@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { database, storage } from "@/lib/appwrite/server";
-import { ID, Query } from "node-appwrite";
+import { ID, Query,Permission,Role } from "node-appwrite";
 
 
 export async function GET(request: Request) {
@@ -107,7 +107,7 @@ export async function POST(request: Request) {
       const uploadedFile = await storage.createFile(
         process.env.NEXT_APPWRITE_BUCKET_ID!,
         ID.unique(),
-        file
+        file,[Permission.read(Role.any())]
       );
 
       const projectId = process.env.NEXT_APPWRITE_PROJECT_ID;

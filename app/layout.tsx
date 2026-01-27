@@ -1,11 +1,7 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import MobileMenu from "@/components/MobileMenu";
-import Footer from "@/components/Footer";
-import { StickyBanner } from "@/components/ui/sticky-banner";
-import FooterDesk from "@/components/FooterDesk";
+
 const monument = localFont({
   src: [
     {
@@ -50,42 +46,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className={`${monument.variable} ${poppins.variable}`}>
-        {/* App wrapper */}
-        <div className="relative min-h-screen bg-background overflow-x-hidden">
-          {/* 🔒 Background texture layer */}
-          <div
-            className="absolute inset-0 z-0 opacity-7 pointer-events-none"
-            style={{
-              backgroundImage: "url('/images/Logo.svg')",
-              backgroundRepeat: "repeat",
-              backgroundSize: "1200px",
-              backgroundPosition: "center top",
-            }}
-          />
-
-          {/* 🔝 UI layer */}
-          <div className="relative z-10 flex flex-col min-h-screen">
-            {/* Navbar must always win */}
-            <div className="relative z-50">
-              <Navbar />
-              <StickyBanner>
-                Relevent 2025 – Register Now – Gateway to Leadership and
-                Innovation
-              </StickyBanner>
-              <MobileMenu />
-            </div>
-
-            {/* Page content */}
-            <main className="flex-1">{children}</main>
-
-            <div className="md:hidden sm:hidden mt-5">
-              <Footer />
-            </div>
-            <div className="hidden md:block sm:block sm:mx-15 lg:mx-0">
-              <FooterDesk />
-            </div>
-          </div>
-        </div>
+        {children}
       </body>
     </html>
   );
