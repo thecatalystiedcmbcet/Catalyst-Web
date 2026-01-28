@@ -1,7 +1,9 @@
 "use client"
+import AddMemberForm from "@/app/admin/members/add-member-form"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal } from "lucide-react"
+import { MoreHorizontal,Pencil } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
 import {
   Avatar,
   AvatarBadge,
@@ -10,6 +12,17 @@ import {
   AvatarGroupCount,
   AvatarImage,
 } from "@/components/ui/avatar"
+
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -24,7 +37,7 @@ import {
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
 export type Payment = {
-//   id: string
+  id: string
 
   name: string
   phone: string
@@ -37,11 +50,55 @@ export type Payment = {
 }
 
 export const columns: ColumnDef<Payment>[] = [
-      {
+  {
+  id: "select",
+  header: ({ table }) => (
+    <Checkbox
+      checked={
+        table.getIsAllPageRowsSelected() ||
+        (table.getIsSomePageRowsSelected() && "indeterminate")
+      }
+      onCheckedChange={(value) =>
+        table.toggleAllPageRowsSelected(!!value)
+      }
+      aria-label="Select all"
+    />
+  ),
+  cell: ({ row }) => {
+    const isSelected = row.getIsSelected()
+
+    return (
+      <div className="relative flex items-center justify-center group">
+
+        {/* Row number */}
+        {!isSelected && (
+          <span className="transition-opacity group-hover:opacity-0">
+            {row.index + 1}
+          </span>
+        )}
+
+        {/* Checkbox */}
+        <Checkbox
+          checked={isSelected}
+          onCheckedChange={(value) => row.toggleSelected(!!value)}
+          aria-label="Select row"
+          className={`
+            absolute transition-opacity
+            ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}
+          `}
+        />
+      </div>
+    )
+  },
+  enableSorting: false,
+  enableHiding: false,
+}
+,
+  {
     accessorKey: "avatar",
     cell: ({ row }) => {
       const payment = row.original
- 
+
       return (
         <Avatar size="sm">
           <AvatarImage src={payment.photo} />
@@ -66,40 +123,31 @@ export const columns: ColumnDef<Payment>[] = [
     accessorKey: "email",
     header: "Email",
   },
-    {
+  {
     accessorKey: "join_date",
     header: "Join Date",
   },
-    {
+  {
     accessorKey: "leave_date",
     header: "Leave Date",
   },
-    {
+  {
     id: "actions",
     header: "Actions",
     cell: ({ row }) => {
       const payment = row.original
- 
+
       return (
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <Button variant="ghost" className="h-8 w-8 p-0">
-              <span className="sr-only">Open menu</span>
-              <MoreHorizontal className="h-4 w-4" />
-            </Button>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
-            <DropdownMenuLabel>Actions</DropdownMenuLabel>
-            <DropdownMenuItem
-              onClick={() => navigator.clipboard.writeText(payment.name)}
-            >
-              Copy payment ID
-            </DropdownMenuItem>
-            <DropdownMenuSeparator />
-            <DropdownMenuItem>View customer</DropdownMenuItem>
-            <DropdownMenuItem>View payment details</DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+
+              <Drawer direction="right" >
+                <DrawerTrigger asChild>
+                  <Button variant="outline" size="icon"><Pencil/></Button>
+                </DrawerTrigger>
+                <DrawerContent className="no-scrollbar overflow-y-auto">
+                  <AddMemberForm />
+                </DrawerContent>
+              </Drawer>
+
       )
     },
   },
