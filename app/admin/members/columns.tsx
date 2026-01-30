@@ -2,7 +2,7 @@
 import AddMemberForm from "@/app/admin/members/add-member-form"
 
 import { ColumnDef } from "@tanstack/react-table"
-import { MoreHorizontal,Pencil } from "lucide-react"
+import { MoreHorizontal, Pencil } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
 import {
   Avatar,
@@ -44,56 +44,56 @@ export type Payment = {
   photo: string
   email: string
   organization: string
-  roles:string
-  join_date:string
-  leave_date:string
+  roles: string
+  join_date: string
+  leave_date: string
 }
 
 export const columns: ColumnDef<Payment>[] = [
   {
-  id: "select",
-  header: ({ table }) => (
-    <Checkbox
-      checked={
-        table.getIsAllPageRowsSelected() ||
-        (table.getIsSomePageRowsSelected() && "indeterminate")
-      }
-      onCheckedChange={(value) =>
-        table.toggleAllPageRowsSelected(!!value)
-      }
-      aria-label="Select all"
-    />
-  ),
-  cell: ({ row }) => {
-    const isSelected = row.getIsSelected()
+    id: "select",
+    header: ({ table }) => (
+      <Checkbox
+        checked={
+          table.getIsAllPageRowsSelected() ||
+          (table.getIsSomePageRowsSelected() && "indeterminate")
+        }
+        onCheckedChange={(value) =>
+          table.toggleAllPageRowsSelected(!!value)
+        }
+        aria-label="Select all"
+      />
+    ),
+    cell: ({ row }) => {
+      const isSelected = row.getIsSelected()
 
-    return (
-      <div className="relative flex items-center justify-center group">
+      return (
+        <div className="relative flex items-center justify-center group">
 
-        {/* Row number */}
-        {!isSelected && (
-          <span className="transition-opacity group-hover:opacity-0">
-            {row.index + 1}
-          </span>
-        )}
+          {/* Row number */}
+          {!isSelected && (
+            <span className="transition-opacity group-hover:opacity-0">
+              {row.index + 1}
+            </span>
+          )}
 
-        {/* Checkbox */}
-        <Checkbox
-          checked={isSelected}
-          onCheckedChange={(value) => row.toggleSelected(!!value)}
-          aria-label="Select row"
-          className={`
+          {/* Checkbox */}
+          <Checkbox
+            checked={isSelected}
+            onCheckedChange={(value) => row.toggleSelected(!!value)}
+            aria-label="Select row"
+            className={`
             absolute transition-opacity
             ${isSelected ? "opacity-100" : "opacity-0 group-hover:opacity-100"}
           `}
-        />
-      </div>
-    )
-  },
-  enableSorting: false,
-  enableHiding: false,
-}
-,
+          />
+        </div>
+      )
+    },
+    enableSorting: false,
+    enableHiding: false,
+  }
+  ,
   {
     accessorKey: "avatar",
     cell: ({ row }) => {
@@ -139,14 +139,14 @@ export const columns: ColumnDef<Payment>[] = [
 
       return (
 
-              <Drawer direction="right" >
-                <DrawerTrigger asChild>
-                  <Button variant="outline" size="icon"><Pencil/></Button>
-                </DrawerTrigger>
-                <DrawerContent className="no-scrollbar overflow-y-auto">
-                  <AddMemberForm />
-                </DrawerContent>
-              </Drawer>
+        <Drawer direction="right" >
+          <DrawerTrigger asChild>
+            <Button variant="outline" size="icon"><Pencil /></Button>
+          </DrawerTrigger>
+          <DrawerContent className="no-scrollbar overflow-y-auto">
+            <AddMemberForm roles={[]} organizations={[]} />
+          </DrawerContent>
+        </Drawer>
 
       )
     },

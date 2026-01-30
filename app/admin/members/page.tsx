@@ -1,7 +1,7 @@
 import { columns, Payment } from "./columns"
 import { DataTable } from "./data-table"
 import AddMemberForm from "./add-member-form"
-
+import { Role, Organization } from "./types"
 import {
     Drawer,
     DrawerClose,
@@ -39,12 +39,13 @@ async function getData(): Promise<Payment[]> {
         )
 
         return {
+            id: item.$id,  // Add the ID from the API
             name: item.name,
             phone: item.phone,
             photo: item.photo,
             email: item.email,
-            organization: item.orgs.map((orgs: any) => orgs.name).join(", "),
-            roles: item.roles.map((roles: any) => roles.name).join(", "),
+            organization: item.orgs.map((orgs: any) => orgs.name).join(","),
+            roles: item.roles.map((roles: any) => roles.name).join(","),
             join_date: join_Date_,
             leave_date: leave_Date_,
         }
@@ -53,8 +54,40 @@ async function getData(): Promise<Payment[]> {
     return payments
 }
 
+export async function getRoles(): Promise<Role[]> {
+    const res = await fetch("http://localhost:3000/api/v1/roles", {
+        method: "GET",
+        cache: "no-store", // always fresh
+    })
+
+    if (!res.ok) {
+        throw new Error("Failed to fetch roles")
+    }
+
+    const data: Role[] = await res.json()
+    return data
+}
+
+export async function getOrganizations(): Promise<Organization[]> {
+    const res = await fetch("http://localhost:3000/api/v1/org", {
+        method: "GET",
+        cache: "no-store", // always fresh
+    })
+
+    if (!res.ok) {
+        throw new Error("Failed to fetch organizations")
+    }
+
+    const data: Organization[] = await res.json()
+    return data
+}
+
 export default async function DemoPage() {
     const data = await getData()
+    const roles = await getRoles()
+    const organizations = await getOrganizations()
+    console.log(roles)
+    console.log(organizations)
 
     return (
         <div className="flex flex-col items-center w-full max-w-7xl mx-auto">
@@ -69,7 +102,7 @@ export default async function DemoPage() {
                             <Button variant="outline" ><Plus />Add User</Button>
                         </DrawerTrigger>
                         <DrawerContent className="no-scrollbar overflow-y-auto">
-                            <AddMemberForm />
+                            <AddMemberForm roles={roles} organizations={organizations} />
                         </DrawerContent>
                     </Drawer>
                 </div>

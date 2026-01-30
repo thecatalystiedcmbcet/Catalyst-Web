@@ -1,4 +1,5 @@
 "use client"
+import { Role, Organization } from "@/app/admin/members/types"
 
 import * as React from "react"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -49,15 +50,19 @@ const formSchema = z.object({
         .max(100, "Description must be at most 100 characters."),
     phone: z.string(),
     photo: z.string(),
-    organization: z.string(),
-    roles: z.string(),
+    organization: z.array(z.object({
+        name: z.string(),
+    })),
+    roles: z.array(z.object({
+        name: z.string(),
+    })),
     join_date: z.string(),
     leave_date: z.string(),
 
 
 })
 
-export default function AddMemberForm() {
+export default function AddMemberForm({ roles, organizations }: { roles: Role[], organizations: Organization[] }) {
     const [joinDate, setJoinDate] = React.useState<Date>()
     const [leaveDate, setLeaveDate] = React.useState<Date>()
     const form = useForm<z.infer<typeof formSchema>>({
@@ -67,27 +72,60 @@ export default function AddMemberForm() {
             email: "",
             phone: "",
             photo: "",
-            organization: "",
-            roles: "",
+            organization: [],
+            roles: [],
             join_date: "",
             leave_date: "",
         },
     })
 
-    function onSubmit(data: z.infer<typeof formSchema>) {
-        console.log(data)
+    async function onSubmit(data: z.infer<typeof formSchema>) {
+        console.log("Form data:", data)
         const formData = new FormData()
         formData.append("name", data.name)
         formData.append("email", data.email)
         formData.append("phone", data.phone)
         formData.append("photo", data.photo)
-        formData.append("organization", data.organization)
-        formData.append("roles", data.roles)
+
+        // Map organization names to organization IDs
+        console.log("Available organizations:", organizations)
+        console.log("Entered organizations:", data.organization)
+        const organizationIds = data.organization
+            .map((org: any) => {
+                const matchedOrg = organizations.find(organization => organization.name.toLowerCase() === org.name.toLowerCase())
+                console.log(`Matching "${org.name}":`, matchedOrg)
+                return matchedOrg?.$id
+            })
+            .filter(Boolean) // Remove any undefined values
+
+        console.log("Organization IDs:", organizationIds)
+        formData.append("orgs", JSON.stringify(organizationIds))
+
+        // Map role names to role IDs
+        console.log("Available roles:", roles)
+        console.log("Entered roles:", data.roles)
+        const roleIds = data.roles
+            .map((r: any) => {
+                const matchedRole = roles.find(role => role.name.toLowerCase() === r.name.toLowerCase())
+                console.log(`Matching "${r.name}":`, matchedRole)
+                return matchedRole?.$id
+            })
+            .filter(Boolean) // Remove any undefined values
+
+        console.log("Role IDs:", roleIds)
+        formData.append("roles", JSON.stringify(roleIds))
         formData.append("join_date", data.join_date)
         formData.append("leave_date", data.leave_date)
         for (const [key, value] of formData.entries()) {
             console.log(key, value)
         }
+        const response = await fetch("/api/v1/members", {
+            method: "POST",
+            body: formData,
+        });
+        const result = await response.json();
+        console.log(result)
+
     }
 
     return (
@@ -203,17 +241,29 @@ export default function AddMemberForm() {
                                         Organization
                                     </FieldLabel>
                                     <Input
-                                        {...field}
                                         id="add-member-organization"
+                                        name={field.name}
+                                        ref={field.ref}
+                                        disabled={field.disabled}
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="Enter your organization"
+                                        placeholder="Enter organizations (comma-separated)"
                                         autoComplete="off"
+                                        value={Array.isArray(field.value) ? field.value.map((org: any) => org.name).join(", ") : ""}
+                                        onChange={(e) => {
+                                            console.log("Organization input changed:", e.target.value);
+                                            const orgNames = e.target.value.split(",").map(name => name.trim()).filter(name => name);
+                                            console.log("Parsed org names:", orgNames);
+                                            const orgObjects = orgNames.map(name => ({ name }));
+                                            console.log("Org objects to store:", orgObjects);
+                                            field.onChange(orgObjects);
+                                        }}
+                                        onBlur={field.onBlur}
                                     />
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
                                     <FieldDescription>
-                                        Enter first and last name
+                                        Enter organizations separated by commas (e.g., Company A, Company B)
                                     </FieldDescription>
                                 </Field>
                             )}
@@ -227,17 +277,29 @@ export default function AddMemberForm() {
                                         Roles
                                     </FieldLabel>
                                     <Input
-                                        {...field}
                                         id="add-member-roles"
+                                        name={field.name}
+                                        ref={field.ref}
+                                        disabled={field.disabled}
                                         aria-invalid={fieldState.invalid}
-                                        placeholder="Enter your name"
+                                        placeholder="Enter roles (comma-separated)"
                                         autoComplete="off"
+                                        value={Array.isArray(field.value) ? field.value.map((r: any) => r.name).join(", ") : ""}
+                                        onChange={(e) => {
+                                            console.log("Roles input changed:", e.target.value);
+                                            const roleNames = e.target.value.split(",").map(name => name.trim()).filter(name => name);
+                                            console.log("Parsed role names:", roleNames);
+                                            const roleObjects = roleNames.map(name => ({ name }));
+                                            console.log("Role objects to store:", roleObjects);
+                                            field.onChange(roleObjects);
+                                        }}
+                                        onBlur={field.onBlur}
                                     />
                                     {fieldState.invalid && (
                                         <FieldError errors={[fieldState.error]} />
                                     )}
                                     <FieldDescription>
-                                        Enter first and last name
+                                        Enter roles separated by commas (e.g., Admin, Developer, Manager)
                                     </FieldDescription>
                                 </Field>
                             )}
