@@ -1,29 +1,30 @@
-export default function AdminDashboardPage() {
-    return (
-        <div>
-            <h2 className="text-2xl font-bold mb-6 text-gray-900">Dashboard Overview</h2>
+import { RolesClient } from "./roles-client"
+import { Role } from "./types"
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                <StatCard title="Total Users" value="128" />
-                <StatCard title="Total Events" value="45" />
-                <StatCard title="Active Members" value="89" />
-            </div>
+async function getRoles(): Promise<Role[]> {
+    const res = await fetch("http://localhost:3000/api/v1/roles", {
+        method: "GET",
+        cache: "no-store",
+    })
 
-            <div className="mt-8">
-                <h3 className="text-xl font-semibold mb-4 text-gray-800">Recent Activity</h3>
-                <div className="bg-white rounded-lg shadow p-6">
-                    <p className="text-gray-600">No recent activity to display.</p>
-                </div>
-            </div>
-        </div>
-    );
+    if (!res.ok) {
+        throw new Error("Failed to fetch roles")
+    }
+
+    const data = await res.json()
+
+    // Transform the API data to match our Role type
+    const roles: Role[] = data.map((role: any) => ({
+        id: role.$id,
+        name: role.name,
+        member_count: 0 // Set to 0 as requested
+    }))
+
+    return roles
 }
 
-function StatCard({ title, value }: { title: string; value: string }) {
-    return (
-        <div className="bg-white rounded-lg shadow p-6">
-            <p className="text-sm text-gray-500 mb-1">{title}</p>
-            <p className="text-3xl font-bold text-gray-900">{value}</p>
-        </div>
-    );
+export default async function RolesPage() {
+    const roles = await getRoles()
+
+    return <RolesClient initialData={roles} />
 }

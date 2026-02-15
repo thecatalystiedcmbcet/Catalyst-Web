@@ -1,20 +1,6 @@
 import { columns, Payment } from "./columns"
-import { DataTable } from "./data-table"
-import AddMemberForm from "./add-member-form"
+import { MembersClient } from "./members-client"
 import { Role, Organization } from "./types"
-import {
-    Drawer,
-    DrawerClose,
-    DrawerContent,
-    DrawerDescription,
-    DrawerFooter,
-    DrawerHeader,
-    DrawerTitle,
-    DrawerTrigger,
-} from "@/components/ui/drawer"
-
-import { Button } from "@/components/ui/button"
-import { Plus } from "lucide-react"
 
 async function getData(): Promise<Payment[]> {
     const res = await fetch("http://localhost:3000/api/v1/members", {
@@ -86,31 +72,12 @@ export default async function DemoPage() {
     const data = await getData()
     const roles = await getRoles()
     const organizations = await getOrganizations()
-    console.log(roles)
-    console.log(organizations)
 
     return (
-        <div className="flex flex-col items-center w-full max-w-7xl mx-auto">
-
-            <div className="flex justify-between items-center w-full">
-                <div>
-                    <h1>Members</h1>
-                </div>
-                <div>
-                    <Drawer direction="right" >
-                        <DrawerTrigger asChild>
-                            <Button variant="outline" ><Plus />Add User</Button>
-                        </DrawerTrigger>
-                        <DrawerContent className="no-scrollbar overflow-y-auto">
-                            <AddMemberForm roles={roles} organizations={organizations} />
-                        </DrawerContent>
-                    </Drawer>
-                </div>
-            </div>
-
-            <div className="py-10 w-full">
-                <DataTable columns={columns} data={data} />
-            </div>
-        </div>
+        <MembersClient
+            initialData={data}
+            roles={roles}
+            organizations={organizations}
+        />
     )
 }
