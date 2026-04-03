@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { database } from "@/lib/appwrite/server";
 import { DB_ID, COLLECTIONS } from "@/lib/constants/collections";
 import { handleError, badRequest, notFound, successResponse } from "@/lib/utils/api-response";
+import { revalidatePath } from "next/cache";
 
 export async function GET(
   request: Request,
@@ -56,6 +57,8 @@ export async function PATCH(
       updateData
     );
 
+    revalidatePath("/admin", "layout");
+
     return NextResponse.json(updatedRole);
   } catch (error) {
     return handleError("Update role", error);
@@ -70,6 +73,8 @@ export async function DELETE(
     const { role_id } = await params;
 
     await database.deleteDocument(DB_ID, COLLECTIONS.ROLES, role_id);
+
+    revalidatePath("/admin", "layout");
 
     return successResponse({ message: "Role deleted successfully", id: role_id });
   } catch (error) {

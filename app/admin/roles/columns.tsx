@@ -144,13 +144,7 @@ export function getColumns(onEditClick?: (role: Role) => void): ColumnDef<Role>[
                 <div className="font-medium">{row.original.name}</div>
             ),
         },
-        {
-            accessorKey: "id",
-            header: "Role ID",
-            cell: ({ row }) => (
-                <div className="font-mono text-sm text-muted-foreground">{row.original.id}</div>
-            ),
-        },
+
         {
             accessorKey: "member_count",
             header: "Member Count",

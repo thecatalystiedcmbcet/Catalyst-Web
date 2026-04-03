@@ -10,8 +10,8 @@ interface ApiSuccessResponse {
     [key: string]: unknown;
 }
 
-export function successResponse(data: Record<string, unknown> | unknown[], status = 200) {
-    return NextResponse.json(data, { status });
+export function successResponse(data: Record<string, unknown> | unknown[], status?: number) {
+    return NextResponse.json(data, { status: status ?? 200 });
 }
 
 export function errorResponse(error: string, details?: string, status = 500) {
