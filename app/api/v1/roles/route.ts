@@ -4,7 +4,6 @@ import { ID, Query } from "node-appwrite";
 import { DB_ID, COLLECTIONS } from "@/lib/constants/collections";
 import { handleError, badRequest } from "@/lib/utils/api-response";
 import { parsePagination, paginationQueries } from "@/lib/utils/pagination";
-import { revalidatePath } from "next/cache";
 
 export async function GET(request: Request) {
   try {
@@ -13,7 +12,7 @@ export async function GET(request: Request) {
 
     const queries = [
       ...paginationQueries(pagination),
-      Query.orderAsc("priority"),
+      Query.orderDesc("$createdAt"),
     ];
 
     const search = url.searchParams.get("search");
@@ -23,22 +22,8 @@ export async function GET(request: Request) {
 
     const roles = await database.listDocuments(DB_ID, COLLECTIONS.ROLES, queries);
 
-    // Fetch total member count for each role
-    const enrichedRoles = await Promise.all(
-      roles.documents.map(async (role) => {
-        const linkDocs = await database.listDocuments(DB_ID, COLLECTIONS.USER_LINK_ROLES, [
-          Query.equal("role_id", role.$id),
-          Query.limit(1), // limit 1 since we only need the .total property
-        ]);
-        return {
-          ...role,
-          member_count: linkDocs.total,
-        };
-      })
-    );
-
     return NextResponse.json({
-      documents: enrichedRoles,
+      documents: roles.documents,
       total: roles.total,
       page: Math.floor(pagination.offset / pagination.limit) + 1,
       limit: pagination.limit,
@@ -67,8 +52,6 @@ export async function POST(request: Request) {
       ID.unique(),
       { name: name.trim() } as Record<string, unknown>
     );
-
-    revalidatePath("/admin", "layout");
 
     return NextResponse.json(newRole, { status: 201 });
   } catch (error) {

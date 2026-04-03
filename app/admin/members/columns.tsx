@@ -48,7 +48,7 @@ import { postActionLog } from "@/lib/utils/action-log"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
-export type Member = {
+export type Payment = {
   id: string
 
   name: string
@@ -61,7 +61,7 @@ export type Member = {
   leave_date: string
 }
 
-export function getColumns(onEditClick?: (member: Member) => void): ColumnDef<Member>[] {
+export function getColumns(onEditClick?: (member: Payment) => void): ColumnDef<Payment>[] {
   return [
     {
       id: "select",
@@ -138,6 +138,7 @@ export function getColumns(onEditClick?: (member: Member) => void): ColumnDef<Me
         return (
           <div className="flex flex-col py-1">
              <span className="text-sm">{primaryOrg}</span>
+             <span className="text-[10px] tracking-wider text-muted-foreground mt-1 uppercase">Enterprise Plan</span>
           </div>
         )
       },
