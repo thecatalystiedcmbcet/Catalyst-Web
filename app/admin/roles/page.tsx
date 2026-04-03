@@ -13,11 +13,23 @@ async function getRoles(): Promise<Role[]> {
 
     const data = Array.isArray(rawData) ? rawData : rawData.documents || []
 
-    const roles: Role[] = data.map((role: any) => ({
+    let roles: Role[] = data.map((role: any) => ({
         id: role.$id,
         name: role.name,
-        member_count: 0,
+        member_count: role.member_count || 0,
+        priority: role.priority || 0,
     }))
+
+    // Sort: 1+ come first in ascending order, 0 or null fall to the bottom
+    roles.sort((a, b) => {
+        const pA = a.priority || 0;
+        const pB = b.priority || 0;
+        
+        if (pA === 0 && pB !== 0) return 1;
+        if (pA !== 0 && pB === 0) return -1;
+        if (pA !== 0 && pB !== 0) return pA - pB;
+        return 0;
+    })
 
     return roles
 }

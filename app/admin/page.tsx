@@ -57,19 +57,15 @@ export default function AdminDashboardPage() {
                     value={stats?.total_members}
                     isLoading={isLoading}
                     icon={<Users className="w-4 h-4 md:w-5 md:h-5 text-neutral-400" />}
-                    badgeText="LIFETIME"
                     desktopTitle="Total Members"
                     desktopDesc="Comprehensive count of all registered users within the curation network."
                     mobileTitle={<><Users className="w-4 h-4" /> TOTAL MEMBERS</>}
-                    mobileWatermarkIcon={<Users className="w-full h-full" />}
                 />
 
                 <BentoCard
                     value={stats?.active_members}
                     isLoading={isLoading}
                     icon={<Zap className="w-4 h-4 md:w-5 md:h-5 text-neutral-400" />}
-                    badgeText="LIVE"
-                    hasLiveDot
                     desktopTitle="Active Members"
                     desktopDesc="Users currently engaged with the platform or with active sessions today."
                     mobileTitle={<><Zap className="w-4 h-4" /> ACTIVE</>}
@@ -79,7 +75,6 @@ export default function AdminDashboardPage() {
                     value={stats?.total_events}
                     isLoading={isLoading}
                     icon={<Calendar className="w-4 h-4 md:w-5 md:h-5 text-neutral-400" />}
-                    badgeText="SCHEDULED"
                     desktopTitle="Total Events"
                     desktopDesc="Aggregated exhibitions, private views, and curated social gatherings."
                     mobileTitle={<><Calendar className="w-4 h-4" /> EVENTS</>}
@@ -89,11 +84,9 @@ export default function AdminDashboardPage() {
                     value={stats?.featured_events}
                     isLoading={isLoading}
                     icon={<Star className="w-4 h-4 md:w-5 md:h-5 text-neutral-400" />}
-                    badgeText="PRIORITY"
                     desktopTitle="Featured Events"
                     desktopDesc="High-profile activations currently highlighted on the member landing page."
-                    mobileTitle={<><Star className="w-4 h-4" /> FEATURED EXHIBITS</>}
-                    mobileWatermarkText="EVENTS"
+                    mobileTitle={<><Star className="w-4 h-4" /> FEATURED EVENTS</>}
                     mobileSpecialBg
                 />
 

@@ -5,6 +5,7 @@ import { DB_ID, COLLECTIONS } from "@/lib/constants/collections";
 import { handleError, badRequest, successResponse } from "@/lib/utils/api-response";
 import { uploadFile, deleteFileByUrl } from "@/lib/utils/storage";
 import { validateFields, formatValidationErrors } from "@/lib/utils/validation";
+import { revalidateTag } from "next/cache";
 
 export async function GET(
   request: Request,
@@ -111,6 +112,8 @@ export async function DELETE(
     await Promise.all(deletePromises);
 
     await database.deleteDocument(DB_ID, COLLECTIONS.MEMBERS, member_id);
+
+    revalidateTag("admin-roles");
 
     return successResponse({ message: "Member deleted successfully", id: member_id });
   } catch (error) {
@@ -263,6 +266,8 @@ export async function PATCH(
         });
       }
     }
+
+    revalidateTag("admin-roles");
 
     return successResponse({
       message: "Member updated successfully",
