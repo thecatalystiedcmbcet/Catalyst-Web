@@ -1,4 +1,4 @@
-import { columns, Member } from "./columns"
+import { columns, Payment } from "./columns"
 import { MembersClient } from "./members-client"
 import { Role, Organization } from "./types"
 import { adminFetch, CACHE_TAGS } from "@/lib/admin-fetcher"
@@ -6,7 +6,7 @@ import { adminFetch, CACHE_TAGS } from "@/lib/admin-fetcher"
 // ISR: revalidate this page every 60 seconds
 export const revalidate = 60
 
-async function getData(): Promise<Member[]> {
+async function getData(): Promise<Payment[]> {
     const rawData = await adminFetch<any>("/api/v1/members", {
         tags: [CACHE_TAGS.members],
         revalidate: 60,
@@ -14,7 +14,7 @@ async function getData(): Promise<Member[]> {
 
     const list = Array.isArray(rawData) ? rawData : rawData.documents || []
 
-    return list.map((item: any): Member => {
+    return list.map((item: any): Payment => {
         const join_Date_ = new Intl.DateTimeFormat("en-CA").format(new Date(item.join_date))
         const leave_Date_ = new Intl.DateTimeFormat("en-CA").format(new Date(item.leave_date))
 
@@ -50,7 +50,7 @@ async function getOrganizations(): Promise<Organization[]> {
     return data
 }
 
-export default async function MembersPage() {
+export default async function DemoPage() {
     // Fetch all resources in parallel (was sequential before!)
     const [data, roles, organizations] = await Promise.all([
         getData(),
