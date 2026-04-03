@@ -18,7 +18,7 @@ import { Label } from "@/components/ui/label"
 interface AddRoleFormProps {
     open: boolean
     onOpenChange: (open: boolean) => void
-    onSuccess?: (role: any) => void
+    onSuccess?: (roleName: string) => void
 }
 
 export function AddRoleForm({ open, onOpenChange, onSuccess }: AddRoleFormProps) {
@@ -75,7 +75,7 @@ export function AddRoleForm({ open, onOpenChange, onSuccess }: AddRoleFormProps)
                 details: `Role name: ${sanitizedName}`,
             })
             if (onSuccess) {
-                onSuccess(result)
+                onSuccess(sanitizedName)
             }
 
             // Reset form

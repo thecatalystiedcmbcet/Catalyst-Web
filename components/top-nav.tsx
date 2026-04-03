@@ -3,25 +3,17 @@
 import * as React from "react"
 import { ChevronDown } from "lucide-react"
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { SidebarTrigger, useSidebar } from "@/components/ui/sidebar"
 
 export function TopNav({ user }: { user: any }) {
-  const { isMobile } = useSidebar()
-
   return (
-    <header data-topnav className="flex h-16 w-full items-center justify-between border-b bg-background px-4 pr-6 shrink-0">
-
-      {/* Left controls: Mobile trigger */}
-      <div className="flex items-center">
-        {isMobile && <SidebarTrigger />}
-      </div>
+    <header data-topnav className="flex h-16 w-full items-center justify-end border-b bg-background px-4 pr-6 shrink-0">
 
       {/* Right controls */}
       <div className="flex items-center gap-4 md:gap-6">
 
 
         {/* User Profile */}
-        <div className="flex items-center  gap-3 text-left bg-muted/40 rounded-full pl-2 pr-4 py-1.5 border border-border/50">
+        <button className="flex items-center gap-3 hover:opacity-80 transition-opacity text-left bg-muted/40 rounded-full pl-2 pr-4 py-1.5 border border-border/50">
           <Avatar className="h-8 w-8 border border-background">
             <AvatarFallback className="bg-primary/10 text-primary text-xs font-medium">
               {user?.name?.charAt(0) || "A"}
@@ -35,7 +27,8 @@ export function TopNav({ user }: { user: any }) {
               {user?.email || "admin@iedc.mbcet"}
             </span>
           </div>
-        </div>
+          <ChevronDown className="hidden md:block h-4 w-4 text-muted-foreground ml-2" />
+        </button>
       </div>
     </header>
   )

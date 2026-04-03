@@ -18,7 +18,7 @@ export function LogsClient({ initialData, total }: LogsClientProps) {
     const [statusFilter, setStatusFilter] = React.useState<"all" | "success" | "error">("all")
     const [entityFilter, setEntityFilter] = React.useState<string>("all")
     const [isRefreshing, setIsRefreshing] = React.useState(false)
-    const limit = 1000
+    const limit = 25
 
     // Derive unique entity types from data for the filter dropdown
     const entityTypes = React.useMemo(() => {
@@ -174,7 +174,46 @@ export function LogsClient({ initialData, total }: LogsClientProps) {
                 <DataTable data={data} />
             </div>
 
-
+            {/* Pagination */}
+            {totalCount > 0 && (
+                <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t pt-4 w-full">
+                    <div className="text-sm text-muted-foreground sm:text-left text-center w-full sm:w-auto">
+                        Showing <span className="font-semibold text-foreground">{(page - 1) * limit + 1}</span> to <span className="font-semibold text-foreground">{Math.min(page * limit, totalCount)}</span> of <span className="font-semibold text-foreground">{totalCount}</span> results
+                    </div>
+                    {totalPages > 1 && (
+                        <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                            <div className="flex items-center gap-1 sm:hidden text-sm font-medium text-muted-foreground mx-auto mb-2">
+                                Page <span className="text-foreground">{page}</span> of {totalPages}
+                            </div>
+                            <div className="flex items-center gap-2 justify-between w-full sm:w-auto">
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="h-8 md:px-3" 
+                                    disabled={page <= 1 || isRefreshing}
+                                    onClick={() => setPage(p => p - 1)}
+                                >
+                                    <ChevronLeft className="w-4 h-4" />
+                                </Button>
+                                <div className="hidden sm:flex items-center gap-1">
+                                    <span className="text-sm text-muted-foreground mx-2">
+                                        Page <span className="font-medium text-foreground">{page}</span> of {totalPages}
+                                    </span>
+                                </div>
+                                <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="h-8 md:px-3"
+                                    disabled={page >= totalPages || isRefreshing}
+                                    onClick={() => setPage(p => p + 1)}
+                                >
+                                    <ChevronRight className="w-4 h-4" />
+                                </Button>
+                            </div>
+                        </div>
+                    )}
+                </div>
+            )}
         </div>
     )
 }
