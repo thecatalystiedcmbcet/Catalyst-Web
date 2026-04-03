@@ -5,7 +5,7 @@ import { DB_ID, COLLECTIONS } from "@/lib/constants/collections";
 import { handleError, badRequest } from "@/lib/utils/api-response";
 import { uploadFile } from "@/lib/utils/storage";
 import { parsePagination, paginationQueries } from "@/lib/utils/pagination";
-import { validateFields, formatValidationErrors, isStringArray } from "@/lib/utils/validation";
+import { validateFields, formatValidationErrors } from "@/lib/utils/validation";
 import { FORM_FIELDS } from "@/lib/utils/form-safety";
 
 export async function GET(request: Request) {
