@@ -3,14 +3,10 @@
 import * as React from "react"
 import {
     ColumnDef,
-    SortingState,
     flexRender,
     getCoreRowModel,
     getPaginationRowModel,
-    getSortedRowModel,
     useReactTable,
-    ColumnFiltersState,
-    getFilteredRowModel,
     RowSelectionState,
 } from "@tanstack/react-table"
 
@@ -23,7 +19,6 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
 import { Trash2, CheckCircle2, XCircle, ChevronLeft, ChevronRight, Users, Pencil, Shield } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import {

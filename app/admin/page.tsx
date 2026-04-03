@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Users, Calendar, ShieldCheck, Landmark, Activity, Star, Zap } from "lucide-react";
+import { Users, Calendar, ShieldCheck, Landmark,Star, Zap } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 interface DashboardStats {

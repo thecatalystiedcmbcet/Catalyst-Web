@@ -3,7 +3,7 @@
 import * as React from "react"
 import { ActionLog } from "./columns"
 import { DataTable } from "./data-table"
-import { ScrollText, RefreshCw, CheckCircle2, XCircle, Download, ChevronLeft, ChevronRight } from "lucide-react"
+import { ScrollText, RefreshCw, CheckCircle2, XCircle, Download} from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface LogsClientProps {
@@ -69,8 +69,6 @@ export function LogsClient({ initialData, total }: LogsClientProps) {
     React.useEffect(() => {
         fetchLogs(page, statusFilter, entityFilter)
     }, [page, statusFilter, entityFilter, fetchLogs])
-
-    const totalPages = Math.max(1, Math.ceil(totalCount / limit))
 
     const successCount = data.filter(l => l.status === "success").length
     const errorCount = data.filter(l => l.status === "error").length

@@ -1,10 +1,10 @@
 import { NextResponse } from "next/server";
 import { database } from "@/lib/appwrite/server";
-import { ID, Query, Permission, Role } from "node-appwrite";
+import { ID, Query } from "node-appwrite";
 import { DB_ID, COLLECTIONS } from "@/lib/constants/collections";
 import { handleError, badRequest, successResponse } from "@/lib/utils/api-response";
 import { uploadFile } from "@/lib/utils/storage";
-import { validateFields, formatValidationErrors, isStringArray } from "@/lib/utils/validation";
+import { validateFields, formatValidationErrors} from "@/lib/utils/validation";
 import { FORM_FIELDS } from "@/lib/utils/form-safety";
 import { parsePagination, paginationQueries } from "@/lib/utils/pagination";
 
@@ -223,6 +223,9 @@ export async function POST(request: Request) {
     }
 
     await Promise.all(promises);
+
+    revalidateTag("admin-members",{});
+    revalidateTag("admin-roles",{});
 
     return successResponse(
       {
