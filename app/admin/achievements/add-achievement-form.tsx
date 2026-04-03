@@ -12,7 +12,7 @@ import {
     PopoverTrigger,
 } from "@/components/ui/popover"
 import { format } from "date-fns"
-import { ChevronDownIcon, X, Layers, Star,Lock, Unlock } from "lucide-react"
+import { ChevronDownIcon, X, Layers, Star, Pencil, Lock, Unlock } from "lucide-react"
 import {
     DropdownMenu,
     DropdownMenuCheckboxItem,

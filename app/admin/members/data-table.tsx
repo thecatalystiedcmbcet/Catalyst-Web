@@ -6,7 +6,11 @@ import {
   flexRender,
   getCoreRowModel,
   useReactTable,
+  getSortedRowModel,
+  SortingState,
   getPaginationRowModel,
+  getFilteredRowModel,
+  ColumnFiltersState,
   RowSelectionState,
 } from "@tanstack/react-table"
 
@@ -19,6 +23,7 @@ import {
   TableRow,
 } from "@/components/ui/table"
 import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { CheckCircle2, XCircle, Trash2, ChevronLeft, ChevronRight, Building2, Calendar, Activity, Pencil } from "lucide-react"
 import {

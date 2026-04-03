@@ -1,8 +1,9 @@
 
 import { NextResponse } from "next/server";
 import { database } from "@/lib/appwrite/server";
+import { ID } from "node-appwrite";
 import { DB_ID, COLLECTIONS, BUCKET_ID } from "@/lib/constants/collections";
-import { handleError, successResponse } from "@/lib/utils/api-response";
+import { handleError, badRequest, successResponse } from "@/lib/utils/api-response";
 import { storage } from "@/lib/appwrite/server";
 import { uploadFile } from "@/lib/utils/storage";
 

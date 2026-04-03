@@ -5,6 +5,10 @@ interface ApiErrorResponse {
     details?: string;
 }
 
+interface ApiSuccessResponse {
+    message: string;
+    [key: string]: unknown;
+}
 
 export function successResponse(data: Record<string, unknown> | unknown[], status = 200) {
     return NextResponse.json(data, { status });

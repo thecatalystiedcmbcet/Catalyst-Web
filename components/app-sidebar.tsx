@@ -62,6 +62,8 @@ const mainNav: NavItem[] = [
   { title: "Logs",      url: "/admin/logs",       icon: ScrollText },
 ]
 
+const bottomNav: NavItem[] = []
+
 // ─── Expandable menu item ─────────────────────────────────────────────────────
 function NavItemRow({ item }: { item: NavItem }) {
   const pathname = usePathname()

@@ -1,4 +1,6 @@
 "use client"
+import AddMemberForm from "@/app/admin/members/add-member-form"
+
 import { ColumnDef } from "@tanstack/react-table"
 import { MoreHorizontal, Pencil, Trash2, CheckCircle2, XCircle } from "lucide-react"
 import { Checkbox } from "@/components/ui/checkbox"
@@ -11,12 +13,23 @@ import {
   AvatarImage,
 } from "@/components/ui/avatar"
 
+import {
+  Drawer,
+  DrawerClose,
+  DrawerContent,
+  DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerTitle,
+  DrawerTrigger,
+} from "@/components/ui/drawer"
 
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"

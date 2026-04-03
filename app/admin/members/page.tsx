@@ -1,4 +1,4 @@
-import { Member } from "./columns"
+import { columns, Payment } from "./columns"
 import { MembersClient } from "./members-client"
 import { Role, Organization } from "./types"
 import { adminFetch, CACHE_TAGS } from "@/lib/admin-fetcher"

@@ -14,7 +14,7 @@ import {
     DrawerTrigger,
 } from "@/components/ui/drawer"
 import { Button } from "@/components/ui/button"
-import { Plus, CheckCircle2, XCircle, Search,Download } from "lucide-react"
+import { Plus, CheckCircle2, XCircle, Search, Filter, Download, Eye } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
@@ -115,22 +115,10 @@ export function MembersClient({ initialData, roles, organizations }: MembersClie
                 details: `Name: ${memberData.name} | Email: ${memberData.email} | Phone: ${memberData.phone} | Joined: ${memberData.join_date}`,
             })
 
-            // Optimistically update the UI since the server cache might be stale
-            const newMemberId = result?.$id || result?.id || "temp-" + Date.now().toString()
-            const organizationNames = memberData.organization.map((org: any) => org.name).join(", ")
-            const roleNames = memberData.roles.map((role: any) => role.name).join(", ")
-            
-            setData(prev => [{ 
-                id: newMemberId, 
-                name: memberData.name, 
-                email: memberData.email,
-                phone: memberData.phone,
-                organization: organizationNames,
-                roles: roleNames,
-                join_date: memberData.join_date || "",
-                leave_date: memberData.leave_date || null,
-                photo: memberData.photo || null,
-            }, ...prev])
+            // Success! Reload page after 1 second to show the success message
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000)
 
         } catch (error: any) {
             console.error("Error adding member:", error)

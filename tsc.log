@@ -1,0 +1,5 @@
+﻿app/admin/logs/data-table.tsx(71,23): error TS17002: Expected corresponding JSX closing tag for 'Table'.
+app/admin/logs/data-table.tsx(134,19): error TS17002: Expected corresponding JSX closing tag for 'div'.
+app/admin/logs/data-table.tsx(137,13): error TS1005: ')' expected.
+app/admin/logs/data-table.tsx(205,9): error TS1128: Declaration or statement expected.
+app/admin/logs/data-table.tsx(206,5): error TS1109: Expression expected.
