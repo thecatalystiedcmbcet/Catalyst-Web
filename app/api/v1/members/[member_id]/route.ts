@@ -113,7 +113,7 @@ export async function DELETE(
 
     await database.deleteDocument(DB_ID, COLLECTIONS.MEMBERS, member_id);
 
-    revalidateTag("admin-roles");
+    revalidateTag("admin-roles", {});
 
     return successResponse({ message: "Member deleted successfully", id: member_id });
   } catch (error) {
@@ -267,7 +267,7 @@ export async function PATCH(
       }
     }
 
-    revalidateTag("admin-roles");
+    revalidateTag("admin-roles", {});
 
     return successResponse({
       message: "Member updated successfully",

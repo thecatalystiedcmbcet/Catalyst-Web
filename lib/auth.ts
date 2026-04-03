@@ -9,10 +9,11 @@ const SESSION_COOKIE = "admin_session";
  * Server Components / Route Handlers only.
  */
 export async function getCurrentUser(): Promise<AppwriteUser | null> {
+  const cookieStore = await cookies();
+  const userId = cookieStore.get(SESSION_COOKIE)?.value;
+  if (!userId) return null;
+
   try {
-    const cookieStore = await cookies();
-    const userId = cookieStore.get(SESSION_COOKIE)?.value;
-    if (!userId) return null;
     return await getSessionUser(userId);
   } catch (err) {
     console.error("[auth] getCurrentUser error:", err);
