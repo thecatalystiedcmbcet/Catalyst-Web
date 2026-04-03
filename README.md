@@ -15,7 +15,7 @@ Built with **Next.js 16**, **Appwrite**, **Shadcn/ui**, **GSAP**, and **Tailwind
 - **GSAP Animations** — Smooth entrance animations for key UI sections.
 - **Fully Responsive** — Mobile-first layout with a collapsible sidebar and adaptive data tables.
 
----
+--
 
 ## Tech Stack
 
