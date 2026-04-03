@@ -7,7 +7,6 @@ import { uploadFile } from "@/lib/utils/storage";
 import { validateFields, formatValidationErrors} from "@/lib/utils/validation";
 import { FORM_FIELDS } from "@/lib/utils/form-safety";
 import { parsePagination, paginationQueries } from "@/lib/utils/pagination";
-import { revalidateTag } from "next/cache";
 
 export async function GET(request: Request) {
   try {

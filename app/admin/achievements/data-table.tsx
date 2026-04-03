@@ -5,7 +5,6 @@ import {
     ColumnDef,
     flexRender,
     getCoreRowModel,
-    getPaginationRowModel,
     useReactTable,
     RowSelectionState,
 } from "@tanstack/react-table"
@@ -39,8 +38,8 @@ interface DataTableProps<TData, TValue> {
     data: TData[]
 }
 
-export function DataTable<TData extends {
-    id: string; title?: string; subtitle?: string | null; cover_image?: string | null; is_featured?: boolean; date?: string | null
+export function DataTable<TData extends { 
+    id: string; title?: string; subtitle?: string | null; cover_image?: string | null; is_featured?: boolean; date?: string | null 
 }, TValue>({
     columns,
     data,
@@ -57,7 +56,6 @@ export function DataTable<TData extends {
         data,
         columns,
         getCoreRowModel: getCoreRowModel(),
-        getPaginationRowModel: getPaginationRowModel(),
         onRowSelectionChange: setRowSelection,
         state: { rowSelection },
     })
@@ -247,63 +245,23 @@ export function DataTable<TData extends {
 
             {/* Table Footer / Pagination Area */}
             <div className="flex flex-col sm:flex-row items-center justify-between gap-4 border-t pt-4">
-                <div className="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
-                    <span className="text-sm text-muted-foreground whitespace-nowrap">Rows per page</span>
-                    <select
-                        className="h-8 rounded-md border border-input bg-background px-2 py-1 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-                        value={table.getState().pagination.pageSize}
-                        onChange={e => {
-                            table.setPageSize(Number(e.target.value))
-                        }}
-                    >
-                        {[10, 20, 30, 40, 50].map(pageSize => (
-                            <option key={pageSize} value={pageSize}>
-                                {pageSize}
-                            </option>
-                        ))}
-                    </select>
-                </div>
-                
                 <div className="text-sm text-muted-foreground sm:text-left text-center w-full sm:w-auto">
-                    Showing <span className="font-semibold text-foreground">{table.getFilteredRowModel().rows.length === 0 ? 0 : table.getState().pagination.pageIndex * table.getState().pagination.pageSize + 1}</span> to <span className="font-semibold text-foreground">{Math.min((table.getState().pagination.pageIndex + 1) * table.getState().pagination.pageSize, table.getFilteredRowModel().rows.length)}</span> of <span className="font-semibold text-foreground">{table.getFilteredRowModel().rows.length}</span> results
+                    Showing <span className="font-semibold text-foreground">1</span> to <span className="font-semibold text-foreground">{table.getRowModel().rows.length}</span> of <span className="font-semibold text-foreground">{data.length}</span> results
                 </div>
-                
-                <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mt-4 sm:mt-0">
+                <div className="flex flex-col sm:flex-row items-center gap-2 w-full sm:w-auto mt-2 sm:mt-0">
+                    <div className="flex items-center gap-1 sm:hidden text-sm font-medium text-muted-foreground mx-auto mb-2">
+                        Page <span className="text-foreground">1</span> of 3
+                    </div>
                     <div className="flex items-center gap-2 justify-between w-full sm:w-auto">
-                        <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-8 md:px-3" 
-                            onClick={() => table.previousPage()}
-                            disabled={!table.getCanPreviousPage()}
-                        >
+                        <Button variant="outline" size="sm" className="h-8 md:px-3" disabled>
                             <ChevronLeft className="w-4 h-4" />
                         </Button>
-                        <div className="flex flex-wrap items-center justify-center gap-1">
-                            {Array.from({ length: table.getPageCount() }, (_, i) => i)
-                                .filter(i => {
-                                    const currentIndex = table.getState().pagination.pageIndex;
-                                    return i >= currentIndex - 2 && i <= currentIndex + 2;
-                                })
-                                .map(i => (
-                                <Button 
-                                    key={i}
-                                    variant={table.getState().pagination.pageIndex === i ? "outline" : "ghost"}
-                                    size="sm" 
-                                    className={`h-8 w-8 p-0 font-medium ${table.getState().pagination.pageIndex === i ? "bg-muted text-foreground" : "text-muted-foreground hover:bg-muted/50 hover:text-foreground"}`}
-                                    onClick={() => table.setPageIndex(i)}
-                                >
-                                    {i + 1}
-                                </Button>
-                            ))}
+                        <div className="hidden sm:flex items-center gap-1">
+                            <Button variant="outline" size="sm" className="h-8 w-8 p-0 bg-muted font-medium text-foreground">1</Button>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:bg-muted/50 hover:text-foreground">2</Button>
+                            <Button variant="ghost" size="sm" className="h-8 w-8 p-0 text-muted-foreground hover:bg-muted/50 hover:text-foreground">3</Button>
                         </div>
-                        <Button 
-                            variant="outline" 
-                            size="sm" 
-                            className="h-8 md:px-3"
-                            onClick={() => table.nextPage()}
-                            disabled={!table.getCanNextPage()}
-                        >
+                        <Button variant="outline" size="sm" className="h-8 md:px-3">
                             <ChevronRight className="w-4 h-4" />
                         </Button>
                     </div>

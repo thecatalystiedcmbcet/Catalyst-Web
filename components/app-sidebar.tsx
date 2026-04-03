@@ -15,11 +15,11 @@ import {
   UserCircle,
   ChevronDown,
   ChevronRight,
-  ChevronLeft,
   Headphones,
   Zap,
   User,
   LogOut,
+  PanelLeft,
 } from "lucide-react"
 
 import { ThemeToggle } from "@/components/theme-toggle"
@@ -54,12 +54,12 @@ type NavItem = {
 }
 
 const mainNav: NavItem[] = [
-  { title: "Dashboard", url: "/admin", icon: Home },
-  { title: "Members", url: "/admin/members", icon: Users },
-  { title: "Events", url: "/admin/events", icon: Calendar },
-  { title: "Roles", url: "/admin/roles", icon: Shield },
+  { title: "Dashboard", url: "/admin",            icon: Home },
+  { title: "Members",   url: "/admin/members",    icon: Users },
+  { title: "Events",    url: "/admin/events",     icon: Calendar },
+  { title: "Roles",     url: "/admin/roles",      icon: Shield },
   { title: "Achievements", url: "/admin/achievements", icon: Trophy },
-  { title: "Logs", url: "/admin/logs", icon: ScrollText },
+  { title: "Logs",      url: "/admin/logs",       icon: ScrollText },
 ]
 
 // ─── Expandable menu item ─────────────────────────────────────────────────────
@@ -142,7 +142,7 @@ function NavItemRow({ item }: { item: NavItem }) {
 
 // ─── Main sidebar ─────────────────────────────────────────────────────────────
 export function AppSidebar() {
-  const { state, toggleSidebar, isMobile } = useSidebar()
+  const { state, toggleSidebar } = useSidebar()
   const isCollapsed = state === "collapsed"
 
   return (
@@ -156,18 +156,14 @@ export function AppSidebar() {
             className="flex items-center gap-3 hover:opacity-80 transition-opacity"
             title={isCollapsed ? "Open sidebar" : ""}
           >
-            {isCollapsed ? (
-              <ChevronRight className="size-6 text-foreground" />
-            ) : (
-              <Image
-                src="/favicon.png"
-                alt="Catalyst Logo"
-                width={28}
-                height={28}
-                className="shrink-0 rounded-md invert dark:invert-0 transition-all"
-              />
-            )}
-            {(!isCollapsed ) && (
+            <Image
+              src="/Catalyst_Logo_Navbar.png"
+              alt="Catalyst Logo"
+              width={28}
+              height={28}
+              className="shrink-0 rounded-md"
+            />
+            {!isCollapsed && (
               <span className="text-sm font-bold tracking-tight text-foreground">
                 Catalyst Admin Panel
               </span>
@@ -181,7 +177,7 @@ export function AppSidebar() {
               title="Close sidebar"
               className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground hover:text-foreground hover:bg-muted transition-colors shrink-0"
             >
-              <ChevronLeft className="size-4" />
+              <PanelLeft className="size-4" />
             </button>
           )}
         </div>
@@ -214,7 +210,7 @@ export function AppSidebar() {
               </div>
               <span className="text-sm font-semibold truncate">Admin</span>
             </div>
-
+            
             <div className="flex items-center gap-1 text-muted-foreground shrink-0">
               <ThemeToggle />
               <form action="/api/v1/auth/logout" method="POST">

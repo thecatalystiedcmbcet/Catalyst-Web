@@ -2,7 +2,7 @@
 
 import * as React from "react"
 import { postActionLog } from "@/lib/utils/action-log"
-import { getColumns, Member } from "./columns"
+import { getColumns, Payment } from "./columns"
 import { DataTable } from "./data-table"
 import AddMemberForm from "./add-member-form"
 import { Role, Organization } from "./types"
@@ -21,19 +21,19 @@ import { useGSAP } from "@gsap/react"
 import { Input } from "@/components/ui/input"
 
 interface MembersClientProps {
-    initialData: Member[]
+    initialData: Payment[]
     roles: Role[]
     organizations: Organization[]
 }
 
 export function MembersClient({ initialData, roles, organizations }: MembersClientProps) {
-    const [data, setData] = React.useState<Member[]>(initialData)
+    const [data, setData] = React.useState<Payment[]>(initialData)
     const [alert, setAlert] = React.useState<{
         type: "success" | "error"
         message: string
     } | null>(null)
     const [isDrawerOpen, setIsDrawerOpen] = React.useState(false)
-    const [editingMember, setEditingMember] = React.useState<Member | null>(null)
+    const [editingMember, setEditingMember] = React.useState<Payment | null>(null)
     const [editFormData, setEditFormData] = React.useState<any>(null)
     const [searchQuery, setSearchQuery] = React.useState("")
 
@@ -226,21 +226,10 @@ export function MembersClient({ initialData, roles, organizations }: MembersClie
                 details: `Name: ${memberData.name} | Email: ${memberData.email} | Phone: ${memberData.phone} | Joined: ${memberData.join_date}`,
             })
 
-            // Optimistically update the UI
-            const organizationNames = memberData.organization.map((org: any) => org.name).join(", ")
-            const roleNames = memberData.roles.map((role: any) => role.name).join(", ")
-            
-            setData(prev => prev.map(m => m.id === memberId ? { 
-                ...m, 
-                name: memberData.name,
-                email: memberData.email,
-                phone: memberData.phone,
-                organization: organizationNames,
-                roles: roleNames,
-                join_date: memberData.join_date || m.join_date,
-                leave_date: memberData.leave_date || m.leave_date,
-                photo: memberData.photo || m.photo,
-            } : m))
+            // Success! Reload page after 1 second to show the success message
+            setTimeout(() => {
+                window.location.reload()
+            }, 1000)
 
         } catch (error: any) {
             console.error("Error updating member:", error)
@@ -334,16 +323,14 @@ export function MembersClient({ initialData, roles, organizations }: MembersClie
                                     {editingMember ? "Edit Member" : "Add Member"}
                                 </DrawerTitle>
                             </DrawerHeader>
-                            <div className="overflow-y-auto no-scrollbar" data-vaul-no-drag>
-                                <AddMemberForm
-                                    roles={roles}
-                                    organizations={organizations}
-                                    onSubmitSuccess={editingMember ? undefined : handleAddMember}
-                                    initialData={editingMember}
-                                    memberId={editingMember?.id}
-                                    onEdit={editingMember ? handleEditMember : undefined}
-                                />
-                            </div>
+                            <AddMemberForm
+                                roles={roles}
+                                organizations={organizations}
+                                onSubmitSuccess={editingMember ? undefined : handleAddMember}
+                                initialData={editingMember}
+                                memberId={editingMember?.id}
+                                onEdit={editingMember ? handleEditMember : undefined}
+                            />
                         </DrawerContent>
                     </Drawer>
                 </div>
@@ -370,10 +357,6 @@ export function MembersClient({ initialData, roles, organizations }: MembersClie
                         setIsDrawerOpen(true)
                     })}
                     data={filteredData}
-                    onEditClick={(member) => {
-                        setEditingMember(member)
-                        setIsDrawerOpen(true)
-                    }}
                 />
             </div>
         </div>
