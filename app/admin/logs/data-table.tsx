@@ -16,7 +16,7 @@ import {
     TableRow,
 } from "@/components/ui/table"
 import { ActionLog, getColumns, formatDate } from "./columns"
-import { ChevronDown, ChevronLeft, ChevronRight, Activity, CheckCircle2, XCircle } from "lucide-react"
+import { ChevronDown, ChevronLeft, ChevronRight, CheckCircle2, XCircle } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface DataTableProps {

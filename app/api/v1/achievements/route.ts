@@ -65,9 +65,7 @@ export async function POST(request: Request) {
         const subtitle = formData.get("subtitle") as string;
         const description = formData.get("description") as string;
         const date = formData.get("date") as string;
-        const is_featured = formData.get("is_featured") === "true";
         const org = formData.get("org") as string;
-
         if (FORM_FIELDS.achievement.title.required && (!title || title.trim().length === 0)) {
             return badRequest("Achievement title is required");
         }

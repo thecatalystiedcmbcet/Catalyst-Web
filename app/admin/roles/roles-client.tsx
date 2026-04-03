@@ -7,7 +7,7 @@ import { Role } from "./types"
 import { AddRoleForm } from "./add-role-form"
 import { EditRoleForm } from "./edit-role-form"
 import { Button } from "@/components/ui/button"
-import { Plus, CheckCircle2, XCircle, Search, Filter, Download, Eye, GripVertical } from "lucide-react"
+import { Plus, CheckCircle2, XCircle, Search,Download,GripVertical } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Input } from "@/components/ui/input"
 
