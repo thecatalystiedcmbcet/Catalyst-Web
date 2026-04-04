@@ -2,7 +2,6 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const SESSION_COOKIE = "admin_session";
-const INTERNAL_SECRET = process.env.INTERNAL_API_KEY || "catalyst-internal-ssr";
 
 /**
  * Middleware (Edge Runtime):
@@ -11,8 +10,9 @@ const INTERNAL_SECRET = process.env.INTERNAL_API_KEY || "catalyst-internal-ssr";
  */
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  const INTERNAL_SECRET = process.env.INTERNAL_API_KEY || "catalyst-internal-ssr";
 
-  // Allow internal SSR fetch bypass
+  // Server-side admin SSR uses a shared secret; do not trust x-admin-fetch alone.
   const internalToken = req.headers.get("x-internal-token");
   if (internalToken === INTERNAL_SECRET && internalToken !== null) {
     return NextResponse.next();

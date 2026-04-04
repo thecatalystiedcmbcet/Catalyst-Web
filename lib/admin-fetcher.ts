@@ -1,25 +1,47 @@
 /**
- * Centralized, cache-aware data fetcher for all admin server components.
+ * Centralized fetcher for admin server components (loopback to /api/v1).
  *
- * Strategy:
- *  - Roles & Organizations are relatively static → revalidate every 5 minutes
- *  - Members, Events, Achievements → revalidate every 60 seconds
- *  - Action Logs (write-heavy, time-sensitive) → no-store (always fresh)
+ * Uses `cache: "no-store"` so list data is not shared via the Next.js Data Cache
+ * (fixes intermittent empty tables on Vercel). Optional `tags` / `revalidate` on
+ * {@link adminFetch} are accepted for call-site compatibility; route handlers
+ * should continue using `revalidateTag` after mutations.
  */
 
-import { cookies, headers } from "next/headers"
-import { getBaseUrl } from "@/lib/get-base-url"
+import { headers } from "next/headers"
+import { getBaseUrlFromRequestHeaders } from "@/lib/get-base-url"
 
-// ─── Auth helper ───────────────────────────────────────────────────────────────
-export async function getSessionHeaders(): Promise<HeadersInit> {
-  const cookieStore = await cookies()
-  // Forward all cookies (important for Vercel deployment protection)
-  const allCookies = cookieStore.getAll().map(c => `${c.name}=${c.value}`).join('; ')
-  
-  return { 
-    Cookie: allCookies,
-    "x-internal-token": process.env.INTERNAL_API_KEY || "catalyst-internal-ssr" 
+/** Loopback to Route Handlers: middleware allows `x-internal-token` without a session cookie. */
+function getInternalApiHeaders(): Headers {
+  const h = new Headers()
+  h.set("x-internal-token", process.env.INTERNAL_API_KEY || "catalyst-internal-ssr")
+  return h
+}
+
+/**
+ * SSR fetch hits the public deployment URL; Vercel Deployment Protection runs
+ * before our app. Use the automation bypass secret so server-side loopback works.
+ * @see https://vercel.com/docs/deployment-protection/methods-to-bypass-deployment-protection/protection-bypass-automation
+ */
+function applyVercelDeploymentBypass(
+  target: Headers,
+  incomingRequestHeaders: Headers
+): void {
+  const forwarded = incomingRequestHeaders.get("x-vercel-protection-bypass")
+  if (forwarded) {
+    target.set("x-vercel-protection-bypass", forwarded)
+    return
   }
+  const secret = process.env.VERCEL_AUTOMATION_BYPASS_SECRET
+  if (secret) {
+    target.set("x-vercel-protection-bypass", secret)
+  }
+}
+
+/** Headers for any server-side fetch to this app while Deployment Protection is on. */
+export async function getLoopbackRequestHeaders(): Promise<Headers> {
+  const h = getInternalApiHeaders()
+  applyVercelDeploymentBypass(h, await headers())
+  return h
 }
 
 // ─── Cache tags (for on-demand revalidation via revalidateTag) ────────────────
@@ -41,34 +63,34 @@ export async function adminFetch<T>(
   } = {}
 ): Promise<T> {
   const { tags = [], revalidate = 60 } = options
-  const sessionHeaders = await getSessionHeaders()
-
   const headersList = await headers()
-  const host = headersList.get("host")
-  const protocol = headersList.get("x-forwarded-proto") || "http"
+  const sessionHeaders = await getLoopbackRequestHeaders()
 
-  const BASE = process.env.NEXT_PUBLIC_APP_URL
-    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
-    || (host ? `${protocol}://${host}` : "http://localhost:3000")
+  // Match the incoming request host (custom domain / preview) and avoid http
+  // defaults on Vercel, which can break loopback fetches.
+  const BASE = getBaseUrlFromRequestHeaders(headersList)
 
-  const nextOptions: RequestInit["next"] =
-    revalidate === false
-      ? { revalidate: 0 }
-      : { revalidate, tags }
+  // Admin lists must not be stored in the Next.js Data Cache — shared or stale
+  // entries on Vercel caused intermittent empty tables for some requests.
+  void tags
+  void revalidate
 
-  // Forward the x-vercel-protection-bypass header if it is present
-  const vercelBypass = headersList.get("x-vercel-protection-bypass")
-  if (vercelBypass) {
-    (sessionHeaders as Record<string, string>)["x-vercel-protection-bypass"] = vercelBypass
+  const fetchUrl = `${BASE}${path.startsWith("/") ? path : `/${path}`}`
+  let res: Response;
+  try {
+    res = await fetch(fetchUrl, {
+      method: "GET",
+      headers: sessionHeaders,
+      cache: "no-store",
+    })
+  } catch (err) {
+    throw new Error(`[adminFetch] ${path} fetch failed entirely: ${err}`)
   }
 
-  const res = await fetch(`${BASE}${path}`, {
-    method: "GET",
-    headers: sessionHeaders,
-    next: nextOptions,
-  })
-
   if (!res.ok) {
+    let errBody = "";
+    try { errBody = await res.text(); } catch(e) {}
+    console.error(`[adminFetch] ${path} failed: ${res.status} ${res.statusText} - Body: ${errBody}`);
     throw new Error(`[adminFetch] ${path} failed: ${res.status} ${res.statusText}`)
   }
 

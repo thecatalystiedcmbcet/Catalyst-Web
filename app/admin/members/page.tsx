@@ -7,7 +7,7 @@ import { adminFetch, CACHE_TAGS } from "@/lib/admin-fetcher"
 
 async function getData(): Promise<Member[]> {
   try {
-    const rawData = await adminFetch<any>("/api/v1/members", {
+    const rawData = await adminFetch<any>("/api/v1/members?limit=500&page=1", {
       tags: [CACHE_TAGS.members],
       revalidate: 60,
     })
@@ -42,7 +42,7 @@ async function getData(): Promise<Member[]> {
 
 async function getRoles(): Promise<Role[]> {
   try {
-    const rawData = await adminFetch<any>("/api/v1/roles", {
+    const rawData = await adminFetch<any>("/api/v1/roles?limit=500&page=1", {
       tags: [CACHE_TAGS.roles],
       revalidate: 300,
     })
@@ -56,7 +56,7 @@ async function getRoles(): Promise<Role[]> {
 
 async function getOrganizations(): Promise<Organization[]> {
   try {
-    const rawData = await adminFetch<any>("/api/v1/org", {
+    const rawData = await adminFetch<any>("/api/v1/org?limit=500&page=1", {
       tags: [CACHE_TAGS.organizations],
       revalidate: 300,
     })

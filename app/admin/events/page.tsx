@@ -6,7 +6,7 @@ import { adminFetch, CACHE_TAGS } from "@/lib/admin-fetcher"
 
 async function getData(): Promise<Event[]> {
   try {
-    const rawData = await adminFetch<any>("/api/v1/events", {
+    const rawData = await adminFetch<any>("/api/v1/events?limit=500&page=1", {
       tags: [CACHE_TAGS.events],
       revalidate: 60,
     })

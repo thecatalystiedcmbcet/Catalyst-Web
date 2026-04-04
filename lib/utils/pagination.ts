@@ -1,7 +1,8 @@
 import { Query } from "node-appwrite";
 
 const DEFAULT_LIMIT = 25;
-const MAX_LIMIT = 100;
+/** High enough for admin dashboards that load full lists in one request. */
+const MAX_LIMIT = 500;
 
 export interface PaginationParams {
     limit: number;

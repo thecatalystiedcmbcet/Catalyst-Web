@@ -1,17 +1,16 @@
 "use server"
 
-import { cookies } from "next/headers"
-import { getBaseUrl } from "@/lib/get-base-url"
+import { headers } from "next/headers"
+import { getBaseUrlFromRequestHeaders } from "@/lib/get-base-url"
+import { getLoopbackRequestHeaders } from "@/lib/admin-fetcher"
 
 export async function deleteAchievement(id: string): Promise<{ success: boolean; error?: string }> {
     try {
-        const cookieStore = await cookies()
-        const sessionCookie = cookieStore.get("admin_session")?.value ?? ""
-        const BASE = getBaseUrl()
+        const BASE = getBaseUrlFromRequestHeaders(await headers())
         const res = await fetch(`${BASE}/api/v1/achievements/${id}`, {
             method: "DELETE",
             cache: "no-store",
-            headers: { Cookie: `admin_session=${sessionCookie}` },
+            headers: await getLoopbackRequestHeaders(),
         })
 
         if (!res.ok) {

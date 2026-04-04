@@ -6,7 +6,7 @@ import { adminFetch, CACHE_TAGS } from "@/lib/admin-fetcher"
 
 async function getRoles(): Promise<Role[]> {
   try {
-    const rawData = await adminFetch<any>("/api/v1/roles", {
+    const rawData = await adminFetch<any>("/api/v1/roles?limit=500&page=1", {
       tags: [CACHE_TAGS.roles],
       revalidate: 300,
     })

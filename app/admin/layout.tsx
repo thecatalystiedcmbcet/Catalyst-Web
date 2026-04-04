@@ -14,6 +14,9 @@ export const metadata: Metadata = {
   title: "Catalyst Admin",
 };
 
+/** Admin uses session + internal API loopback; never prerender with empty fallbacks. */
+export const dynamic = "force-dynamic";
+
 export default async function Layout({
   children,
 }: {

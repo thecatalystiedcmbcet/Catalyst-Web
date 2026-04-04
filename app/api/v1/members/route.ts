@@ -9,6 +9,16 @@ import { FORM_FIELDS } from "@/lib/utils/form-safety";
 import { parsePagination, paginationQueries } from "@/lib/utils/pagination";
 import { revalidateTag } from "next/cache";
 
+/** Appwrite may return relationship fields as an ID string or a populated doc. */
+function relationId(value: unknown): string {
+  if (value == null) return "";
+  if (typeof value === "string") return value;
+  if (typeof value === "object" && value !== null && "$id" in value) {
+    return String((value as { $id: string }).$id);
+  }
+  return "";
+}
+
 export async function GET(request: Request) {
   try {
     const pagination = parsePagination(request);
@@ -125,10 +135,10 @@ export async function GET(request: Request) {
 
     const enrichedMembers = member_data.documents.map((member) => {
       const memberRoleLinks = allRoleLinks.documents.filter(
-        (link) => link.user_id === member.$id
+        (link) => relationId(link.user_id) === member.$id
       );
       const memberOrgLinks = allOrgLinks.documents.filter(
-        (link) => link.user_id === member.$id
+        (link) => relationId(link.user_id) === member.$id
       );
 
       return {
