@@ -3,7 +3,7 @@ import { ActionLog } from "./columns"
 import { adminFetch, CACHE_TAGS } from "@/lib/admin-fetcher"
 
 // Logs are written constantly — always serve fresh
-export const revalidate = 0
+
 
 async function getLogs(): Promise<{ data: ActionLog[]; total: number }> {
     try {

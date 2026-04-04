@@ -225,7 +225,7 @@ export async function POST(request: Request) {
 
     await Promise.all(promises);
 
-    revalidateTag("admin-roles",{});
+    revalidateTag("admin-members", {});
 
     return successResponse(
       {

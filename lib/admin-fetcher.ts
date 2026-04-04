@@ -7,26 +7,29 @@
  *  - Action Logs (write-heavy, time-sensitive) → no-store (always fresh)
  */
 
-import { cookies } from "next/headers"
+import { cookies, headers } from "next/headers"
 import { getBaseUrl } from "@/lib/get-base-url"
 
-const BASE = getBaseUrl()
-
 // ─── Auth helper ───────────────────────────────────────────────────────────────
-export async function getSessionHeaders(): Promise<{ Cookie: string }> {
+export async function getSessionHeaders(): Promise<HeadersInit> {
   const cookieStore = await cookies()
-  const value = cookieStore.get("admin_session")?.value ?? ""
-  return { Cookie: `admin_session=${value}` }
+  // Forward all cookies (important for Vercel deployment protection)
+  const allCookies = cookieStore.getAll().map(c => `${c.name}=${c.value}`).join('; ')
+  
+  return { 
+    Cookie: allCookies,
+    "x-internal-token": process.env.INTERNAL_API_KEY || "catalyst-internal-ssr" 
+  }
 }
 
 // ─── Cache tags (for on-demand revalidation via revalidateTag) ────────────────
 export const CACHE_TAGS = {
-  members:       "admin-members",
-  roles:         "admin-roles",
+  members: "admin-members",
+  roles: "admin-roles",
   organizations: "admin-organizations",
-  events:        "admin-events",
-  achievements:  "admin-achievements",
-  logs:          "admin-logs",
+  events: "admin-events",
+  achievements: "admin-achievements",
+  logs: "admin-logs",
 } as const
 
 // ─── Generic fetcher ──────────────────────────────────────────────────────────
@@ -38,16 +41,30 @@ export async function adminFetch<T>(
   } = {}
 ): Promise<T> {
   const { tags = [], revalidate = 60 } = options
-  const headers = await getSessionHeaders()
+  const sessionHeaders = await getSessionHeaders()
+
+  const headersList = await headers()
+  const host = headersList.get("host")
+  const protocol = headersList.get("x-forwarded-proto") || "http"
+
+  const BASE = process.env.NEXT_PUBLIC_APP_URL
+    || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : null)
+    || (host ? `${protocol}://${host}` : "http://localhost:3000")
 
   const nextOptions: RequestInit["next"] =
     revalidate === false
       ? { revalidate: 0 }
       : { revalidate, tags }
 
+  // Forward the x-vercel-protection-bypass header if it is present
+  const vercelBypass = headersList.get("x-vercel-protection-bypass")
+  if (vercelBypass) {
+    (sessionHeaders as Record<string, string>)["x-vercel-protection-bypass"] = vercelBypass
+  }
+
   const res = await fetch(`${BASE}${path}`, {
     method: "GET",
-    headers,
+    headers: sessionHeaders,
     next: nextOptions,
   })
 

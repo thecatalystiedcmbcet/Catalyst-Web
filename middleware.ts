@@ -2,15 +2,21 @@ import { NextResponse } from "next/server";
 import type { NextRequest } from "next/server";
 
 const SESSION_COOKIE = "admin_session";
+const INTERNAL_SECRET = process.env.INTERNAL_API_KEY || "catalyst-internal-ssr";
 
 /**
- * Proxy (Edge Runtime):
+ * Middleware (Edge Runtime):
  * Only checks whether the session cookie EXISTS.
- * Actual Appwrite validation happens in the admin layout Server Component
- * (Node.js runtime, much more reliable for external API calls).
+ * Actual Appwrite validation happens in the admin layout Server Component.
  */
-export function proxy(req: NextRequest) {
+export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // Allow internal SSR fetch bypass
+  const internalToken = req.headers.get("x-internal-token");
+  if (internalToken === INTERNAL_SECRET && internalToken !== null) {
+    return NextResponse.next();
+  }
 
   // ── Guard /admin/* ─────────────────────────────────────────────────────────
   if (pathname.startsWith("/admin")) {
