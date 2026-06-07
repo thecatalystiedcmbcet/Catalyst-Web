@@ -1,6 +1,9 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
+  // Allow hot-reloading on your phone (192.168.1.3) over local network
+  allowedDevOrigins: ['192.168.1.3'],
+
   // ─── Compression ────────────────────────────────────────────────────
   compress: true,
 

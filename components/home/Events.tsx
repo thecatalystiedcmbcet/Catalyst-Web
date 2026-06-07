@@ -1,53 +1,93 @@
-import React from "react";
+"use client";
+import React, { useRef } from "react";
 import EventCard from "@/components/EventCard";
 import { Button } from "@/components/ui/button";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
 
 const ButtonNew = () => {
   return (
     <Button
       className="
     mt-5 flex items-center gap-1
-    bg-white px-6 py-3
-    text-sm font-secondary text-black
+    bg-white px-6 py-3 rounded-lg
+    text-sm font-semibold font-secondary text-black
     transition-all duration-300
-    hover:bg-black hover:text-white hover:shadow-lg
+    hover:bg-gray-200 hover:text-black hover:shadow-lg
     group
     [&>svg]:h-10 [&>svg]:w-10
-    md:text-2xl md:mt-10 md:px-7 md:py-7 sm:text-2xl sm:py-7
+    md:text-lg md:mt-10 md:px-7 md:py-6 sm:text-lg sm:py-6
   "
     >
       Events
       <img
         src="/right.svg"
         alt=""
-        className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 ml-1 w-3 h-3 md:w-5 md:h-5 sm:w-5 sm:h-5"
+        className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 ml-1 w-3 h-3 md:w-4 md:h-4 sm:w-4 sm:h-4"
       />
     </Button>
   );
 };
+
 const Events = () => {
+  const container = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container.current,
+        start: "top 80%",
+        once: true,
+      },
+    });
+
+    tl.fromTo(
+      ".event-header",
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" }
+    ).fromTo(
+      ".event-desc",
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+      "-=0.6"
+    ).fromTo(
+      ".event-grid",
+      { y: 40, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "back.out(1.2)" },
+      "-=0.4"
+    ).fromTo(
+      ".event-btn",
+      { y: 20, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+      "-=0.4"
+    );
+  }, { scope: container });
+
   return (
-    <div className="text-white mx-5 md:px-9 sm:mx-15 lg:mt-60">
-      <h1 className="text-3xl text-center font-primary mt-20 mb-6 md:text-4xl sm:text-4xl">
-        EVENTS
+    <div ref={container} className="text-white mx-5 md:px-9 sm:mx-15 lg:mt-60 overflow-hidden">
+      <h1 className="event-header text-3xl font-primary mt-20 mb-6 md:text-4xl sm:text-4xl font-bold tracking-widest uppercase">
+        THE EVENTS
       </h1>
-      <p className="text-left font-secondary mb-6 mx-2 leading-loose md:text-xl sm:text-xl ">
-        Catalyst is a vibrant hub where ideas are sparked and transformed into
-        action. Our events create meaningful opportunities for students to
-        learn, collaborate, and grow beyond the classroom. We believe learning
-        should extend past textbooks. Through hands-on sessions, talks, and
-        collaborative experiences, our events offer practical exposure that
-        inspires innovation and real-world thinking.
+      <p className="event-desc text-left font-secondary mb-10 leading-relaxed md:text-lg sm:text-lg text-gray-300 max-w-5xl">
+        Catalyst is a hub of activity, where ideas are sparked and brought to life. Our events calendar is packed with opportunities for students to learn, collaborate, and grow. We believe that learning shouldn't be confined to the classroom. Our events offer a unique learning experience that goes beyond textbooks.
       </p>
-      <div className="grid grid-cols-1 gap-3 md:grid-cols-2 md:gap-7 sm:grid-cols-2 sm:px-5 sm:gap-5 lg:grid-cols-3">
-        <EventCard />
-        <EventCard />
-        <EventCard />
-        <EventCard />
-        <EventCard />
-        <EventCard />
+      
+      <div className="event-grid relative w-full overflow-hidden whitespace-nowrap py-4">
+        {/* Infinite Scroll Container */}
+        <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
+          {[...Array(2)].map((_, setIdx) => (
+            <div key={setIdx} className="flex gap-4 md:gap-6 pr-4 md:pr-6 items-center">
+              <EventCard imgSrc="/log.png" alt="ChallengeX 4.0" />
+              <EventCard imgSrc="/log.png" alt="Converge" />
+              <EventCard imgSrc="/log.png" alt="Catalyst Evening Cafe" />
+              <EventCard imgSrc="/log.png" alt="IPL" />
+              <EventCard imgSrc="/log.png" alt="Event 5" />
+            </div>
+          ))}
+        </div>
       </div>
-      <div className="sm:px-5">
+
+      <div className="event-btn">
         <ButtonNew />
       </div>
     </div>

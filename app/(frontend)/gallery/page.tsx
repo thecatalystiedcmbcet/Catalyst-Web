@@ -1,5 +1,17 @@
-import React from "react";
+"use client";
+
+import React, { useRef } from "react";
 import Masonry from "@/components/Masonry";
+import WatermarkHeader from "@/components/home/WatermarkHeader";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
+import localFont from 'next/font/local';
+
+const enigma = localFont({
+  src: "../../../public/fonts/enigma.otf",
+  weight: "100",
+  style: "normal",
+});
 
 const items = [
   {
@@ -65,14 +77,41 @@ const items = [
 ];
 
 export default function Page() {
-  return (
-    <div className="mb-5 ">
-      <div className="relative h-[50vh] flex items-center justify-center font-primary text-white overflow-hidden ">
-        <h1 className="absolute text-5xl opacity-10 select-none">CATALYST</h1>
-        <p className="relative text-xl tracking-wide">GALLERY</p>
-      </div>
+  const container = useRef<HTMLDivElement>(null);
 
-      <div className="mx-5">
+  useGSAP(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container.current,
+        start: "top 80%",
+        once: true,
+      },
+    });
+
+    tl.fromTo(
+      ".nh-watermark",
+      { y: 50, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, ease: "power3.out" }
+    ).fromTo(
+      ".nh-title",
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+      "-=0.6"
+    );
+  }, { scope: container });
+
+  return (
+    <div ref={container} className="mb-5 w-full pb-10">
+      <div className="w-full px-5 sm:px-10 lg:px-20 pt-40">
+        <WatermarkHeader 
+          title="GALLERY"
+          watermark="CATALYST"
+          titleClassName={`${enigma.className} nh-title drop-shadow-lg !text-[4vw] md:text-4xl lg:text-5xl`}
+          watermarkClassName={`${enigma.className} nh-watermark tracking-[1em] !text-[12vw] md:!text-[12vw] lg:!text-[12vw]`}
+        />
+      </div>
+      
+      <div className="mx-5 md:mx-10 lg:mx-20 mt-12">
         <Masonry
           items={items}
           ease="power3.out"

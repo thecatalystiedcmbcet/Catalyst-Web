@@ -38,6 +38,8 @@ export const metadata: Metadata = {
   description: "Catalyst Platform",
 };
 
+import SmoothScrolling from "@/components/SmoothScrolling";
+
 export default function RootLayout({
   children,
 }: {
@@ -46,9 +48,8 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${monument.variable} ${poppins.variable}`}>
-        {children}
+        <SmoothScrolling>{children}</SmoothScrolling>
       </body>
     </html>
   );
 }
-

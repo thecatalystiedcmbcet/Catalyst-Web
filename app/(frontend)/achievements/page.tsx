@@ -1,48 +1,150 @@
-import React from "react";
-const Card = () => {
+"use client";
+import WatermarkHeader from "@/components/home/WatermarkHeader";
+import React, { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
+
+const achievementsData = [
+  {
+    year: "2025",
+    title: "Catalyst TRIBE x Permute 2025",
+    description:
+      "The creative team of Catalyst IEDC - TRIBE was the official design partner of India's largest skill festival, Permute 2025 where MBCET witnessed history by receiving the µButton for being the first campus to hit 2 Million Karma Points.",
+    image: "/agni.png",
+  },
+  {
+    year: "2025",
+    title: "First Campus to reach 2 Million Karma Points in µLearn Foundation.",
+    description:
+      "Received the Purple µButton Award from Hon. Chief Minister of Kerala, Shri. Pinarayi Vijayan during Permute 2025: India's Largest Skill Festival on 29th March 2025.",
+    image: "/agni.png",
+  },
+];
+
+const Card = ({ year, title, description, image }: any) => {
   return (
-    <div className="text-white">
-      <div>
+    <div className="ach-card text-white flex flex-col group h-full cursor-pointer">
+      {/* Image Container */}
+      <div className="relative w-full aspect-video overflow-hidden mb-4 md:mb-6">
         <img
-          className="w-full h-full object-cover"
-          src="
-      /agni.png"
-          alt=""
+          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+          src={image}
+          alt={title}
         />
+        {/* Subtle overlay on hover */}
+        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
       </div>
-      <div className="sm:mt-5">
-        <h1 className="font-primary text-3xl mt-2 sm:text-4xl">2025</h1>
-        <p className="font-secondary text-lg mt-[-8] font-semibold sm:text-2xl">
-          Catalyst TRIBE x Permute 2025
+
+      {/* Content Container */}
+      <div className="flex flex-col flex-grow">
+        <h1 className="font-primary text-3xl sm:text-4xl md:text-[40px] mb-2 text-white">
+          {year}
+        </h1>
+        <p className="font-secondary text-base sm:text-lg md:text-xl font-semibold mb-3 text-white">
+          {title}
         </p>
-        <p className="font-secondary text-sm mt-2 text-left font-normal text-pretty sm:text-lg">
-          The creative team of Catalyst IEDC - TRIBE was the official design
-          partner of India’s largest skill festival, Permute 2025 where MBCET
-          witnessed history by receiving the µButton for being the first campus
-          to hit 2 Million Karma Points.
+        <p className="font-secondary text-sm sm:text-base md:text-[15px] font-normal text-zinc-400 text-pretty leading-relaxed">
+          {description}
         </p>
       </div>
     </div>
   );
 };
+
 const Team = () => {
-  const stats = [1, 2, 5, 6, 9];
+  const container = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container.current,
+        start: "top 80%",
+        once: true,
+      },
+    });
+
+    tl.fromTo(
+      ".nh-watermark",
+      { y: 50, opacity: 0 },
+      { y: 0, opacity: 1, duration: 1, ease: "power3.out" }
+    ).fromTo(
+      ".nh-title",
+      { y: 30, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+      "-=0.6"
+    ).fromTo(
+      ".ach-featured",
+      { y: 40, opacity: 0, scale: 0.98 },
+      { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out" },
+      "-=0.4"
+    ).fromTo(
+      ".ach-card",
+      { y: 40, opacity: 0, scale: 0.98 },
+      { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out", stagger: 0.15 },
+      "-=0.4"
+    );
+  }, { scope: container });
+
+  const featured = achievementsData[0];
+  const others = achievementsData.slice(1);
+
   return (
-    <div className="">
-      <div className="relative h-[50vh] flex items-center justify-center font-primary text-white overflow-hidden mb-[-100]">
-        <h1 className="absolute text-5xl opacity-10 select-none sm:text-7xl md:text-8xl lg:text-9xl">
-          CATALYST
-        </h1>
-        <p className="relative text-xl tracking-wide sm:text-2xl md:text-3xl lg:text-4xl">
-          ACHIEVEMENTS
-        </p>
-      </div>
-      <div className="mx-7 grid grid-cols-1 gap-10 mt-[-60] mb-10 md:grid-cols-2 sm:mx-10 lg:mx-15 ">
-        {stats.map((item, key) => (
-          <div>
-            <Card key={key} />
+    <div ref={container} className="w-full overflow-hidden pb-10">
+      <div className="w-full px-5 sm:px-10 lg:px-20 pt-40">
+        <WatermarkHeader
+          title="ACHIEVEMENTS"
+          watermark="CATALYST"
+          titleClassName="nh-title"
+          watermarkClassName="nh-watermark"
+        />
+
+        {/* Featured Achievement */}
+        <div className="ach-featured relative z-10 flex flex-col lg:flex-row w-full bg-[#080808] rounded-2xl md:rounded-[1.25rem] border border-zinc-800 overflow-hidden shadow-2xl ">
+          
+          {/* Left Content */}
+          <div className="flex flex-col items-start justify-center p-8 md:p-12 lg:p-16 w-full lg:w-[45%] bg-[#080808]">
+            <div className="flex flex-col items-start">
+              <div className="flex items-center gap-[4px] mb-2 tracking-widest">
+                <span className="font-primary text-[10px] md:text-xs text-white uppercase font-bold">LATEST</span>
+                <span className="font-secondary text-[10px] md:text-xs text-white uppercase font-bold">ACHIEVEMENT</span>
+              </div>
+              
+              <div className="w-full h-[1px] bg-zinc-400 mb-4" /> 
+              
+              <h3 className="font-primary text-[2rem] sm:text-3xl md:text-4xl lg:text-[2.5rem] text-white leading-tight tracking-wide mb-2">
+                {featured.title}
+              </h3>
+              
+              <div className="w-full h-[1px] bg-zinc-400 mt-4 mb-4" /> 
+              
+              <p className="font-secondary text-sm sm:text-base text-zinc-400 leading-relaxed mb-4">
+                {featured.description}
+              </p>
+            </div>
           </div>
-        ))}
+
+          {/* Right Image */}
+          <div className="w-full lg:w-[55%] h-64 sm:h-80 lg:h-auto relative bg-[#080808]">
+            {/* Fading gradient edge for smooth blend on desktop */}
+            <div className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#080808] via-[#080808]/80 to-transparent z-10" />
+            <img 
+              src={featured.image} 
+              alt={featured.title} 
+              className="w-full h-full object-cover grayscale opacity-75"
+            />
+          </div>
+        </div>
+
+        <p className="text-lg tracking-wide text-white font-primary text-center mt-20 mb-8 md:text-left md:text-3xl">
+          OTHER ACHIEVEMENTS
+        </p>
+
+        {/* Responsive Grid */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 mb-20">
+          {others.map((item, index) => (
+            <Card key={index} {...item} />
+          ))}
+        </div>
       </div>
     </div>
   );

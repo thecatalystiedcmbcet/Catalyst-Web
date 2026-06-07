@@ -1,8 +1,7 @@
 import Navbar from "@/components/Navbar";
 import MobileMenu from "@/components/MobileMenu";
-import Footer from "@/components/Footer";
+import Footer from "@/components/home/Footer";
 import { StickyBanner } from "@/components/ui/sticky-banner";
-import FooterDesk from "@/components/FooterDesk";
 
 export default function FrontendLayout({
   children,
@@ -13,7 +12,7 @@ export default function FrontendLayout({
     <div className="relative min-h-screen bg-background overflow-x-hidden">
       {/* Background texture layer */}
       <div
-        className="absolute inset-0 z-0 opacity-7 pointer-events-none"
+        className="absolute inset-0 z-0 opacity-3 pointer-events-none"
         style={{
           backgroundImage: "url('/images/Logo.svg')",
           backgroundRepeat: "repeat",
@@ -36,13 +35,7 @@ export default function FrontendLayout({
 
         {/* Page content */}
         <main className="flex-1">{children}</main>
-
-        <div className="md:hidden sm:hidden mt-5">
-          <Footer />
-        </div>
-        <div className="hidden md:block sm:block sm:mx-15 lg:mx-0">
-          <FooterDesk />
-        </div>
+        <Footer />
       </div>
     </div>
   );

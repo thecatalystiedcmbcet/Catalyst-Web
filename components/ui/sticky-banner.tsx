@@ -12,11 +12,25 @@ export const StickyBanner = ({
   children: React.ReactNode;
 }) => {
   const { isOpen } = useNavbarStore();
+  const [isAtTop, setIsAtTop] = React.useState(true);
+
+  React.useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY < 50) {
+        setIsAtTop(true);
+      } else {
+        setIsAtTop(false);
+      }
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
     <motion.div
       className={cn(
-        "fixed top-16 left-0 right-0 z-[350] w-full overflow-hidden bg-white py-1 text-black font-secondary",
+        "fixed top-[84px] lg:top-[72px] left-0 right-0 z-[350] w-full overflow-hidden bg-white py-1 text-black font-secondary",
         className
       )}
       initial={{
@@ -24,8 +38,8 @@ export const StickyBanner = ({
         opacity: 0,
       }}
       animate={{
-        y: isOpen ? -100 : 0,
-        opacity: isOpen ? 0 : 1,
+        y: isOpen || !isAtTop ? -100 : 0,
+        opacity: isOpen || !isAtTop ? 0 : 1,
       }}
       transition={{
         duration: 0.3,
@@ -41,7 +55,7 @@ export const StickyBanner = ({
           x: {
             repeat: Infinity,
             repeatType: "loop",
-            duration: 20,
+            duration: 16,
             ease: "linear",
           },
         }}

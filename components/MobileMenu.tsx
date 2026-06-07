@@ -1,16 +1,27 @@
 "use client";
 import useNavbarStore from "@/app/utils/useNavbarStore";
 import Link from "next/link";
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
+import { FaChevronDown } from "react-icons/fa";
 
 const MobileMenu = () => {
   const { isOpen, toggleNavbar } = useNavbarStore();
+  const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+
   const links = [
     { page: "Home", path: "/" },
     { page: "Events", path: "/events" },
     { page: "Achievements", path: "/achievements" },
-    { page: "Execom", path: "/execom" },
-    { page: "MuLearn", path: "/mulearn" },
+    { page: "Web Team", path: "/dev-team" },
+    {
+      page: "MuLearn",
+      path: "/mulearn",
+      subLinks: [
+        { page: "Execom", path: "/mulearn/execom" },
+        { page: "Achievements", path: "/mulearn/achievements" }
+
+      ]
+    },
     { page: "Gallery", path: "/gallery" },
   ];
 
@@ -21,8 +32,15 @@ const MobileMenu = () => {
       return () => {
         document.body.style.overflow = originalStyle;
       };
+    } else {
+      // Close all submenus when closing the main menu
+      setTimeout(() => setOpenSubmenu(null), 300);
     }
   }, [isOpen]);
+
+  const handleSubmenuToggle = (page: string) => {
+    setOpenSubmenu(openSubmenu === page ? null : page);
+  };
 
   return (
     <div
@@ -44,10 +62,9 @@ const MobileMenu = () => {
         transition-all
         duration-500
         ease-in-out
-        ${
-          isOpen
-            ? "translate-x-0 opacity-100"
-            : "translate-x-full opacity-0 pointer-events-none"
+        ${isOpen
+          ? "translate-x-0 opacity-100"
+          : "translate-x-full opacity-0 pointer-events-none"
         }
         lg:hidden
       `}
@@ -76,25 +93,58 @@ const MobileMenu = () => {
 
       {/* Menu Links */}
       {links.map((link, index) => (
-        <Link
-          key={index}
-          href={link.path}
-          onClick={toggleNavbar}
-          className="
-            text-5xl
-            z-10
-            text-white
-            font-light
-            tracking-tighter
-            transform
-            transition-all
-            duration-300
-            hover:translate-x-4
-            hover:opacity-80
-          "
-        >
-          {link.page}
-        </Link>
+        <div key={index} className="flex flex-col">
+          <div className="flex items-center justify-between z-10 w-full max-w-[280px]">
+            <Link
+              href={link.path}
+              onClick={toggleNavbar}
+              className="
+                text-5xl
+                text-white
+                font-light
+                tracking-tighter
+                transform
+                transition-all
+                duration-300
+                hover:translate-x-4
+                hover:opacity-80
+              "
+            >
+              {link.page}
+            </Link>
+
+            {link.subLinks && (
+              <button
+                onClick={() => handleSubmenuToggle(link.page)}
+                className="p-3 focus:outline-none transition-transform duration-300"
+                style={{
+                  transform: openSubmenu === link.page ? "rotate(180deg)" : "rotate(0deg)"
+                }}
+              >
+                <FaChevronDown className="w-6 h-6 text-white" />
+              </button>
+            )}
+          </div>
+
+          {/* Sub Links */}
+          {link.subLinks && (
+            <div
+              className={`flex flex-col gap-5 ml-6 overflow-hidden transition-all duration-500 ease-in-out ${openSubmenu === link.page ? "max-h-64 mt-6 opacity-100" : "max-h-0 mt-0 opacity-0"
+                }`}
+            >
+              {link.subLinks.map((subLink, subIndex) => (
+                <Link
+                  key={subIndex}
+                  href={subLink.path}
+                  onClick={toggleNavbar}
+                  className="text-3xl text-gray-300 font-light tracking-tighter hover:text-white"
+                >
+                  {subLink.page}
+                </Link>
+              ))}
+            </div>
+          )}
+        </div>
       ))}
     </div>
   );
