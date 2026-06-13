@@ -6,9 +6,14 @@ import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 
 const enigma = localFont({
-  src: "../../../../public/fonts/enigma.otf",
+  src: "../../../../public/fonts/MonumentExtended-Ultrabold.otf",
   weight: "100",
   style: "normal",
+});
+
+const poppins = localFont({
+  src: "../../../../public/fonts/Poppins-Regular.ttf",
+  display: "swap",
 });
 
 const muLearnAchievementsData = [
@@ -54,13 +59,13 @@ const Card = ({ year, title, description, image }: any) => {
 
       {/* Content Container */}
       <div className="flex flex-col flex-grow">
-        <h1 className="font-primary text-3xl sm:text-4xl md:text-[40px] mb-2 text-white">
+        <h1 className={`${enigma.className} text-3xl sm:text-4xl md:text-[40px] mb-2 text-white`}>
           {year}
         </h1>
-        <p className="font-secondary text-base sm:text-lg md:text-xl font-semibold mb-3 text-white">
+        <p className={`${poppins.className} text-base sm:text-lg md:text-xl font-semibold mb-3 text-white`}>
           {title}
         </p>
-        <p className="font-secondary text-sm sm:text-base md:text-[15px] font-normal text-zinc-400 text-pretty leading-relaxed">
+        <p className={`${poppins.className} text-sm sm:text-base md:text-[15px] font-normal text-zinc-400 text-pretty leading-relaxed`}>
           {description}
         </p>
       </div>
@@ -122,19 +127,19 @@ const MuLearnAchievements = () => {
           <div className="flex flex-col items-start justify-center p-6 md:p-8 lg:p-10 w-full lg:w-[45%] bg-[#080808]">
             <div className="flex flex-col items-start w-full">
               <div className="flex items-center gap-[4px] mb-2 tracking-widest">
-                <span className="font-primary text-[10px] md:text-xs text-white uppercase font-bold">LATEST</span>
-                <span className="font-secondary text-[10px] md:text-xs text-white uppercase font-bold">ACHIEVEMENT</span>
+                <span className={`${enigma.className} text-[10px] md:text-xs text-white uppercase font-bold`}>LATEST</span>
+                <span className={`${enigma.className} text-[10px] md:text-xs text-white uppercase font-bold`}>ACHIEVEMENT</span>
               </div>
               
               <div className="w-full h-[1px] bg-zinc-400 mb-3" /> 
               
-              <h3 className="font-primary text-2xl sm:text-3xl md:text-4xl text-white leading-tight tracking-wide mb-2">
+              <h3 className={`${poppins.className} text-2xl sm:text-3xl md:text-4xl text-white leading-tight tracking-wide mb-2`}>
                 {featured.title}
               </h3>
               
               <div className="w-full h-[1px] bg-zinc-400 mt-3 mb-3" /> 
               
-              <p className="font-secondary text-xs sm:text-sm md:text-base text-zinc-400 leading-relaxed mb-2">
+              <p className={`${poppins.className} text-xs sm:text-sm md:text-base text-zinc-400 leading-relaxed mb-2`}>
                 {featured.description}
               </p>
             </div>
@@ -152,7 +157,7 @@ const MuLearnAchievements = () => {
           </div>
         </div>
 
-        <p className="text-lg tracking-wide text-white font-primary text-center mt-20 mb-8 md:text-left md:text-3xl">
+        <p className={`text-lg tracking-wide text-white ${enigma.className} text-center mt-20 mb-8 md:text-left md:text-3xl`}>
           OTHER ACHIEVEMENTS
         </p>
 

@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 export const Component = () => {
   const images = [
@@ -67,16 +68,18 @@ export const Component = () => {
                 className="
                   image-item
                   flex-shrink-0
+                  relative
                   w-[320px] md:w-[420px] lg:w-[520px]
                   aspect-[16/9]
                   overflow-hidden
                 "
               >
-                <img
+                <Image
                   src={image}
                   alt={`Gallery image ${(index % images.length) + 1}`}
-                  className="w-full h-full object-cover"
-                  loading="lazy"
+                  fill
+                  sizes="(max-width: 768px) 320px, (max-width: 1024px) 420px, 520px"
+                  className="object-cover"
                   draggable={false}
                 />
               </div>

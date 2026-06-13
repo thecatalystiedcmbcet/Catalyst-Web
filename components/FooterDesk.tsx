@@ -1,4 +1,5 @@
 import React from "react";
+import Image from "next/image";
 
 const FooterDesk = () => {
   return (
@@ -21,10 +22,10 @@ const FooterDesk = () => {
           </h1>
 
           <div className="flex gap-10 mt-4 opacity-100 items-center justify-center">
-            <img src="/social/insta.svg" alt="Instagram" className="w-6 h-6" />
-            <img src="/social/link.svg" alt="LinkedIn" className="w-6 h-6" />
-            <img src="/social/dis.svg" alt="Discord" className="w-8 h-8" />
-            <img src="/social/yuo.svg" alt="YouTube" className="w-8 h-8" />
+            <Image src="/social/insta.svg" alt="Instagram" width={24} height={24} className="w-6 h-6" />
+            <Image src="/social/link.svg" alt="LinkedIn" width={24} height={24} className="w-6 h-6" />
+            <Image src="/social/dis.svg" alt="Discord" width={32} height={32} className="w-8 h-8" />
+            <Image src="/social/yuo.svg" alt="YouTube" width={32} height={32} className="w-8 h-8" />
           </div>
         </div>
 

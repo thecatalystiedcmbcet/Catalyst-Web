@@ -4,6 +4,7 @@ import localFont from "next/font/local";
 
 const enigmaFont = localFont({
   src: "../public/fonts/enigma.otf",
+  display: "swap",
 });
 
 const stats = [
@@ -102,7 +103,7 @@ const CampusStatistics = () => {
                   <h3 className={`font-bold text-white text-2xl md:text-[40px] uppercase leading-tight mb-2 md:mb-3 drop-shadow-lg tracking-wide ${enigmaFont.className}`}>
                     {stat.title}
                   </h3>
-                  <p className="font-secondary font-normal text-white/80 text-sm md:text-base">
+                  <p className={`font-normal text-white/80 text-sm md:text-base ${enigmaFont.className}`}>
                     {stat.desc}
                   </p>
                 </div>

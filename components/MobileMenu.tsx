@@ -18,8 +18,8 @@ const MobileMenu = () => {
       path: "/mulearn",
       subLinks: [
         { page: "Execom", path: "/mulearn/execom" },
-        { page: "Achievements", path: "/mulearn/achievements" }
-
+        { page: "Achievements", path: "/mulearn/achievements" },
+        { page: "Campus Snapshot", path: "/campus-snapshot" },
       ]
     },
     { page: "Gallery", path: "/gallery" },

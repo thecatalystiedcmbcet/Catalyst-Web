@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from "react";
+import Image from "next/image";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
@@ -99,14 +100,17 @@ const Connect = () => {
         </div>
       )}
 
-      <img
+      <Image
         src="/connect.png"
         alt="Contact illustration"
-        className="pointer-events-none absolute bottom-0 right-0 w-48 z-0"
+        width={192}
+        height={192}
+        className="pointer-events-none absolute bottom-0 right-0 w-48 h-auto z-0"
+        style={{ width: 'auto', height: 'auto' }}
       />
 
       <div className="connect-content relative z-10 p-8 sm:p-10 text-left bg-white/80 backdrop-blur-sm h-full flex flex-col justify-center">
-        <h2 className="mb-8 text-2xl md:text-3xl font-primary font-bold tracking-wide uppercase">
+        <h2 className="mb-8 text-2xl md:text-3xl font-primary font-normal tracking-wide uppercase">
           GET IN TOUCH WITH US
         </h2>
 

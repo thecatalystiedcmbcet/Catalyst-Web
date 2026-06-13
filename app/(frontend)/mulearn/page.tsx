@@ -2,6 +2,20 @@
 import React from "react";
 import CampusStatistics from "@/components/CampusStatistics";
 import DiscordSection from "@/components/DiscordSection";
+import Link from "next/link";
+import localFont from "next/font/local";
+
+const monumentFont = localFont({
+  src: "../../../public/fonts/MonumentExtended-Ultrabold.otf",
+  display: "swap",
+});
+
+const poppinsFont = localFont({
+  src: "../../../public/fonts/Poppins-Regular.ttf",
+  display: "swap",
+});
+import { ArrowUpRight } from "lucide-react";
+import Image from "next/image";
 
 const MuLearn = () => {
   return (
@@ -16,21 +30,29 @@ const MuLearn = () => {
             WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 85%, rgba(0,0,0,0) 100%)'
           }}
         >
-          <img
+          <Image
             src="/mu.png"
             alt="MuLearn Group"
-            className="w-full h-full object-cover object-center grayscale"
+            fill
+            className="object-cover object-center grayscale"
+            priority
           />
         </div>
 
         {/* Content over the hero image/fade */}
         <div className="flex flex-col items-center z-10 w-full px-4 text-center mt-auto">
-          {/* Join Button */}
-          <button className="mb-6 px-8 py-2.5 rounded-full border border-white/20 bg-[#1a1a1a]/80 backdrop-blur-md text-white font-secondary text-sm font-medium hover:bg-white/20 transition-all cursor-pointer">
-            Join μLearn
-          </button>
+          {/* Action Buttons */}
+          <div className="flex flex-wrap justify-center gap-4 mb-6">
+            <button className={`px-8 py-2.5 rounded-full border border-white/20 bg-[#1a1a1a]/80 backdrop-blur-md text-white ${poppinsFont.className} text-sm font-medium hover:bg-white/20 transition-all cursor-pointer`}>
+              Join μLearn
+            </button>
+            <Link href="/campus-snapshot" className={`px-6 py-2.5 rounded-full bg-gradient-to-r from-[#1A1A5B] to-[#0A24A6] text-white ${poppinsFont.className} text-sm font-medium hover:scale-105 transition-all cursor-pointer flex items-center justify-center gap-2 group shadow-xl shadow-blue-900/20`}>
+              Campus Snapshot 
+              <ArrowUpRight className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </Link>
+          </div>
 
-          <h1 className="text-[32px] md:text-[50px] font-primary font-normal leading-none tracking-normal text-white uppercase drop-shadow-2xl">
+          <h1 className={`text-[32px] md:text-[50px] ${monumentFont.className} font-normal leading-none tracking-normal text-white uppercase drop-shadow-2xl`}>
             MULEARN FOUNDATION
           </h1>
         </div>
@@ -38,7 +60,7 @@ const MuLearn = () => {
 
       {/* Description Section */}
       <section className="max-w-6xl mx-auto px-6 mt-4 md:mt-6 text-center z-10 relative">
-        <p className="text-gray-300 font-secondary font-medium text-[15px] md:text-[18px] leading-[24px] md:leading-[30px] tracking-tight md:tracking-[-0.03em]">
+        <p className={`text-gray-300 ${poppinsFont.className} text-[15px] md:text-[18px] leading-[24px] md:leading-[30px] tracking-tight`}>
           GTech μLearn is a synergic philosophy of education, with a culture of mutual learning through micro peer groups.
           We are here to assist you in breaking through the echo chambers and free you from the shackles you have
           grounded yourself in. And we are one of the campuses of the foundation.

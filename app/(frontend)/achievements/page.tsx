@@ -1,6 +1,7 @@
 "use client";
 import WatermarkHeader from "@/components/home/WatermarkHeader";
 import React, { useRef } from "react";
+import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 
@@ -26,10 +27,11 @@ const Card = ({ year, title, description, image }: any) => {
     <div className="ach-card text-white flex flex-col group h-full cursor-pointer">
       {/* Image Container */}
       <div className="relative w-full aspect-video overflow-hidden mb-4 md:mb-6">
-        <img
-          className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
+        <Image
+          className="object-cover transition-transform duration-700 group-hover:scale-105"
           src={image}
           alt={title}
+          fill
         />
         {/* Subtle overlay on hover */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -104,20 +106,20 @@ const Team = () => {
           {/* Left Content */}
           <div className="flex flex-col items-start justify-center p-8 md:p-12 lg:p-16 w-full lg:w-[45%] bg-[#080808]">
             <div className="flex flex-col items-start">
-              <div className="flex items-center gap-[4px] mb-2 tracking-widest">
-                <span className="font-primary text-[10px] md:text-xs text-white uppercase font-bold">LATEST</span>
-                <span className="font-secondary text-[10px] md:text-xs text-white uppercase font-bold">ACHIEVEMENT</span>
+              <div className="flex items-center gap-[6px] mb-2 tracking-widest">
+                <span className="font-primary text-[10px] md:text-xs text-white uppercase font-normal">LATEST</span>
+                <span className="font-primary text-[10px] md:text-xs text-white uppercase font-normal">ACHIEVEMENT</span>
               </div>
               
               <div className="w-full h-[1px] bg-zinc-400 mb-4" /> 
               
-              <h3 className="font-primary text-[2rem] sm:text-3xl md:text-4xl lg:text-[2.5rem] text-white leading-tight tracking-wide mb-2">
+              <h3 className="font-primary font-normal text-[2rem] sm:text-3xl md:text-4xl lg:text-[2.5rem] text-white leading-tight tracking-wide mb-2">
                 {featured.title}
               </h3>
               
               <div className="w-full h-[1px] bg-zinc-400 mt-4 mb-4" /> 
               
-              <p className="font-secondary text-sm sm:text-base text-zinc-400 leading-relaxed mb-4">
+              <p className="font-secondary text-sm sm:text-base text-gray-300 leading-relaxed mb-4">
                 {featured.description}
               </p>
             </div>
@@ -127,10 +129,11 @@ const Team = () => {
           <div className="w-full lg:w-[55%] h-64 sm:h-80 lg:h-auto relative bg-[#080808]">
             {/* Fading gradient edge for smooth blend on desktop */}
             <div className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#080808] via-[#080808]/80 to-transparent z-10" />
-            <img 
+            <Image 
               src={featured.image} 
               alt={featured.title} 
-              className="w-full h-full object-cover grayscale opacity-75"
+              fill
+              className="object-cover grayscale opacity-75"
             />
           </div>
         </div>

@@ -1,0 +1,197 @@
+"use client";
+import React, { useRef } from "react";
+import { useGSAP } from "@gsap/react";
+import { gsap } from "@/lib/gsap";
+import localFont from "next/font/local";
+import Image from "next/image";
+
+const enigmaFont = localFont({
+  src: "../../../public/fonts/enigma.otf",
+  display: "swap",
+});
+
+const snapshotData = [
+  { label: "Campus Name", value: "MAR BASELIOS COLLEGE OF\nENGINEERING AND TECHNOLOGY" },
+  { label: "Rank", value: "#1" },
+  { label: "Campus Code", value: "MBT" },
+  { label: "Campus Zone", value: "SOUTH ZONE" },
+  { label: "Total Karma", value: "4181208" },
+  { label: "Total Members", value: "2695" },
+];
+
+const CampusSnapshot = () => {
+  const container = useRef<HTMLDivElement>(null);
+
+  useGSAP(() => {
+    const tl = gsap.timeline({
+      scrollTrigger: {
+        trigger: container.current,
+        start: "top 80%",
+      },
+    });
+
+    tl.fromTo(
+      ".snapshot-header",
+      { opacity: 0, y: 30 },
+      { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
+    ).fromTo(
+      ".snapshot-line",
+      { height: 0 },
+      { height: "100%", duration: 1.5, ease: "power3.inOut" },
+      "-=0.4"
+    ).fromTo(
+      ".snapshot-item",
+      { opacity: 0, x: -30 },
+      { opacity: 1, x: 0, duration: 0.8, stagger: 0.15, ease: "power3.out" },
+      "-=1.2"
+    );
+  }, { scope: container });
+
+  return (
+    <div ref={container} className="min-h-screen bg-transparent pt-32 pb-32 relative overflow-hidden">
+      <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-20 relative z-10 flex justify-start">
+        <div className="w-full flex flex-col">
+          <div className="snapshot-header mb-16">
+            <h1 className={`text-[5.5vw] sm:text-5xl md:text-6xl lg:text-[64px] whitespace-nowrap text-white uppercase leading-[1.05] mb-4 tracking-wide ${enigmaFont.className}`}>
+              MULEARN MBCET<br/>
+              CAMPUS SNAPSHOT
+            </h1>
+            
+            <div className={`flex items-center gap-3 text-gray-400 font-secondary text-sm md:text-base`}>
+              <div className="w-2 h-2 rounded-full bg-white animate-pulse shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
+              Live stats from the MuLearn Foundation Platform
+            </div>
+          </div>
+
+          <div className="relative mt-4 md:mt-8 w-full">
+            <div className="snapshot-line absolute left-[17px] md:left-[21px] top-5 bottom-5 w-1 bg-white origin-top z-0 shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
+
+            <div className="flex flex-col gap-10 md:gap-14 relative z-10">
+              {snapshotData.map((item, index) => (
+                <div key={index} className="snapshot-item relative flex items-start gap-6 md:gap-8 group">
+
+                  {/* Timeline Node */}
+                  <div className="relative z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#0a0a0a] flex items-center justify-center border border-white/30 text-white shrink-0 group-hover:border-white transition-colors duration-300">
+                    <span className={`text-sm md:text-base ${enigmaFont.className} [text-shadow:-1.5px_0_0_#0ff,1.5px_0_0_#f00]`}>μ</span>
+                  </div>
+
+                  {/* Content */}
+                  <div className="flex flex-col pt-1">
+                    <span className="font-mono text-white/50 text-xs md:text-sm mb-1 tracking-wider">
+                      {item.label}
+                    </span>
+                    <span className={`text-white text-2xl md:text-[36px] uppercase leading-tight tracking-wide whitespace-pre-line ${enigmaFont.className}`}>
+                      {item.value}
+                    </span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Karma Miners Section */}
+      <section className="w-full bg-gradient-to-br from-[#0617e1] via-[#050f8f] to-[#040638] pt-24 pb-32 relative mt-32 z-10 border-t border-white/10">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-20 relative">
+          
+          <div className="flex flex-col relative z-10 mb-20">
+            <h2 className={`text-5xl md:text-6xl text-white uppercase leading-[1.1] tracking-wide ${enigmaFont.className}`}>
+              TOP 20<br/>
+              KARMA MINERS
+            </h2>
+          </div>
+
+          {/* Faded Watermark */}
+          <div className={`absolute -top-10 right-0 md:right-10 text-[180px] md:text-[250px] text-white/5 font-bold leading-none pointer-events-none select-none ${enigmaFont.className}`}>
+            20
+          </div>
+
+          {/* All 20 ranks in a unified grid */}
+          <div className="grid grid-cols-6 gap-x-6 md:gap-x-10 gap-y-8 md:gap-y-12 relative z-10">
+            {Array.from({ length: 20 }, (_, i) => {
+              const rank = i + 1;
+              const isTop2 = rank <= 2;
+              const name = rank === 1 ? "VEDHA MAHADEVAN" : rank === 4 ? "AGNIVESH\nPS" : "CHRIS THOMAS\nABRAHAM";
+
+              return (
+                <div
+                  key={rank}
+                  className={`flex items-start gap-3 md:gap-5 ${isTop2 ? 'col-span-6 lg:col-span-3' : 'col-span-6 sm:col-span-3 lg:col-span-2'}`}
+                >
+                  {/* Avatar */}
+                  <div className={`relative shrink-0 bg-white/10 ${isTop2 ? 'w-20 h-20 md:w-[130px] md:h-[130px]' : 'w-16 h-16 md:w-[110px] md:h-[120px]'}`}>
+                    <Image
+                      src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop"
+                      fill
+                      sizes="(max-width: 768px) 100vw, 33vw"
+                      alt={name.replace(/\n/g, ' ')}
+                      className="object-cover grayscale hover:grayscale-0 transition-all duration-500"
+                    />
+                  </div>
+                  {/* Text */}
+                  <div className="flex flex-col text-white overflow-hidden min-w-0">
+                    <div className={`leading-none tracking-wide ${enigmaFont.className} ${isTop2 ? 'text-3xl md:text-[40px]' : 'text-2xl md:text-[34px]'}`}>
+                      #{rank}
+                    </div>
+                    <div className={`uppercase leading-[1.15] whitespace-pre-line tracking-wide ${enigmaFont.className} mt-1 ${isTop2 ? 'text-base md:text-[20px]' : 'text-xs md:text-[15px]'}`}>
+                      {name}
+                    </div>
+                    <div className={`text-white/70 font-mono mt-0.5 tracking-tight truncate ${isTop2 ? 'text-[10px] md:text-[13px]' : 'text-[9px] md:text-[12px]'}`}>
+                      christhomasabraham@mulearn
+                    </div>
+                    <div className={`leading-none tracking-wider ${enigmaFont.className} mt-1.5 ${isTop2 ? 'text-2xl md:text-[36px]' : 'text-xl md:text-[30px]'}`}>
+                      70122
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Top 5 Interest Groups Section */}
+      <section className="w-full bg-transparent pt-24 pb-32 relative z-10 border-t border-white/5">
+        <div className="max-w-7xl mx-auto px-6 sm:px-10 lg:px-20 relative">
+          
+          <div className="flex flex-col relative z-10 mb-20">
+            <h2 className={`text-[6vw] sm:text-5xl md:text-6xl whitespace-nowrap text-white uppercase leading-[1.1] tracking-wide ${enigmaFont.className}`}>
+              TOP 5<br/>
+              INTEREST GROUPS
+            </h2>
+          </div>
+
+          {/* Faded Watermark */}
+          <div className={`absolute -top-10 right-0 md:right-10 text-[180px] md:text-[250px] text-white/5 font-bold leading-none pointer-events-none select-none ${enigmaFont.className}`}>
+            05
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16 relative z-10">
+            {Array.from({ length: 5 }, (_, i) => {
+              const rank = i + 1;
+              return (
+                <div key={rank} className="flex flex-col text-white">
+                  <div className={`text-4xl md:text-[44px] leading-none mb-1 text-white tracking-wide ${enigmaFont.className}`}>
+                    #{rank}
+                  </div>
+                  <div className={`uppercase leading-[1.1] tracking-wide ${enigmaFont.className} text-xl md:text-[22px] mt-2`}>
+                    CYBER SECURITY
+                  </div>
+                  <div className={`text-xs md:text-[14px] text-white/70 ${enigmaFont.className} mt-1 tracking-tight`}>
+                    Members: 428
+                  </div>
+                  <div className={`text-3xl md:text-[40px] mt-4 leading-none tracking-wider ${enigmaFont.className}`}>
+                    165548
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+    </div>
+  );
+};
+
+export default CampusSnapshot;

@@ -1,5 +1,6 @@
 "use client";
 import React, { useRef } from "react";
+import Image from "next/image";
 import EventCard from "@/components/EventCard";
 import { Button } from "@/components/ui/button";
 import { useGSAP } from "@gsap/react";
@@ -20,9 +21,11 @@ const ButtonNew = () => {
   "
     >
       Events
-      <img
+      <Image
         src="/right.svg"
         alt=""
+        width={16}
+        height={16}
         className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 ml-1 w-3 h-3 md:w-4 md:h-4 sm:w-4 sm:h-4"
       />
     </Button>
@@ -65,7 +68,7 @@ const Events = () => {
 
   return (
     <div ref={container} className="text-white mx-5 md:px-9 sm:mx-15 lg:mt-60 overflow-hidden">
-      <h1 className="event-header text-3xl font-primary mt-20 mb-6 md:text-4xl sm:text-4xl font-bold tracking-widest uppercase">
+      <h1 className="event-header text-3xl font-primary mt-20 mb-6 md:text-4xl sm:text-4xl font-normal tracking-widest uppercase">
         THE EVENTS
       </h1>
       <p className="event-desc text-left font-secondary mb-10 leading-relaxed md:text-lg sm:text-lg text-gray-300 max-w-5xl">

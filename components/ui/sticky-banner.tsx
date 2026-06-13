@@ -15,12 +15,16 @@ export const StickyBanner = ({
   const [isAtTop, setIsAtTop] = React.useState(true);
 
   React.useEffect(() => {
+    let ticking = false;
+
     const handleScroll = () => {
-      if (window.scrollY < 50) {
-        setIsAtTop(true);
-      } else {
-        setIsAtTop(false);
-      }
+      if (ticking) return;
+
+      ticking = true;
+      requestAnimationFrame(() => {
+        setIsAtTop(window.scrollY < 50);
+        ticking = false;
+      });
     };
 
     window.addEventListener("scroll", handleScroll, { passive: true });
@@ -60,21 +64,11 @@ export const StickyBanner = ({
           },
         }}
       >
-        <span className="inline-block px-4 text-black font-medium">
-          {children}
-        </span>
-        <span className="inline-block px-4 text-black font-medium">
-          {children}
-        </span>
-        <span className="inline-block px-4 text-black font-medium">
-          {children}
-        </span>
-        <span className="inline-block px-4 text-black font-medium">
-          {children}
-        </span>
-        <span className="inline-block px-4 text-black font-medium">
-          {children}
-        </span>
+        {Array.from({ length: 4 }).map((_, index) => (
+          <span key={index} className="inline-block px-4 text-black font-medium">
+            {children}
+          </span>
+        ))}
       </motion.div>
     </motion.div>
   );

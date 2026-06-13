@@ -2,25 +2,34 @@
 
 import { ReactLenis, useLenis } from "lenis/react";
 import React, { useEffect } from "react";
+import { usePathname } from "next/navigation";
 import ScrollTrigger from "gsap/dist/ScrollTrigger";
 import gsap from "gsap";
 
-// Register plugin once at module level
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
 function SmoothScrolling({ children }: { children: React.ReactNode }) {
+  const pathname = usePathname();
+  const shouldSmoothScroll =
+    !pathname.startsWith("/admin") && !pathname.startsWith("/api");
+
+  if (!shouldSmoothScroll) {
+    return <>{children}</>;
+  }
+
   return (
     <ReactLenis
       root
       options={{
-        lerp: 0.08,
-        duration: 1.2,
+        lerp: 0.07,
+        duration: 0.9,
         smoothWheel: true,
-        syncTouch: false,      // use native scroll on touch — much smoother
-        touchMultiplier: 1.5,
+        syncTouch: false,
+        touchMultiplier: 1.2,
         infinite: false,
+        wheelMultiplier: 1,
       }}
     >
       <LenisScrollTriggerSync />
@@ -29,18 +38,18 @@ function SmoothScrolling({ children }: { children: React.ReactNode }) {
   );
 }
 
-// Keeps GSAP ScrollTrigger in sync with Lenis scroll position
 function LenisScrollTriggerSync() {
   const lenis = useLenis(({ scroll }) => {
     ScrollTrigger.update();
   });
 
   useEffect(() => {
-    // Tell ScrollTrigger to use Lenis scroll values
-    function update(time: number) {
-      lenis?.raf(time * 1000);
-    }
-    // Use GSAP ticker to drive Lenis — prevents double requestAnimationFrame
+    if (!lenis) return;
+
+    const update = (time: number) => {
+      lenis.raf(time * 1000);
+    };
+
     gsap.ticker.add(update);
     gsap.ticker.lagSmoothing(0);
 

@@ -1,6 +1,7 @@
 "use client";
 
 import React from "react";
+import Image from "next/image";
 import { Button } from "@/components/ui/button";
 import NowHappening from "@/components/home/NowHappening";
 
@@ -20,7 +21,7 @@ const mockEvents = [
   {
     $id: "2",
     title: "Design Sprint",
-    cover_image: "/event2.jpg",
+    cover_image: "/featured.jpg",
     start_date: "Jan 5",
     end_date: "Jan 6",
     is_featured: false,
@@ -28,7 +29,7 @@ const mockEvents = [
   {
     $id: "3",
     title: "Prototype Jam",
-    cover_image: "/event2.jpg",
+    cover_image: "/featured.jpg",
     start_date: "Jan 10",
     end_date: "Jan 11",
     is_featured: false,
@@ -36,7 +37,7 @@ const mockEvents = [
   {
     $id: "4",
     title: "Startup Meetup",
-    cover_image: "/event2.jpg",
+    cover_image: "/featured.jpg",
     start_date: "Jan 15",
     end_date: "Jan 16",
     is_featured: false,
@@ -44,7 +45,7 @@ const mockEvents = [
   {
     $id: "5",
     title: "Hackathon",
-    cover_image: "/event2.jpg",
+    cover_image: "/featured.jpg",
     start_date: "Jan 20",
     end_date: "Jan 21",
     is_featured: false,
@@ -56,9 +57,11 @@ const mockEvents = [
 const ButtonNew = ({ link }: { link?: string }) => (
   <Button className="mt-5 flex items-center gap-1 bg-white px-6 py-3 text-sm font-secondary text-black transition-all duration-300 hover:bg-black hover:text-white hover:shadow-lg group md:text-2xl md:mt-10 md:px-7 md:py-7 sm:text-2xl sm:py-7 w-fit">
     Events
-    <img
+    <Image
       src="/right.svg"
       alt=""
+      width={20}
+      height={20}
       className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 ml-1 w-3 h-3 md:w-5 md:h-5 sm:w-5 sm:h-5"
     />
   </Button>
@@ -85,10 +88,11 @@ const CardDesktop = ({ event }: any) => (
         </div>
 
         <div className="relative w-1/2 h-full">
-          <img
+          <Image
             src={event.cover_image}
             alt={event.title}
-            className="w-full h-full object-cover"
+            fill
+            className="object-cover"
           />
           <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/40 to-black" />
         </div>
@@ -108,10 +112,11 @@ const Card = ({ event }: any) => (
     />
     <div className="relative rounded-2xl bg-gradient-to-b from-[#1D1D1D] to-[#0B0B0B] text-white p-1 h-[60vh]">
       <div className="relative w-full h-full rounded-xl overflow-hidden">
-        <img
+        <Image
           src={event.cover_image}
           alt={event.title}
-          className="absolute inset-0 w-full h-full object-cover opacity-50"
+          fill
+          className="object-cover opacity-50"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
         <div className="relative z-20 h-full flex flex-col justify-between items-center py-6">
@@ -136,10 +141,11 @@ const Card2 = ({ event }: any) => (
     />
     <div className="relative rounded-2xl bg-gradient-to-b from-[#1D1D1D] to-[#0B0B0B] text-white overflow-hidden">
       <div className="relative h-[260px]">
-        <img
+        <Image
           src={event.cover_image}
           alt={event.title}
-          className="absolute inset-0 w-full h-full object-cover opacity-50"
+          fill
+          className="object-cover opacity-50"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
       </div>

@@ -1,4 +1,5 @@
-import React from "react";
+import React, { memo } from "react";
+import Image from "next/image";
 
 interface EventCardProps {
   imgSrc?: string;
@@ -19,10 +20,12 @@ const EventCard: React.FC<EventCardProps> = ({ imgSrc = "/log.png", alt = "Event
 
       {/* Card body */}
       <div className="relative w-full h-full rounded-3xl bg-gradient-to-b from-[#181818] to-[#0a0a0a] flex items-center justify-center p-6">
-        <img src={imgSrc} alt={alt} className="max-w-full max-h-full object-contain" />
+        <div className="relative w-full h-full">
+          <Image src={imgSrc} alt={alt} fill sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw" className="object-contain" />
+        </div>
       </div>
     </div>
   );
 };
 
-export default EventCard;
+export default memo(EventCard);

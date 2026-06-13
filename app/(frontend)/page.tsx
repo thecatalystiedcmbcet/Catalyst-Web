@@ -1,15 +1,16 @@
 import React from "react";
+import dynamic from "next/dynamic";
 import Hero from "@/components/home/Hero";
-import About from "@/components/home/About";
-import TimelineDemo from "@/components/home/TimelineDemo";
-import Stats from "@/components/home/Stats";
-import Events from "@/components/home/Events";
-import OurPioneers from "@/components/home/OurPioneers";
-import Pioneers from "@/components/home/Team";
-import Connect from "@/components/home/Connect";
-import AddText from "@/components/home/AddText";
-import FamilyText from "@/components/home/FamilyText";
-import Footer from "@/components/home/Footer";
+
+const AddText = dynamic(() => import("@/components/home/AddText"));
+const About = dynamic(() => import("@/components/home/About"));
+const TimelineDemo = dynamic(() => import("@/components/home/TimelineDemo"));
+const Stats = dynamic(() => import("@/components/home/Stats"));
+const Events = dynamic(() => import("@/components/home/Events"));
+const OurPioneers = dynamic(() => import("@/components/home/OurPioneers"));
+const Pioneers = dynamic(() => import("@/components/home/Team"));
+const Connect = dynamic(() => import("@/components/home/Connect"));
+const FamilyText = dynamic(() => import("@/components/home/FamilyText"));
 
 const page = () => {
   return (

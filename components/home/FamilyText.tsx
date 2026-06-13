@@ -30,7 +30,7 @@ function FamilyText() {
       <span className="font-secondary text-base sm:text-xl md:text-3xl text-white mb-4 md:mb-6">
         Your life's best choice
       </span>
-      <h3 className="font-primary text-[1.4rem] sm:text-4xl md:text-5xl lg:text-7xl text-white leading-[1.4] md:leading-[1.1] max-w-4xl uppercase font-bold tracking-wider">
+      <h3 className="font-primary text-[1.4rem] sm:text-4xl md:text-5xl lg:text-7xl text-white leading-[1.4] md:leading-[1.1] max-w-4xl uppercase font-normal tracking-wider">
         MORE THAN<br />
         JUST A CENTRE,<br />
         WE ARE A FAMILY

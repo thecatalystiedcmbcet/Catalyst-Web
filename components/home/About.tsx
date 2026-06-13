@@ -42,7 +42,7 @@ const About = () => {
       </div>
 
       <div className="relative z-10 flex flex-col items-start text-left max-w-6xl mx-auto">
-        <h2 className="text-5xl md:text-6xl lg:text-7xl font-primary font-bold mb-10 about-title uppercase tracking-[0.1em] text-white">
+        <h2 className="text-5xl md:text-6xl lg:text-7xl font-primary font-normal mb-10 about-title uppercase tracking-[0.1em] text-white">
           About Us
         </h2>
         

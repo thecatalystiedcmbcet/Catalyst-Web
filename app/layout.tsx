@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import localFont from "next/font/local";
+import SmoothScrolling from "@/components/SmoothScrolling";
 import "./globals.css";
 
 const monument = localFont({
@@ -37,8 +38,6 @@ export const metadata: Metadata = {
   title: "Catalyst",
   description: "Catalyst Platform",
 };
-
-import SmoothScrolling from "@/components/SmoothScrolling";
 
 export default function RootLayout({
   children,

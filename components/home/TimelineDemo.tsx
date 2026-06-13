@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef } from "react";
+import Image from "next/image";
 import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 const achievements = [
@@ -283,7 +284,7 @@ export default function TimelineDemo() {
             {/* Giant parallax year */}
             <div className="tl-bg-year absolute inset-0 flex items-center justify-center z-0 pointer-events-none overflow-hidden select-none">
               <span
-                className="font-primary font-black leading-none tracking-tighter"
+                className="font-primary font-normal leading-none tracking-tighter"
                 style={{
                   fontSize: "clamp(120px, 28vw, 380px)",
                   color: "transparent",
@@ -416,12 +417,12 @@ function TextBlock({
 function ImageBlock({ item }: { item: (typeof achievements)[0] }) {
   return (
     <div
-      className="relative w-full aspect-[4/3] overflow-hidden"
+      className="relative w-full aspect-[4/3] overflow-hidden will-change-transform"
       style={{
         /* Subtle white border with glow */
         outline: "1px solid rgba(255,255,255,0.08)",
         boxShadow:
-          "0 0 0 1px rgba(255,255,255,0.04), 0 24px 80px -20px rgba(0,0,0,0.8)",
+          "0 0 0 1px rgba(255,255,255,0.04), 0 12px 40px -10px rgba(0,0,0,0.6)",
       }}
     >
       {/* Gradient vignettes */}
@@ -439,23 +440,14 @@ function ImageBlock({ item }: { item: (typeof achievements)[0] }) {
         }}
       />
 
-      {/* Grain texture */}
-      <div
-        className="absolute inset-0 z-10 pointer-events-none opacity-30 mix-blend-overlay"
-        style={{
-          backgroundImage:
-            "url(\"data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E\")",
-          backgroundSize: "160px 160px",
-        }}
-      />
-
       {/* Image */}
-      <img
+      <Image
         src={item.image}
         alt={item.title}
-        className="tl-img absolute inset-0 w-full h-full object-cover scale-[1.15] grayscale"
+        fill
+        sizes="(max-width: 768px) 100vw, 50vw"
+        className="tl-img object-cover scale-[1.15] grayscale"
         style={{ opacity: 0.75 }}
-        referrerPolicy="no-referrer"
       />
 
       {/* Corner labels */}
