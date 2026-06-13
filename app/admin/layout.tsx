@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import { redirect } from "next/navigation";
 import { SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar";
 import { AppSidebar } from "@/components/app-sidebar";
@@ -38,7 +39,9 @@ export default async function Layout({
     >
       <div className="admin-theme">
         <SidebarProvider defaultOpen={true}>
-          <AppSidebar />
+          <Suspense fallback={null}>
+            <AppSidebar />
+          </Suspense>
           <div className="flex flex-col flex-1 min-h-screen overflow-hidden bg-background text-foreground relative">
             <TopNav user={user} />
 

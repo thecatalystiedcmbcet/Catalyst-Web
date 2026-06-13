@@ -32,7 +32,10 @@ async function getRoles(): Promise<Role[]> {
     })
 
     return roles
-  } catch (err) {
+  } catch (err: any) {
+    if (err?.digest === 'HANGING_PROMISE_REJECTION' || err?.message?.includes('prerendering') || err?.digest?.includes('DYNAMIC')) {
+      throw err;
+    }
     console.error("[RolesPage] getRoles failed:", err)
     return []
   }

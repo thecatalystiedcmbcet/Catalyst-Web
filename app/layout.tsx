@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { Suspense } from "react";
 import localFont from "next/font/local";
 import SmoothScrolling from "@/components/SmoothScrolling";
 import "./globals.css";
@@ -47,7 +48,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${monument.variable} ${poppins.variable}`}>
-        <SmoothScrolling>{children}</SmoothScrolling>
+        <SmoothScrolling>
+          <Suspense fallback={null}>{children}</Suspense>
+        </SmoothScrolling>
       </body>
     </html>
   );

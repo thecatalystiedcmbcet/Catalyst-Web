@@ -10,13 +10,13 @@ if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
 }
 
-function SmoothScrolling({ children }: { children: React.ReactNode }) {
+function SmoothScrollingContent() {
   const pathname = usePathname();
   const shouldSmoothScroll =
     !pathname.startsWith("/admin") && !pathname.startsWith("/api");
 
   if (!shouldSmoothScroll) {
-    return <>{children}</>;
+    return null;
   }
 
   return (
@@ -33,8 +33,18 @@ function SmoothScrolling({ children }: { children: React.ReactNode }) {
       }}
     >
       <LenisScrollTriggerSync />
-      {children}
     </ReactLenis>
+  );
+}
+
+function SmoothScrolling({ children }: { children: React.ReactNode }) {
+  return (
+    <>
+      <React.Suspense fallback={null}>
+        <SmoothScrollingContent />
+      </React.Suspense>
+      {children}
+    </>
   );
 }
 

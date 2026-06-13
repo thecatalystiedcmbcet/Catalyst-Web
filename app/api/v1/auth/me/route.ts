@@ -5,8 +5,8 @@ import { getSessionUser } from "@/lib/appwrite/session";
 const SESSION_COOKIE = "admin_session";
 
 export async function GET() {
+    const cookieStore = await cookies();
     try {
-        const cookieStore = await cookies();
         const sessionSecret = cookieStore.get(SESSION_COOKIE)?.value;
 
         if (!sessionSecret) {
