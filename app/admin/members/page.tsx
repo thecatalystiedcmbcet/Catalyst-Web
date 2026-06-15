@@ -68,6 +68,8 @@ async function getOrganizations(): Promise<Organization[]> {
   }
 }
 
+import { FeatureGuard } from "@/components/admin/feature-guard"
+
 export default async function MembersPage() {
   const [data, roles, organizations] = await Promise.all([
     getData(),
@@ -76,10 +78,12 @@ export default async function MembersPage() {
   ])
 
   return (
-    <MembersClient
-      initialData={data}
-      roles={roles}
-      organizations={organizations}
-    />
+    <FeatureGuard featureKey="members" featureName="Members Directory">
+      <MembersClient
+        initialData={data}
+        roles={roles}
+        organizations={organizations}
+      />
+    </FeatureGuard>
   )
 }

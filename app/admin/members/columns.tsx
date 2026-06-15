@@ -45,6 +45,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { postActionLog } from "@/lib/utils/action-log"
+import { useAdminSettings } from "@/hooks/use-admin-settings"
 
 // This type is used to define the shape of our data.
 // You can use a Zod schema here if you want.
@@ -180,6 +181,7 @@ export function getColumns(onEditClick?: (member: Member) => void): ColumnDef<Me
       header: "",
       cell: ({ row }) => {
         const payment = row.original
+        const { uiElements } = useAdminSettings()
         const [isDeleting, setIsDeleting] = useState(false)
         const [alert, setAlert] = useState<{
           type: "success" | "error"
@@ -226,6 +228,8 @@ export function getColumns(onEditClick?: (member: Member) => void): ColumnDef<Me
           }
         }
 
+        const hasActions = uiElements.showEditButtons || uiElements.showDeleteButtons
+
         return (
           <>
             {alert && (
@@ -250,27 +254,37 @@ export function getColumns(onEditClick?: (member: Member) => void): ColumnDef<Me
 
             <div className="flex items-center gap-1">
               <AlertDialog>
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <Button variant="ghost" className="h-8 w-8 p-0 text-muted-foreground hover:text-white">
-                      <span className="sr-only">Open menu</span>
-                      <MoreHorizontal className="h-4 w-4" />
-                    </Button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-[160px]">
-                    <DropdownMenuItem onClick={() => onEditClick?.(payment)} className="cursor-pointer">
-                      <Pencil className="mr-2 h-4 w-4" />
-                      <span>Edit User</span>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator />
-                    <AlertDialogTrigger asChild>
-                      <DropdownMenuItem className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        <span>Delete User</span>
-                      </DropdownMenuItem>
-                    </AlertDialogTrigger>
-                  </DropdownMenuContent>
-                </DropdownMenu>
+                {hasActions && (
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button variant="ghost" className="h-8 w-8 p-0 text-muted-foreground hover:text-white">
+                        <span className="sr-only">Open menu</span>
+                        <MoreHorizontal className="h-4 w-4" />
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end" className="w-[160px]">
+                      {uiElements.showEditButtons && (
+                        <DropdownMenuItem onClick={() => onEditClick?.(payment)} className="cursor-pointer">
+                          <Pencil className="mr-2 h-4 w-4" />
+                          <span>Edit User</span>
+                        </DropdownMenuItem>
+                      )}
+                      
+                      {uiElements.showEditButtons && uiElements.showDeleteButtons && (
+                        <DropdownMenuSeparator />
+                      )}
+                      
+                      {uiElements.showDeleteButtons && (
+                        <AlertDialogTrigger asChild>
+                          <DropdownMenuItem className="cursor-pointer text-destructive focus:bg-destructive/10 focus:text-destructive">
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            <span>Delete User</span>
+                          </DropdownMenuItem>
+                        </AlertDialogTrigger>
+                      )}
+                    </DropdownMenuContent>
+                  </DropdownMenu>
+                )}
 
                 <AlertDialogContent>
                   <AlertDialogHeader>

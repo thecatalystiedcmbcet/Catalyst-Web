@@ -15,19 +15,11 @@ const nextConfig: NextConfig = {
   images: {
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 3600, // 1 hour
-    // Allow remote image hostnames from your Appwrite bucket here
+    // Allow all remote https image hostnames (e.g. for mock data)
     remotePatterns: [
       {
         protocol: "https",
-        hostname: "cloud.appwrite.io",
-      },
-      {
-        protocol: "https",
-        hostname: "images.unsplash.com",
-      },
-      {
-        protocol: "https",
-        hostname: "plus.unsplash.com",
+        hostname: "**",
       },
     ],
   },

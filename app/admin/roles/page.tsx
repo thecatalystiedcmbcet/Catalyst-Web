@@ -41,7 +41,13 @@ async function getRoles(): Promise<Role[]> {
   }
 }
 
+import { FeatureGuard } from "@/components/admin/feature-guard"
+
 export default async function RolesPage() {
   const roles = await getRoles()
-  return <RolesClient initialData={roles} />
+  return (
+    <FeatureGuard featureKey="roles" featureName="Role Based Access Control (RBAC)">
+      <RolesClient initialData={roles} />
+    </FeatureGuard>
+  )
 }

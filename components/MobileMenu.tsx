@@ -4,26 +4,41 @@ import Link from "next/link";
 import React, { useEffect, useState } from "react";
 import { FaChevronDown } from "react-icons/fa";
 
+import { useAdminSettings } from "@/hooks/use-admin-settings";
+
+const ALL_LINKS = [
+  { page: "Home", path: "/" },
+  { page: "Events", path: "/events" },
+  { page: "Achievements", path: "/achievements" },
+  { page: "Web Team", path: "/dev-team" },
+  {
+    page: "MuLearn",
+    path: "/mulearn",
+    subLinks: [
+      { page: "Execom", path: "/mulearn/execom" },
+      { page: "Achievements", path: "/mulearn/achievements" },
+      { page: "Campus Snapshot", path: "/campus-snapshot" },
+    ]
+  },
+  { page: "Gallery", path: "/gallery" },
+];
+
 const MobileMenu = () => {
+  const { frontendPages } = useAdminSettings();
   const { isOpen, toggleNavbar } = useNavbarStore();
   const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
 
-  const links = [
-    { page: "Home", path: "/" },
-    { page: "Events", path: "/events" },
-    { page: "Achievements", path: "/achievements" },
-    { page: "Web Team", path: "/dev-team" },
-    {
-      page: "MuLearn",
-      path: "/mulearn",
-      subLinks: [
-        { page: "Execom", path: "/mulearn/execom" },
-        { page: "Achievements", path: "/mulearn/achievements" },
-        { page: "Campus Snapshot", path: "/campus-snapshot" },
-      ]
-    },
-    { page: "Gallery", path: "/gallery" },
-  ];
+  const links = React.useMemo(() => {
+    return ALL_LINKS.filter(link => {
+      if (link.page === "Home" && !frontendPages.showHome) return false;
+      if (link.page === "Events" && !frontendPages.showEvents) return false;
+      if (link.page === "Achievements" && !frontendPages.showAchievements) return false;
+      if (link.page === "Web Team" && !frontendPages.showWebTeam) return false;
+      if (link.page === "MuLearn" && !frontendPages.showMuLearn) return false;
+      if (link.page === "Gallery" && !frontendPages.showGallery) return false;
+      return true;
+    });
+  }, [frontendPages]);
 
   useEffect(() => {
     if (isOpen) {

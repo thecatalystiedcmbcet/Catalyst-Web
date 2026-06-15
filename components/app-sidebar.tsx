@@ -43,26 +43,31 @@ import {
 } from "@/components/ui/sidebar"
 import { cn } from "@/lib/utils"
 
+import { useAdminSettings } from "@/hooks/use-admin-settings"
+
 // ─── Nav structure ────────────────────────────────────────────────────────────
-type NavChild = { title: string; url: string }
+type NavChild = { title: string; url: string; featureKey?: string }
 type NavItem = {
   title: string
   url: string
   icon: React.ComponentType<{ className?: string }>
   badge?: string | number
   children?: NavChild[]
+  featureKey?: "events" | "members" | "roles" | "achievements" | "logs"
 }
 
 const mainNav: NavItem[] = [
   { title: "Dashboard", url: "/admin", icon: Home },
-  { title: "Members", url: "/admin/members", icon: Users },
-  { title: "Events", url: "/admin/events", icon: Calendar },
-  { title: "Roles", url: "/admin/roles", icon: Shield },
-  { title: "Achievements", url: "/admin/achievements", icon: Trophy },
-  { title: "Logs", url: "/admin/logs", icon: ScrollText },
+  { title: "Members", url: "/admin/members", icon: Users, featureKey: "members" },
+  { title: "Events", url: "/admin/events", icon: Calendar, featureKey: "events" },
+  { title: "Roles", url: "/admin/roles", icon: Shield, featureKey: "roles" },
+  { title: "Achievements", url: "/admin/achievements", icon: Trophy, featureKey: "achievements" },
+  { title: "Logs", url: "/admin/logs", icon: ScrollText, featureKey: "logs" },
 ]
 
-const bottomNav: NavItem[] = []
+const bottomNav: NavItem[] = [
+  { title: "Settings", url: "/admin/settings", icon: Settings },
+]
 
 // ─── Expandable menu item ─────────────────────────────────────────────────────
 function NavItemRow({ item }: { item: NavItem }) {
@@ -146,6 +151,7 @@ function NavItemRow({ item }: { item: NavItem }) {
 export function AppSidebar() {
   const { state, toggleSidebar, isMobile } = useSidebar()
   const isCollapsed = state === "collapsed"
+  const { features } = useAdminSettings()
 
   return (
     <Sidebar collapsible="icon">
@@ -197,7 +203,23 @@ export function AppSidebar() {
         <SidebarGroup>
           <SidebarGroupContent>
             <SidebarMenu>
-              {mainNav.map((item) => (
+              {mainNav
+                .filter((item) => {
+                  if (!item.featureKey) return true;
+                  return features[item.featureKey];
+                })
+                .map((item) => (
+                <NavItemRow key={item.title} item={item} />
+              ))}
+            </SidebarMenu>
+          </SidebarGroupContent>
+        </SidebarGroup>
+        
+        {/* Bottom nav */}
+        <SidebarGroup className="mt-auto">
+          <SidebarGroupContent>
+            <SidebarMenu>
+              {bottomNav.map((item) => (
                 <NavItemRow key={item.title} item={item} />
               ))}
             </SidebarMenu>

@@ -11,14 +11,10 @@ const Hero3D = () => {
   const containerRef = useRef<HTMLDivElement>(null);
   const isInView = useInView(containerRef);
 
-  if (!isDesktop) {
-    return null;
-  }
-
   return (
-    <div ref={containerRef} className="absolute inset-0">
+    <div ref={containerRef} className={`absolute inset-0 ${!isDesktop ? 'pointer-events-none' : ''}`}>
       <Canvas
-        camera={{ position: [0, -55, 110], fov: 4 }}
+        camera={{ position: [0, -55, 110], fov: isDesktop ? 4.5 : 7 }}
         dpr={[1, 1.5]}
         gl={{
           antialias: true,

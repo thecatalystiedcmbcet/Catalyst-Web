@@ -9,7 +9,8 @@ export async function GET(
     { params }: { params: Promise<{ slug: string }> }
 ) {
     try {
-        const { slug } = await params;
+        const paramsAwaited = await params;
+        const slug = decodeURIComponent(paramsAwaited.slug);
 
         const events = await database.listDocuments(DB_ID, COLLECTIONS.EVENTS, [
             Query.equal("slug", slug),

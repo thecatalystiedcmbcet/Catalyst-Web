@@ -24,6 +24,7 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { postActionLog } from "@/lib/utils/action-log"
+import { useAdminSettings } from "@/hooks/use-admin-settings"
 
 export type Achievement = {
     id: string
@@ -139,6 +140,7 @@ export function getColumns(
             header: "",
             cell: ({ row }) => {
                 const achievement = row.original
+                const { uiElements } = useAdminSettings()
                 const [isDeleting, setIsDeleting] = useState(false)
                 const [alert, setAlert] = useState<{
                     type: "success" | "error"
@@ -197,35 +199,39 @@ export function getColumns(
                         )}
 
                         <div className="flex items-center gap-2">
-                            <Button
-                                variant="outline"
-                                size="icon"
-                                onClick={() => onEditClick?.(achievement)}
-                            >
-                                <Pencil className="h-4 w-4" />
-                            </Button>
+                            {uiElements.showEditButtons && (
+                                <Button
+                                    variant="outline"
+                                    size="icon"
+                                    onClick={() => onEditClick?.(achievement)}
+                                >
+                                    <Pencil className="h-4 w-4" />
+                                </Button>
+                            )}
 
-                            <AlertDialog>
-                                <AlertDialogTrigger asChild>
-                                    <Button variant="outline" size="icon" disabled={isDeleting}>
-                                        <Trash2 className="h-4 w-4" />
-                                    </Button>
-                                </AlertDialogTrigger>
-                                <AlertDialogContent>
-                                    <AlertDialogHeader>
-                                        <AlertDialogTitle>Delete Achievement</AlertDialogTitle>
-                                        <AlertDialogDescription>
-                                            Are you sure you want to delete &quot;{achievement.title}&quot;? This action cannot be undone.
-                                        </AlertDialogDescription>
-                                    </AlertDialogHeader>
-                                    <AlertDialogFooter>
-                                        <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                                        <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
-                                            {isDeleting ? "Deleting..." : "Delete"}
-                                        </AlertDialogAction>
-                                    </AlertDialogFooter>
-                                </AlertDialogContent>
-                            </AlertDialog>
+                            {uiElements.showDeleteButtons && (
+                                <AlertDialog>
+                                    <AlertDialogTrigger asChild>
+                                        <Button variant="outline" size="icon" disabled={isDeleting}>
+                                            <Trash2 className="h-4 w-4" />
+                                        </Button>
+                                    </AlertDialogTrigger>
+                                    <AlertDialogContent>
+                                        <AlertDialogHeader>
+                                            <AlertDialogTitle>Delete Achievement</AlertDialogTitle>
+                                            <AlertDialogDescription>
+                                                Are you sure you want to delete &quot;{achievement.title}&quot;? This action cannot be undone.
+                                            </AlertDialogDescription>
+                                        </AlertDialogHeader>
+                                        <AlertDialogFooter>
+                                            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                                            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                                                {isDeleting ? "Deleting..." : "Delete"}
+                                            </AlertDialogAction>
+                                        </AlertDialogFooter>
+                                    </AlertDialogContent>
+                                </AlertDialog>
+                            )}
                         </div>
                     </>
                 )

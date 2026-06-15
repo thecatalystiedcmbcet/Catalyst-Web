@@ -10,12 +10,14 @@ import { Button } from "@/components/ui/button"
 import { Plus, CheckCircle2, XCircle, Search, Filter, Download, Eye, GripVertical } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Input } from "@/components/ui/input"
+import { useAdminSettings } from "@/hooks/use-admin-settings"
 
 interface RolesClientProps {
     initialData: Role[]
 }
 
 export function RolesClient({ initialData }: RolesClientProps) {
+    const { uiElements } = useAdminSettings()
     const [data, setData] = React.useState<Role[]>(initialData)
     const [editingRole, setEditingRole] = React.useState<Role | null>(null)
     const [isAddDialogOpen, setIsAddDialogOpen] = React.useState(false)
@@ -141,39 +143,46 @@ export function RolesClient({ initialData }: RolesClientProps) {
                         </>
                     ) : (
                         <>
-                            <Button variant="outline" className="w-full sm:w-auto h-10 shadow-sm order-3 sm:order-1" onClick={() => {
-                                setIsReordering(true)
-                                setReorderedData(data)
-                                setSearchQuery("")
-                            }}>
-                                <GripVertical className="w-4 h-4 mr-2" /> Edit Order
-                            </Button>
-                            <Button variant="outline" className="w-full sm:w-auto h-10 shadow-sm order-2 sm:order-2" asChild>
-                                <a href="/api/v1/export?collection=ROLES">
-                                    <Download className="w-4 h-4 mr-2" /> Export
-                                </a>
-                            </Button>
-                            <Button className="w-full sm:w-auto h-10 order-1 sm:order-3" onClick={() => setIsAddDialogOpen(true)}>
-                                <Plus className="w-4 h-4 mr-2" /> Add Role
-                            </Button>
+                            {uiElements.showEditButtons && (
+                                <Button variant="outline" className="w-full sm:w-auto h-10 shadow-sm order-3 sm:order-1" onClick={() => {
+                                    setIsReordering(true)
+                                    setReorderedData(data)
+                                    setSearchQuery("")
+                                }}>
+                                    <GripVertical className="w-4 h-4 mr-2" /> Edit Order
+                                </Button>
+                            )}
+                            {uiElements.showExportButtons && (
+                                <Button variant="outline" className="w-full sm:w-auto h-10 shadow-sm order-2 sm:order-2" asChild>
+                                    <a href="/api/v1/export?collection=ROLES">
+                                        <Download className="w-4 h-4 mr-2" /> Export
+                                    </a>
+                                </Button>
+                            )}
+                            {uiElements.showAddButtons && (
+                                <Button className="w-full sm:w-auto h-10 order-1 sm:order-3" onClick={() => setIsAddDialogOpen(true)}>
+                                    <Plus className="w-4 h-4 mr-2" /> Add Role
+                                </Button>
+                            )}
                         </>
                     )}
                 </div>
             </div>
 
-            {/* Filter and Search Bar */}
-            <div className="gsap-fade-up w-full pt-2">
-                <div className="relative w-full md:max-w-md">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input
-                        placeholder="Search roles..."
-                        className="pl-9 h-10 bg-background"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                        disabled={isReordering}
-                    />
+            {uiElements.showSearchBars && (
+                <div className="gsap-fade-up w-full pt-2">
+                    <div className="relative w-full md:max-w-md">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input
+                            placeholder="Search roles..."
+                            className="pl-9 h-10 bg-background"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                            disabled={isReordering}
+                        />
+                    </div>
                 </div>
-            </div>
+            )}
 
             <div className="py-10 w-full">
                 <DataTable

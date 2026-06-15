@@ -19,10 +19,12 @@ import {
     AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 import { postActionLog } from "@/lib/utils/action-log"
+import { useAdminSettings } from "@/hooks/use-admin-settings"
 import { Role } from "./types"
 
 // ─── Proper component so useState is valid ────────────────────────────────────
 function RowActions({ role, onEditClick }: { role: Role; onEditClick?: (role: Role) => void }) {
+    const { uiElements } = useAdminSettings()
     const [isDeleting, setIsDeleting] = useState(false)
     const [alert, setAlert] = useState<{
         type: "success" | "error"
@@ -66,35 +68,39 @@ function RowActions({ role, onEditClick }: { role: Role; onEditClick?: (role: Ro
             )}
 
             <div className="flex items-center gap-2">
-                <Button
-                    variant="outline"
-                    size="icon"
-                    onClick={() => onEditClick?.(role)}
-                >
-                    <Pencil />
-                </Button>
+                {uiElements.showEditButtons && (
+                    <Button
+                        variant="outline"
+                        size="icon"
+                        onClick={() => onEditClick?.(role)}
+                    >
+                        <Pencil />
+                    </Button>
+                )}
 
-                <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                        <Button variant="outline" size="icon" disabled={isDeleting}>
-                            <Trash2 className="h-4 w-4" />
-                        </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                        <AlertDialogHeader>
-                            <AlertDialogTitle>Delete Role</AlertDialogTitle>
-                            <AlertDialogDescription>
-                                Are you sure you want to delete this role? This action cannot be undone.
-                            </AlertDialogDescription>
-                        </AlertDialogHeader>
-                        <AlertDialogFooter>
-                            <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
-                            <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
-                                {isDeleting ? "Deleting..." : "Delete"}
-                            </AlertDialogAction>
-                        </AlertDialogFooter>
-                    </AlertDialogContent>
-                </AlertDialog>
+                {uiElements.showDeleteButtons && (
+                    <AlertDialog>
+                        <AlertDialogTrigger asChild>
+                            <Button variant="outline" size="icon" disabled={isDeleting}>
+                                <Trash2 className="h-4 w-4" />
+                            </Button>
+                        </AlertDialogTrigger>
+                        <AlertDialogContent>
+                            <AlertDialogHeader>
+                                <AlertDialogTitle>Delete Role</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                    Are you sure you want to delete this role? This action cannot be undone.
+                                </AlertDialogDescription>
+                            </AlertDialogHeader>
+                            <AlertDialogFooter>
+                                <AlertDialogCancel disabled={isDeleting}>Cancel</AlertDialogCancel>
+                                <AlertDialogAction onClick={handleDelete} disabled={isDeleting}>
+                                    {isDeleting ? "Deleting..." : "Delete"}
+                                </AlertDialogAction>
+                            </AlertDialogFooter>
+                        </AlertDialogContent>
+                    </AlertDialog>
+                )}
             </div>
         </>
     )

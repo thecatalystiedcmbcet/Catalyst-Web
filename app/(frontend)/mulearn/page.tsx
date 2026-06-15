@@ -16,8 +16,11 @@ const poppinsFont = localFont({
 });
 import { ArrowUpRight } from "lucide-react";
 import Image from "next/image";
+import { useAdminSettings } from "@/hooks/use-admin-settings";
 
 const MuLearn = () => {
+  const { pageComponents } = useAdminSettings();
+
   return (
     <div className="min-h-screen bg-transparent -mb-20 md:-mb-32">
       {/* Hero Section */}
@@ -68,10 +71,10 @@ const MuLearn = () => {
       </section>
 
       {/* Campus Statistics Section */}
-      <CampusStatistics />
+      {pageComponents.mulearn.showStats && <CampusStatistics />}
 
       {/* Discord Section */}
-      <DiscordSection />
+      {pageComponents.mulearn.showDiscord && <DiscordSection />}
     </div>
   );
 };

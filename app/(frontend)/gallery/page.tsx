@@ -13,71 +13,39 @@ const enigma = localFont({
   style: "normal",
 });
 
-const items = [
-  {
-    id: "1",
-    img: "https://picsum.photos/id/1015/800/600",
-    url: "https://picsum.photos/",
-    height: 200,
-  },
-  {
-    id: "2",
-    img: "https://picsum.photos/id/1024/800/900",
-    url: "https://picsum.photos/",
-    height: 300,
-  },
-  {
-    id: "3",
-    img: "https://picsum.photos/id/1035/800/700",
-    url: "https://picsum.photos/",
-    height: 250,
-  },
-  {
-    id: "4",
-    img: "https://picsum.photos/id/1043/800/1000",
-    url: "https://picsum.photos/",
-    height: 350,
-  },
-  {
-    id: "5",
-    img: "https://picsum.photos/id/1050/800/800",
-    url: "https://picsum.photos/",
-    height: 280,
-  },
-  {
-    id: "6",
-    img: "https://picsum.photos/id/1062/800/900",
-    url: "https://picsum.photos/",
-    height: 320,
-  },
-  {
-    id: "7",
-    img: "https://picsum.photos/id/1074/800/650",
-    url: "https://picsum.photos/",
-    height: 220,
-  },
-  {
-    id: "8",
-    img: "https://picsum.photos/id/1084/800/850",
-    url: "https://picsum.photos/",
-    height: 290,
-  },
-  {
-    id: "9",
-    img: "https://picsum.photos/id/1080/800/920",
-    url: "https://picsum.photos/",
-    height: 310,
-  },
-  {
-    id: "10",
-    img: "https://picsum.photos/id/109/800/780",
-    url: "https://picsum.photos/",
-    height: 260,
-  },
-];
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAdminSettings } from "@/hooks/use-admin-settings";
 
 export default function Page() {
+  const { pageComponents } = useAdminSettings();
   const container = useRef<HTMLDivElement>(null);
+  const [items, setItems] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchGallery = async () => {
+      try {
+        const res = await fetch("/api/v1/gallery?limit=100");
+        if (res.ok) {
+          const data = await res.json();
+          const formattedItems = (data.documents || []).map((item: any, index: number) => ({
+            id: item.$id,
+            img: item.image_url,
+            url: item.image_url,
+            // Generate a stable pseudo-random height between 200 and 400
+            height: 200 + ((index * 37) % 200),
+          }));
+          setItems(formattedItems);
+        }
+      } catch (error) {
+        console.error("Failed to fetch gallery:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchGallery();
+  }, []);
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -112,17 +80,29 @@ export default function Page() {
       </div>
       
       <div className="mx-5 md:mx-10 lg:mx-20 mt-12">
-        <Masonry
-          items={items}
-          ease="power3.out"
-          duration={0.6}
-          stagger={0.05}
-          animateFrom="bottom"
-          scaleOnHover
-          hoverScale={0.95}
-          blurToFocus
-          colorShiftOnHover
-        />
+        {pageComponents.gallery.showMasonry && (
+          isLoading ? (
+            <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <Skeleton key={i} className="w-full h-48 bg-white/5 rounded-lg" />
+              ))}
+            </div>
+          ) : items.length > 0 ? (
+            <Masonry
+              items={items}
+              ease="power3.out"
+              duration={0.6}
+              stagger={0.05}
+              animateFrom="bottom"
+              scaleOnHover
+              hoverScale={0.95}
+              blurToFocus
+              colorShiftOnHover
+            />
+          ) : (
+            <p className="text-center text-white/50">No images in gallery.</p>
+          )
+        )}
       </div>
     </div>
   );

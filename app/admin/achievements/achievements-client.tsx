@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button"
 import { Plus, CheckCircle2, XCircle, Search, Filter, Download, Eye } from "lucide-react"
 import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import { Input } from "@/components/ui/input"
+import { useAdminSettings } from "@/hooks/use-admin-settings"
 
 interface AchievementsClientProps {
     initialData: Achievement[]
@@ -23,6 +24,7 @@ interface AchievementsClientProps {
 }
 
 export function AchievementsClient({ initialData, organizations }: AchievementsClientProps) {
+    const { uiElements } = useAdminSettings()
     const [data, setData] = React.useState<Achievement[]>(initialData)
     const [alert, setAlert] = React.useState<{
         type: "success" | "error"
@@ -124,48 +126,54 @@ export function AchievementsClient({ initialData, organizations }: AchievementsC
                 </div>
                 
                 <div className="flex w-full md:w-auto flex-col sm:flex-row shadow-sm sm:shadow-none gap-2">
-                    <Button variant="outline" className="w-full sm:w-auto h-10 shadow-sm order-2 sm:order-1" asChild>
-                        <a href="/api/v1/export?collection=ACHIEVEMENTS">
-                            <Download className="w-4 h-4 mr-2" /> Export
-                        </a>
-                    </Button>
+                    {uiElements.showExportButtons && (
+                        <Button variant="outline" className="w-full sm:w-auto h-10 shadow-sm order-2 sm:order-1" asChild>
+                            <a href="/api/v1/export?collection=ACHIEVEMENTS">
+                                <Download className="w-4 h-4 mr-2" /> Export
+                            </a>
+                        </Button>
+                    )}
 
-                    <Drawer direction="right" open={isDrawerOpen} onOpenChange={handleDrawerOpenChange}>
-                        <DrawerTrigger asChild>
-                            <Button className="w-full sm:w-auto h-10 order-1 sm:order-2">
-                                <Plus className="w-4 h-4 mr-2" /> Add Achievement
-                            </Button>
-                        </DrawerTrigger>
-                        <DrawerContent className="no-scrollbar overflow-y-auto overflow-x-hidden">
-                            <DrawerHeader className="sr-only">
-                                <DrawerTitle>
-                                    {editingAchievement ? "Edit Achievement" : "Add Achievement"}
-                                </DrawerTitle>
-                            </DrawerHeader>
-                            <AddAchievementForm
-                                organizations={organizations}
-                                onSubmitSuccess={editingAchievement ? handleEditSuccess : handleAddSuccess}
-                                onBackgroundPost={editingAchievement ? undefined : handleBackgroundPost}
-                                initialData={editingAchievement ?? undefined}
-                                achievementId={editingAchievement?.id}
-                            />
-                        </DrawerContent>
-                    </Drawer>
+                    {uiElements.showAddButtons && (
+                        <Drawer direction="right" open={isDrawerOpen} onOpenChange={handleDrawerOpenChange}>
+                            <DrawerTrigger asChild>
+                                <Button className="w-full sm:w-auto h-10 order-1 sm:order-2">
+                                    <Plus className="w-4 h-4 mr-2" /> Add Achievement
+                                </Button>
+                            </DrawerTrigger>
+                            <DrawerContent className="no-scrollbar overflow-y-auto overflow-x-hidden">
+                                <DrawerHeader className="sr-only">
+                                    <DrawerTitle>
+                                        {editingAchievement ? "Edit Achievement" : "Add Achievement"}
+                                    </DrawerTitle>
+                                </DrawerHeader>
+                                <AddAchievementForm
+                                    organizations={organizations}
+                                    onSubmitSuccess={editingAchievement ? handleEditSuccess : handleAddSuccess}
+                                    onBackgroundPost={editingAchievement ? undefined : handleBackgroundPost}
+                                    initialData={editingAchievement ?? undefined}
+                                    achievementId={editingAchievement?.id}
+                                />
+                            </DrawerContent>
+                        </Drawer>
+                    )}
                 </div>
             </div>
 
             {/* Filter and Search Bar */}
-            <div className="gsap-fade-up w-full pt-2">
-                <div className="relative w-full md:max-w-md">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                        placeholder="Search achievements..." 
-                        className="pl-9 h-10 bg-background"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+            {uiElements.showSearchBars && (
+                <div className="gsap-fade-up w-full pt-2">
+                    <div className="relative w-full md:max-w-md">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input 
+                            placeholder="Search achievements..." 
+                            className="pl-9 h-10 bg-background"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
                 </div>
-            </div>
+            )}
 
             <div className="py-10 w-full">
                 <DataTable

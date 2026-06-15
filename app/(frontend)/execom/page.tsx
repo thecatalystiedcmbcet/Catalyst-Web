@@ -1,12 +1,13 @@
 "use client";
 
-import React, { useRef } from "react";
+import React, { useRef, useState, useEffect } from "react";
 import Image from "next/image";
 import WatermarkHeader from "@/components/home/WatermarkHeader";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import localFont from 'next/font/local';
 import TeamMemberCard from '@/components/TeamMemberCard';
+import { useAdminSettings } from "@/hooks/use-admin-settings";
 
 const enigma = localFont({
   src: "../../../public/fonts/enigma.otf",
@@ -57,9 +58,9 @@ const Card = ({ invert = false, data = null as any, loading = true }) => {
   return (
     <div className="execom-card">
       <TeamMemberCard
-        name={data?.name ?? "SABAREESH"}
-        role={data?.role ?? "Chief Operations Officer"}
-        image={data?.image ?? "/sab.png"}
+        name={data?.name ?? "Member"}
+        role={data?.roles?.[0]?.name ?? "Execom Member"}
+        image={data?.photo ?? data?.image ?? "/sab.png"}
         invert={invert}
       />
     </div>
@@ -69,13 +70,36 @@ const Card = ({ invert = false, data = null as any, loading = true }) => {
 /* ---------------- EXECOM ---------------- */
 
 const Execom = () => {
-  // Simulate loading state — replace with real API state
-  const isLoading = true;
+  const { pageComponents } = useAdminSettings();
+  const [members, setMembers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
-  // Simulated API shape — replace with real fetch
-  const featured = null;
-  const legacyLeaders = [null, null, null, null];
-  const coreTeam = [null, null, null, null, null, null];
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await fetch("/api/v1/members?limit=100");
+        if (res.ok) {
+          const data = await res.json();
+          const docs = data.documents || [];
+          
+          // Filter by org "iedc" or "catalyst"
+          const iedcMembers = docs.filter((m: any) => 
+            m.orgs?.some((o: any) => o.name?.toLowerCase().includes("iedc") || o.name?.toLowerCase().includes("catalyst"))
+          );
+          setMembers(iedcMembers);
+        }
+      } catch (error) {
+        console.error("Failed to fetch members:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchMembers();
+  }, []);
+
+  const featured = members.find((m) => m.roles?.some((r: any) => r.name?.toLowerCase().includes("nodal") || r.name?.toLowerCase().includes("lead") || r.name?.toLowerCase().includes("ceo"))) || null;
+  const legacyLeaders = members.filter((m) => m !== featured && m.roles?.some((r: any) => r.name?.toLowerCase().includes("legacy") || r.name?.toLowerCase().includes("alumni")));
+  const coreTeam = members.filter((m) => m !== featured && !legacyLeaders.includes(m));
 
   const container = useRef<HTMLDivElement>(null);
 
@@ -112,44 +136,62 @@ const Execom = () => {
         <WatermarkHeader 
           title="THE CATALYST FAMILY"
           watermark="CATALYST"
-          titleClassName={`${enigma.className} nh-title drop-shadow-lg !text-[4vw] md:text-4xl lg:text-5xl`}
-          watermarkClassName={`${enigma.className} nh-watermark tracking-[1em] !text-[12vw] md:!text-[12vw] lg:!text-[12vw]`}
+          titleClassName={` nh-title drop-shadow-lg !text-[4vw] md:text-4xl lg:text-5xl`}
+          watermarkClassName={` nh-watermark tracking-[1em] !text-[12vw] md:!text-[12vw] lg:!text-[12vw]`}
         />
       </div>
 
       {/* ── FEATURED LEAD ── */}
-      <div className="flex justify-center mt-[-40px]">
-        <Card loading={isLoading} data={featured} invert={false} />
-      </div>
+      {pageComponents.execom.showFeatured && (
+        <div className="flex justify-center mt-[-40px]">
+          <Card loading={isLoading} data={featured} invert={false} />
+        </div>
+      )}
 
       {/* ── CORE TEAM ── */}
-      <div className="mt-20 mx-5">
-        <h2 className="font-primary text-xl text-white text-center mb-10 sm:text-2xl md:text-3xl">
-          CORE TEAM
-        </h2>
-        <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6">
-          {coreTeam.map((member, index) => (
-            <Card
-              key={index}
-              loading={isLoading}
-              data={member}
-              invert={false}
-            />
-          ))}
+      {pageComponents.execom.showCore && (
+        <div className="mt-20 mx-5">
+          <h2 className="font-primary text-xl text-white text-center mb-10 sm:text-2xl md:text-3xl">
+            CORE TEAM
+          </h2>
+          <div className="grid grid-cols-2 gap-10 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6">
+            {isLoading ? (
+              Array.from({ length: 6 }).map((_, idx) => <Card key={idx} loading={true} invert={false} />)
+            ) : coreTeam.length > 0 ? (
+              coreTeam.map((member, index) => (
+                <Card
+                  key={index}
+                  loading={false}
+                  data={member}
+                  invert={false}
+                />
+              ))
+            ) : (
+              <p className="col-span-full text-center text-white/50">No core team members found.</p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
 
       {/* ── LEGACY LEADERS ── */}
-      <div className="bg-white pt-10 mt-20 mx-5 pb-10">
-        <h2 className="font-primary text-xl mt-5 text-black text-center mb-10 sm:text-2xl md:text-3xl">
-          LEGACY LEADERS
-        </h2>
-        <div className="grid grid-cols-2 gap-10 sm:grid-cols-2 md:grid-cols-4">
-          {legacyLeaders.map((member, index) => (
-            <Card key={index} loading={isLoading} data={member} invert={true} />
-          ))}
+      {pageComponents.execom.showLegacy && (
+        <div className="bg-white pt-10 mt-20 mx-5 pb-10">
+          <h2 className="font-primary text-xl mt-5 text-black text-center mb-10 sm:text-2xl md:text-3xl">
+            LEGACY LEADERS
+          </h2>
+          <div className="grid grid-cols-2 gap-10 sm:grid-cols-2 md:grid-cols-4">
+            {isLoading ? (
+              Array.from({ length: 4 }).map((_, idx) => <Card key={idx} loading={true} invert={true} />)
+            ) : legacyLeaders.length > 0 ? (
+              legacyLeaders.map((member, index) => (
+                <Card key={index} loading={false} data={member} invert={true} />
+              ))
+            ) : (
+              <p className="col-span-full text-center text-black/50">No legacy leaders found.</p>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

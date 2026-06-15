@@ -5,22 +5,9 @@ import Image from "next/image";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 
-const achievementsData = [
-  {
-    year: "2025",
-    title: "Catalyst TRIBE x Permute 2025",
-    description:
-      "The creative team of Catalyst IEDC - TRIBE was the official design partner of India's largest skill festival, Permute 2025 where MBCET witnessed history by receiving the µButton for being the first campus to hit 2 Million Karma Points.",
-    image: "/agni.png",
-  },
-  {
-    year: "2025",
-    title: "First Campus to reach 2 Million Karma Points in µLearn Foundation.",
-    description:
-      "Received the Purple µButton Award from Hon. Chief Minister of Kerala, Shri. Pinarayi Vijayan during Permute 2025: India's Largest Skill Festival on 29th March 2025.",
-    image: "/agni.png",
-  },
-];
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
+import { useAdminSettings } from "@/hooks/use-admin-settings";
 
 const Card = ({ year, title, description, image }: any) => {
   return (
@@ -32,6 +19,7 @@ const Card = ({ year, title, description, image }: any) => {
           src={image}
           alt={title}
           fill
+          unoptimized={typeof image === 'string' && image.includes('appwrite.io')}
         />
         {/* Subtle overlay on hover */}
         <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
@@ -54,7 +42,27 @@ const Card = ({ year, title, description, image }: any) => {
 };
 
 const Team = () => {
+  const { pageComponents } = useAdminSettings();
   const container = useRef<HTMLDivElement>(null);
+  const [achievements, setAchievements] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchAchievements = async () => {
+      try {
+        const res = await fetch("/api/v1/achievements?limit=100");
+        if (res.ok) {
+          const data = await res.json();
+          setAchievements(data.documents || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch achievements:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchAchievements();
+  }, []);
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -87,8 +95,20 @@ const Team = () => {
     );
   }, { scope: container });
 
-  const featured = achievementsData[0];
-  const others = achievementsData.slice(1);
+  const featured = achievements.find((a) => a.is_featured === true) || null;
+  const others = achievements.filter((a) => a !== featured);
+
+  const currentYear = new Date().getFullYear();
+
+  const recentAchievements = others.filter((item) => {
+    const year = Number(item.year || new Date(item.$createdAt).getFullYear());
+    return year >= currentYear;
+  });
+
+  const pastAchievements = others.filter((item) => {
+    const year = Number(item.year || new Date(item.$createdAt).getFullYear());
+    return year < currentYear;
+  });
 
   return (
     <div ref={container} className="w-full overflow-hidden pb-10">
@@ -100,54 +120,98 @@ const Team = () => {
           watermarkClassName="nh-watermark"
         />
 
+        {!isLoading && achievements.length === 0 && (
+          <p className="text-lg tracking-wide text-white/50 font-primary text-center mt-30 mb-5 md:text-3xl md:mb-7 md:mt-25">
+            COMING SOON...
+          </p>
+        )}
+
         {/* Featured Achievement */}
-        <div className="ach-featured relative z-10 flex flex-col lg:flex-row w-full bg-[#080808] rounded-2xl md:rounded-[1.25rem] border border-zinc-800 overflow-hidden shadow-2xl ">
-          
-          {/* Left Content */}
-          <div className="flex flex-col items-start justify-center p-8 md:p-12 lg:p-16 w-full lg:w-[45%] bg-[#080808]">
-            <div className="flex flex-col items-start">
-              <div className="flex items-center gap-[6px] mb-2 tracking-widest">
-                <span className="font-primary text-[10px] md:text-xs text-white uppercase font-normal">LATEST</span>
-                <span className="font-primary text-[10px] md:text-xs text-white uppercase font-normal">ACHIEVEMENT</span>
+        {pageComponents.achievements.showFeatured && (
+          isLoading ? (
+            <Skeleton className="ach-featured h-[400px] w-full rounded-2xl bg-white/5" />
+          ) : featured ? (
+            <div className="ach-featured relative z-10 flex flex-col lg:flex-row w-full bg-[#080808] rounded-2xl md:rounded-[1.25rem] border border-zinc-800 overflow-hidden shadow-2xl ">
+              
+              {/* Left Content */}
+              <div className="flex flex-col items-start justify-center p-8 md:p-12 lg:p-16 w-full lg:w-[45%] bg-[#080808]">
+                <div className="flex flex-col items-start">
+                  <div className="flex items-center gap-[6px] mb-2 tracking-widest">
+                    <span className="font-primary text-[10px] md:text-xs text-white uppercase font-normal">LATEST</span>
+                    <span className="font-primary text-[10px] md:text-xs text-white uppercase font-normal">ACHIEVEMENT</span>
+                  </div>
+                  
+                  <div className="w-full h-[1px] bg-zinc-400 mb-4" /> 
+                  
+                  <h3 className="font-primary font-normal text-[2rem] sm:text-3xl md:text-4xl lg:text-[2.5rem] text-white leading-tight tracking-wide mb-2">
+                    {featured.title}
+                  </h3>
+                  
+                  <div className="w-full h-[1px] bg-zinc-400 mt-4 mb-4" /> 
+                  
+                  <p className="font-secondary text-sm sm:text-base text-gray-300 leading-relaxed mb-4">
+                    {featured.description}
+                  </p>
+                </div>
               </div>
-              
-              <div className="w-full h-[1px] bg-zinc-400 mb-4" /> 
-              
-              <h3 className="font-primary font-normal text-[2rem] sm:text-3xl md:text-4xl lg:text-[2.5rem] text-white leading-tight tracking-wide mb-2">
-                {featured.title}
-              </h3>
-              
-              <div className="w-full h-[1px] bg-zinc-400 mt-4 mb-4" /> 
-              
-              <p className="font-secondary text-sm sm:text-base text-gray-300 leading-relaxed mb-4">
-                {featured.description}
-              </p>
+
+              {/* Right Image */}
+              <div className="w-full lg:w-[55%] h-64 sm:h-80 lg:h-auto relative bg-[#080808]">
+                {/* Fading gradient edge for smooth blend on desktop */}
+                <div className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#080808] via-[#080808]/80 to-transparent z-10" />
+                <Image 
+                  src={featured.cover_image || featured.image || "/agni.png"} 
+                  alt={featured.title} 
+                  fill
+                  unoptimized={(featured.cover_image || featured.image || "").includes('appwrite.io')}
+                  className="object-cover grayscale opacity-75"
+                />
+              </div>
             </div>
-          </div>
+          ) : null
+        )}
 
-          {/* Right Image */}
-          <div className="w-full lg:w-[55%] h-64 sm:h-80 lg:h-auto relative bg-[#080808]">
-            {/* Fading gradient edge for smooth blend on desktop */}
-            <div className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#080808] via-[#080808]/80 to-transparent z-10" />
-            <Image 
-              src={featured.image} 
-              alt={featured.title} 
-              fill
-              className="object-cover grayscale opacity-75"
-            />
-          </div>
-        </div>
+        {/* Recent Achievements */}
+        {pageComponents.achievements.showRecent && (isLoading || recentAchievements.length > 0) && (
+          <>
+            <p className="text-lg tracking-wide text-white font-primary text-center mt-20 mb-8 md:text-left md:text-3xl">
+              RECENT ACHIEVEMENTS
+            </p>
 
-        <p className="text-lg tracking-wide text-white font-primary text-center mt-20 mb-8 md:text-left md:text-3xl">
-          OTHER ACHIEVEMENTS
-        </p>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 mb-20">
+              {isLoading ? (
+                Array.from({ length: 2 }).map((_, i) => (
+                  <Skeleton key={i} className="h-[300px] w-full rounded-2xl bg-white/5" />
+                ))
+              ) : (
+                recentAchievements.map((item, index) => (
+                  <Card key={item.$id || index} year={item.year || new Date(item.$createdAt).getFullYear()} title={item.title} description={item.description} image={item.cover_image || item.image || "/agni.png"} />
+                ))
+              )}
+            </div>
+          </>
+        )}
 
-        {/* Responsive Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 mb-20">
-          {others.map((item, index) => (
-            <Card key={index} {...item} />
-          ))}
-        </div>
+        {/* Past Achievements */}
+        {pageComponents.achievements.showPast && (isLoading || pastAchievements.length > 0) && (
+          <>
+            <p className="text-lg tracking-wide text-white font-primary text-center mt-20 mb-8 md:text-left md:text-3xl">
+              PAST ACHIEVEMENTS
+            </p>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-12 lg:gap-16 mb-20">
+              {isLoading ? (
+                Array.from({ length: 2 }).map((_, i) => (
+                  <Skeleton key={i} className="h-[300px] w-full rounded-2xl bg-white/5" />
+                ))
+              ) : (
+                pastAchievements.map((item, index) => (
+                  <Card key={item.$id || index} year={item.year || new Date(item.$createdAt).getFullYear()} title={item.title} description={item.description} image={item.cover_image || item.image || "/agni.png"} />
+                ))
+              )}
+            </div>
+          </>
+        )}
       </div>
     </div>
   );

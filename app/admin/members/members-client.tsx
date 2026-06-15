@@ -19,6 +19,7 @@ import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert"
 import gsap from "gsap"
 import { useGSAP } from "@gsap/react"
 import { Input } from "@/components/ui/input"
+import { useAdminSettings } from "@/hooks/use-admin-settings"
 
 interface MembersClientProps {
     initialData: Member[]
@@ -27,6 +28,7 @@ interface MembersClientProps {
 }
 
 export function MembersClient({ initialData, roles, organizations }: MembersClientProps) {
+    const { uiElements } = useAdminSettings()
     const [data, setData] = React.useState<Member[]>(initialData)
     const [alert, setAlert] = React.useState<{
         type: "success" | "error"
@@ -310,57 +312,63 @@ export function MembersClient({ initialData, roles, organizations }: MembersClie
                 </div>
                 
                 <div className="flex w-full md:w-auto flex-col sm:flex-row shadow-sm sm:shadow-none gap-2">
-                    <Button variant="outline" className="w-full sm:w-auto h-10 shadow-sm order-2 sm:order-1" asChild>
-                        <a href="/api/v1/export?collection=MEMBERS">
-                            <Download className="w-4 h-4 mr-2" /> Export
-                        </a>
-                    </Button>
+                    {uiElements.showExportButtons && (
+                        <Button variant="outline" className="w-full sm:w-auto h-10 shadow-sm order-2 sm:order-1" asChild>
+                            <a href="/api/v1/export?collection=MEMBERS">
+                                <Download className="w-4 h-4 mr-2" /> Export
+                            </a>
+                        </Button>
+                    )}
 
-                    <Drawer direction="right" open={isDrawerOpen} onOpenChange={(open) => {
-                        setIsDrawerOpen(open)
-                        if (!open) {
-                            setEditingMember(null)
-                            setEditFormData(null)
-                        }
-                    }}>
-                        <DrawerTrigger asChild>
-                            <Button className="w-full sm:w-auto h-10 order-1 sm:order-2">
-                                <Plus className="w-4 h-4 mr-2" /> Add User
-                            </Button>
-                        </DrawerTrigger>
-                        <DrawerContent className="no-scrollbar overflow-y-auto overflow-x-hidden">
-                            <DrawerHeader className="sr-only">
-                                <DrawerTitle>
-                                    {editingMember ? "Edit Member" : "Add Member"}
-                                </DrawerTitle>
-                            </DrawerHeader>
-                            <div className="overflow-y-auto no-scrollbar" data-vaul-no-drag>
-                                <AddMemberForm
-                                    roles={roles}
-                                    organizations={organizations}
-                                    onSubmitSuccess={editingMember ? undefined : handleAddMember}
-                                    initialData={editingMember}
-                                    memberId={editingMember?.id}
-                                    onEdit={editingMember ? handleEditMember : undefined}
-                                />
-                            </div>
-                        </DrawerContent>
-                    </Drawer>
+                    {uiElements.showAddButtons && (
+                        <Drawer direction="right" open={isDrawerOpen} onOpenChange={(open) => {
+                            setIsDrawerOpen(open)
+                            if (!open) {
+                                setEditingMember(null)
+                                setEditFormData(null)
+                            }
+                        }}>
+                            <DrawerTrigger asChild>
+                                <Button className="w-full sm:w-auto h-10 order-1 sm:order-2">
+                                    <Plus className="w-4 h-4 mr-2" /> Add User
+                                </Button>
+                            </DrawerTrigger>
+                            <DrawerContent className="no-scrollbar overflow-y-auto overflow-x-hidden">
+                                <DrawerHeader className="sr-only">
+                                    <DrawerTitle>
+                                        {editingMember ? "Edit Member" : "Add Member"}
+                                    </DrawerTitle>
+                                </DrawerHeader>
+                                <div className="overflow-y-auto no-scrollbar" data-vaul-no-drag>
+                                    <AddMemberForm
+                                        roles={roles}
+                                        organizations={organizations}
+                                        onSubmitSuccess={editingMember ? undefined : handleAddMember}
+                                        initialData={editingMember}
+                                        memberId={editingMember?.id}
+                                        onEdit={editingMember ? handleEditMember : undefined}
+                                    />
+                                </div>
+                            </DrawerContent>
+                        </Drawer>
+                    )}
                 </div>
             </div>
 
             {/* Filter and Search Bar */}
-            <div className="gsap-fade-up w-full pt-2">
-                <div className="relative w-full md:max-w-md">
-                    <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                    <Input 
-                        placeholder="Search members..." 
-                        className="pl-9 h-10 bg-background"
-                        value={searchQuery}
-                        onChange={(e) => setSearchQuery(e.target.value)}
-                    />
+            {uiElements.showSearchBars && (
+                <div className="gsap-fade-up w-full pt-2">
+                    <div className="relative w-full md:max-w-md">
+                        <Search className="absolute left-2.5 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                        <Input 
+                            placeholder="Search members..." 
+                            className="pl-9 h-10 bg-background"
+                            value={searchQuery}
+                            onChange={(e) => setSearchQuery(e.target.value)}
+                        />
+                    </div>
                 </div>
-            </div>
+            )}
 
             {/* Data Table */}
             <div className="gsap-fade-up w-full">

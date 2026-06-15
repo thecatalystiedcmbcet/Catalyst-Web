@@ -30,7 +30,13 @@ async function getData(): Promise<Event[]> {
   }
 }
 
+import { FeatureGuard } from "@/components/admin/feature-guard"
+
 export default async function EventsPage() {
   const data = await getData()
-  return <EventsClient initialData={data} />
+  return (
+    <FeatureGuard featureKey="events" featureName="Events Management">
+      <EventsClient initialData={data} />
+    </FeatureGuard>
+  )
 }

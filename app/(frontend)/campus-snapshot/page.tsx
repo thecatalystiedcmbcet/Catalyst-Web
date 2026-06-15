@@ -10,17 +10,32 @@ const enigmaFont = localFont({
   display: "swap",
 });
 
-const snapshotData = [
-  { label: "Campus Name", value: "MAR BASELIOS COLLEGE OF\nENGINEERING AND TECHNOLOGY" },
-  { label: "Rank", value: "#1" },
-  { label: "Campus Code", value: "MBT" },
-  { label: "Campus Zone", value: "SOUTH ZONE" },
-  { label: "Total Karma", value: "4181208" },
-  { label: "Total Members", value: "2695" },
-];
+import { useEffect, useState } from "react";
+import { Skeleton } from "@/components/ui/skeleton";
 
 const CampusSnapshot = () => {
   const container = useRef<HTMLDivElement>(null);
+  const [stats, setStats] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const res = await fetch("/api/v1/campus-stats?limit=100");
+        if (res.ok) {
+          const data = await res.json();
+          // Sort by createdAt or use as is. Since we added orderDesc("$createdAt"), we might want to reverse it if we want oldest first, or just use it.
+          // Let's use it as returned.
+          setStats(data.documents || []);
+        }
+      } catch (error) {
+        console.error("Failed to fetch campus stats:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchStats();
+  }, []);
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -67,25 +82,39 @@ const CampusSnapshot = () => {
             <div className="snapshot-line absolute left-[17px] md:left-[21px] top-5 bottom-5 w-1 bg-white origin-top z-0 shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
 
             <div className="flex flex-col gap-10 md:gap-14 relative z-10">
-              {snapshotData.map((item, index) => (
-                <div key={index} className="snapshot-item relative flex items-start gap-6 md:gap-8 group">
-
-                  {/* Timeline Node */}
-                  <div className="relative z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#0a0a0a] flex items-center justify-center border border-white/30 text-white shrink-0 group-hover:border-white transition-colors duration-300">
-                    <span className={`text-sm md:text-base ${enigmaFont.className} [text-shadow:-1.5px_0_0_#0ff,1.5px_0_0_#f00]`}>μ</span>
+              {isLoading ? (
+                Array.from({ length: 6 }).map((_, i) => (
+                  <div key={i} className="snapshot-item relative flex items-start gap-6 md:gap-8">
+                    <Skeleton className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 shrink-0" />
+                    <div className="flex flex-col pt-1 w-full max-w-[300px]">
+                      <Skeleton className="h-4 w-24 bg-white/10 mb-2" />
+                      <Skeleton className="h-10 w-full bg-white/10" />
+                    </div>
                   </div>
+                ))
+              ) : stats.length > 0 ? (
+                stats.map((item, index) => (
+                  <div key={item.$id || index} className="snapshot-item relative flex items-start gap-6 md:gap-8 group">
 
-                  {/* Content */}
-                  <div className="flex flex-col pt-1">
-                    <span className="font-mono text-white/50 text-xs md:text-sm mb-1 tracking-wider">
-                      {item.label}
-                    </span>
-                    <span className={`text-white text-2xl md:text-[36px] uppercase leading-tight tracking-wide whitespace-pre-line ${enigmaFont.className}`}>
-                      {item.value}
-                    </span>
+                    {/* Timeline Node */}
+                    <div className="relative z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#0a0a0a] flex items-center justify-center border border-white/30 text-white shrink-0 group-hover:border-white transition-colors duration-300">
+                      <span className={`text-sm md:text-base ${enigmaFont.className} [text-shadow:-1.5px_0_0_#0ff,1.5px_0_0_#f00]`}>μ</span>
+                    </div>
+
+                    {/* Content */}
+                    <div className="flex flex-col pt-1">
+                      <span className="font-mono text-white/50 text-xs md:text-sm mb-1 tracking-wider">
+                        {item.label}
+                      </span>
+                      <span className={`text-white text-2xl md:text-[36px] uppercase leading-tight tracking-wide whitespace-pre-line ${enigmaFont.className}`}>
+                        {item.value}
+                      </span>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))
+              ) : (
+                <p className="text-white/50">No campus stats found.</p>
+              )}
             </div>
           </div>
         </div>

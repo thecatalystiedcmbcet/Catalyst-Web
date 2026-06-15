@@ -45,7 +45,13 @@ async function getOrganizations(): Promise<Organization[]> {
   }
 }
 
+import { FeatureGuard } from "@/components/admin/feature-guard"
+
 export default async function AchievementsPage() {
   const [data, organizations] = await Promise.all([getData(), getOrganizations()])
-  return <AchievementsClient initialData={data} organizations={organizations} />
+  return (
+    <FeatureGuard featureKey="achievements" featureName="Achievements & Karma">
+      <AchievementsClient initialData={data} organizations={organizations} />
+    </FeatureGuard>
+  )
 }

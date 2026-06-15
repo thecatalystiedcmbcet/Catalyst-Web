@@ -34,7 +34,7 @@ export const StickyBanner = ({
   return (
     <motion.div
       className={cn(
-        "fixed top-[84px] lg:top-[72px] left-0 right-0 z-[350] w-full overflow-hidden bg-white py-1 text-black font-secondary",
+        "fixed top-[23.2vw] lg:top-[5.2vw] left-0 right-0 z-[350] w-full overflow-hidden bg-white py-1 text-black font-secondary transition-all duration-300 hover:shadow-[0_0_25px_rgba(255,255,255,0.6)]",
         className
       )}
       initial={{

@@ -1,70 +1,132 @@
 "use client";
 import Link from "next/link";
+import { useParams } from "next/navigation";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
+import { Skeleton } from "@/components/ui/skeleton";
 
-const ButtonNew = (props: { title: string }) => {
+/* ---------------- IMAGE UTILS ---------------- */
+function getValidImageUrl(url?: string) {
+  if (!url) return "/log.png";
+  if (url.includes("unsplash.com") || url.includes("appwrite.io")) return url;
+  return "/log.png";
+}
+
+
+const ButtonNew = (props: { title: string, onClick?: () => void, disabled?: boolean }) => {
   return (
     <Button
-      className="
+      onClick={props.disabled ? undefined : props.onClick}
+      disabled={props.disabled}
+      className={`
     mt-8 flex items-center gap-2
     bg-white px-6 py-5 rounded-md
     text-sm font-semibold text-black
     transition-all duration-300
-    hover:bg-gray-200 hover:text-black hover:shadow-lg
-    group
+    ${props.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 hover:text-black hover:shadow-lg group'}
     [&>svg]:h-4 [&>svg]:w-4
-  "
+  `}
     >
       {props.title}
-      <ArrowUpRight className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+      {!props.disabled && <ArrowUpRight className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />}
     </Button>
   );
 };
 
-const EventCarousel = () => {
-  const images = [
-    "https://images.unsplash.com/photo-1518495973542-4542c06a5843?q=80&w=1974&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1472396961693-142e6e269027?q=80&w=2152&auto=format&fit=crop",
-    "https://images.unsplash.com/photo-1505142468610-359e7d316be0?q=80&w=2126&auto=format&fit=crop",
-  ];
+const EventCarousel = ({ images = [] }: { images?: string[] }) => {
+  if (!images || images.length === 0) return null;
 
   return (
-    <div className="relative w-full flex items-center overflow-hidden rounded-xl">
-      {/* Left Image */}
-      <div className="relative w-1/3 aspect-[4/5] md:aspect-square group cursor-pointer">
-        <img src={images[0]} className="w-full h-full object-cover brightness-[0.3] transition-all duration-500 group-hover:brightness-[0.5]" />
-        <div className="absolute inset-0 flex items-center justify-center">
-           <button className="p-2 md:p-3 rounded-full border border-white/50 bg-black/20 text-white/80 hover:text-white hover:bg-white/20 transition-all">
-             <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
-           </button>
-        </div>
-      </div>
-      
-      {/* Center Image */}
-      <div className="relative w-1/3 aspect-[4/5] md:aspect-[4/3] z-10 shadow-2xl scale-[1.02] cursor-pointer">
-        <img src={images[1]} className="w-full h-full object-cover" />
-      </div>
-
-      {/* Right Image */}
-      <div className="relative w-1/3 aspect-[4/5] md:aspect-square group cursor-pointer">
-        <img src={images[2]} className="w-full h-full object-cover brightness-[0.3] transition-all duration-500 group-hover:brightness-[0.5]" />
-        <div className="absolute inset-0 flex items-center justify-center">
-           <button className="p-2 md:p-3 rounded-full border border-white/50 bg-black/20 text-white/80 hover:text-white hover:bg-white/20 transition-all">
-             <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
-           </button>
-        </div>
-      </div>
+    <div className="relative w-full flex items-center justify-center overflow-hidden rounded-xl h-[50vh] md:h-[70vh]">
+      <img src={getValidImageUrl(images[0])} className="w-full h-full object-cover rounded-xl shadow-2xl" />
     </div>
   );
 };
 
 export default function EventsPage() {
+  const params = useParams();
+  const id = params?.id as string;
+
+  const [event, setEvent] = useState<any>(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (!id) return;
+
+    const fetchEventDetails = async () => {
+      try {
+        let res = await fetch(`/api/v1/events/slug/${encodeURIComponent(id)}`);
+        if (res.status === 404) {
+          res = await fetch(`/api/v1/events/${encodeURIComponent(id)}`);
+        }
+
+        if (res.ok) {
+          const data = await res.json();
+          setEvent(data);
+        } else {
+          setError("Event not found");
+        }
+      } catch (err) {
+        console.error("Failed to fetch event:", err);
+        setError("Failed to load event details.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchEventDetails();
+  }, [id]);
+
+  if (isLoading) {
+    return (
+      <div className="min-h-screen bg-transparent p-10 flex flex-col gap-10">
+        <Skeleton className="w-full h-[55vh] rounded-2xl bg-white/5" />
+        <div className="max-w-5xl mx-auto w-full space-y-4">
+          <Skeleton className="w-1/2 h-10 bg-white/5" />
+          <Skeleton className="w-full h-4 bg-white/5" />
+          <Skeleton className="w-full h-4 bg-white/5" />
+          <Skeleton className="w-3/4 h-4 bg-white/5" />
+        </div>
+      </div>
+    );
+  }
+
+  if (error || !event) {
+    return (
+      <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-10 text-white">
+        <h1 className="text-3xl font-primary mb-4">{error || "Event not found"}</h1>
+        <Link href="/events">
+          <Button className="bg-white text-black hover:bg-gray-200">Go Back to Events</Button>
+        </Link>
+      </div>
+    );
+  }
+
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
+  const startDate = new Date(event.start_date);
+  startDate.setHours(0, 0, 0, 0);
+
+  const endDate = event.end_date ? new Date(event.end_date) : startDate;
+  endDate.setHours(0, 0, 0, 0);
+
+  let eventStatus = "";
+  if (today < startDate) {
+    eventStatus = "upcoming";
+  } else if (today >= startDate && today <= endDate) {
+    eventStatus = "ongoing";
+  } else {
+    eventStatus = "completed";
+  }
+
   return (
     <div className="mb-20 min-h-screen bg-transparent">
       {/* Hero Section */}
       <section className="relative w-full h-[55vh] md:h-[65vh]">
-        {/* Masking the image so it fades its opacity to 0 at the bottom, revealing the global background texture perfectly */}
+        {/* Masking the image so it fades its opacity to 0 at the bottom */}
         <div 
           className="absolute inset-0 pointer-events-none"
           style={{
@@ -73,8 +135,8 @@ export default function EventsPage() {
           }}
         >
           <img
-            src="/boots.png"
-            alt="Event Hero"
+            src={getValidImageUrl(event.cover_image)}
+            alt={event.title}
             className="w-full h-full object-cover object-top"
           />
         </div>
@@ -82,10 +144,10 @@ export default function EventsPage() {
         {/* Text */}
         <div className="absolute bottom-4 md:bottom-10 w-full text-center z-10 px-4">
           <h1 className="text-5xl md:text-7xl lg:text-[5rem] font-primary font-extrabold tracking-widest text-white uppercase drop-shadow-xl">
-            INCEPTRA VIII
+            {event.title}
           </h1>
           <p className="text-xl md:text-2xl font-secondary text-gray-300 mt-2 md:mt-4 drop-shadow-md">
-            2-Day Startup Bootcamp
+            {event.subtitle || new Date(event.start_date).toLocaleDateString()}
           </p>
         </div>
       </section>
@@ -93,29 +155,19 @@ export default function EventsPage() {
       {/* Content Section */}
       <section className="max-w-5xl mx-auto px-6 md:px-12 mt-12 md:mt-20">
         <div className="text-gray-300 font-secondary text-sm md:text-base leading-loose space-y-6">
-          <p>
-            The Innovation and Entrepreneurship Development Centre of Mar Baselios
-            College of Engineering and Technology, Catalyst was inaugurated in the
-            year 2013 with a purpose of inspiring students to become independent
-            engineers by exposing them to the world of Entrepreneurship through
-            Innovation. The Centre aims in sharpening the skills of students,
-            broadening their knowledge base and equipping them with technical and
-            non-technical qualities that an engineer need.
-          </p>
-          <p>
-            Rather than pushing students to startup, the center believes in
-            inculcating the spirit in students. The members have identified the
-            true joy of self-learning and they passionately involve in bringing
-            life into their ideas, to solve the problems that they see around.
-          </p>
+          <p className="whitespace-pre-wrap">{event.description || "No description available for this event."}</p>
         </div>
 
-        <ButtonNew title="After Movie" />
+        {eventStatus !== "completed" && event.register_link ? (
+          <ButtonNew title="Register Now" onClick={() => window.open(event.register_link, "_blank")} />
+        ) : eventStatus === "completed" ? (
+          <ButtonNew title="Event Completed" disabled />
+        ) : null}
       </section>
 
-      {/* Carousel Section */}
+      {/* Carousel Section (Fallback to cover image if no gallery) */}
       <div className="max-w-6xl mx-auto px-6 md:px-12 mt-20">
-        <EventCarousel />
+        <EventCarousel images={event.gallery?.length > 0 ? event.gallery : [event.cover_image]} />
       </div>
     </div>
   );

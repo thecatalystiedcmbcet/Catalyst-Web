@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import localFont from "next/font/local";
-import SmoothScrolling from "@/components/SmoothScrolling";
+
+import DynamicSmoothScrolling from "@/components/DynamicSmoothScrolling";
 import "./globals.css";
 
 const monument = localFont({
@@ -48,9 +49,9 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <body className={`${monument.variable} ${poppins.variable}`}>
-        <SmoothScrolling>
+        <DynamicSmoothScrolling>
           <Suspense fallback={null}>{children}</Suspense>
-        </SmoothScrolling>
+        </DynamicSmoothScrolling>
       </body>
     </html>
   );

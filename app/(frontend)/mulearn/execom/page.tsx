@@ -1,5 +1,5 @@
 "use client";
-import React, { useRef } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { FaInstagram, FaLinkedinIn } from 'react-icons/fa';
@@ -13,6 +13,30 @@ import TeamMemberCard from '@/components/TeamMemberCard';
 
 const MuLearnExecom = () => {
   const container = useRef<HTMLDivElement>(null);
+  const [members, setMembers] = useState<any[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        const res = await fetch("/api/v1/members?limit=100");
+        if (res.ok) {
+          const data = await res.json();
+          const docs = data.documents || [];
+          
+          const mulearnMembers = docs.filter((m: any) => 
+            m.orgs?.some((o: any) => o.name?.toLowerCase().includes("mulearn"))
+          );
+          setMembers(mulearnMembers);
+        }
+      } catch (error) {
+        console.error("Failed to fetch members:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchMembers();
+  }, []);
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -51,26 +75,25 @@ const MuLearnExecom = () => {
 
       <div className="w-full px-5 sm:px-10 lg:px-20 relative z-10 flex flex-col items-center mt-16 md:mt-24">
 
-        {/* Row 1 (2 items) */}
-        <div className="flex justify-center gap-8 md:gap-24 mb-12 md:mb-16 w-full">
-          <TeamMemberCard name="SABAREESH" role="Chief Nodal Officer" subtitle="Nodal Officer, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Chief Nodal Officer" subtitle="Nodal Officer, 2024" />
-        </div>
-
-        {/* Row 2 (4 items) */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-8 lg:gap-12 mb-12 md:mb-16 w-full max-w-5xl justify-items-center">
-          <TeamMemberCard name="SABAREESH" role="Chief Executive Officer" subtitle="CEO, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Chief Operations Officer" subtitle="COO, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Chief Skill Officer" subtitle="CSO, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Chief Technical Officer" subtitle="CTO, 2024" />
-        </div>
-
-        {/* Row 3 (4 items) */}
         <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-4 gap-y-12 md:gap-8 lg:gap-12 w-full max-w-5xl justify-items-center">
-          <TeamMemberCard name="SABAREESH" role="Chief Marketing Officer" subtitle="CMO, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Chief Creative Officer" subtitle="CCO, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Chief Finance Officer" subtitle="CFO, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Chief Vibe Officer" subtitle="CVO, 2024" />
+          {isLoading ? (
+             Array.from({ length: 8 }).map((_, idx) => (
+               <div key={idx} className="team-member-card w-full aspect-[3/4] bg-white/5 rounded animate-pulse" />
+             ))
+          ) : members.length > 0 ? (
+            members.map((member, idx) => (
+              <div key={idx} className="team-member-card w-full flex justify-center">
+                <TeamMemberCard 
+                  name={member.name || "Member"} 
+                  role={member.roles?.[0]?.name || "Execom"} 
+                  subtitle=""
+                  image={member.photo || member.image || "/sab.png"} 
+                />
+              </div>
+            ))
+          ) : (
+            <p className="col-span-full text-center text-white/50 py-10">No MuLearn workforce members found.</p>
+          )}
         </div>
       </div>
     </div>

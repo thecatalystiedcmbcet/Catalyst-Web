@@ -30,12 +30,16 @@ async function getLogs(): Promise<{ data: ActionLog[]; total: number }> {
     }
 }
 
+import { FeatureGuard } from "@/components/admin/feature-guard"
+
 export default async function LogsPage() {
     const { data, total } = await getLogs()
 
     return (
-        <div className="py-10 px-4">
-            <LogsClient initialData={data} total={total} />
-        </div>
+        <FeatureGuard featureKey="logs" featureName="System Logs">
+            <div className="py-10 px-4">
+                <LogsClient initialData={data} total={total} />
+            </div>
+        </FeatureGuard>
     )
 }

@@ -7,6 +7,7 @@ import localFont from 'next/font/local';
 import WatermarkHeader from '@/components/home/WatermarkHeader';
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
+import { useAdminSettings } from "@/hooks/use-admin-settings";
 
 const enigma = localFont({
   src: "../../../public/fonts/enigma.otf",
@@ -23,6 +24,7 @@ const CabnetFont = localFont({
 import TeamMemberCard from '@/components/TeamMemberCard';
 
 const DevTeamPage = () => {
+  const { pageComponents } = useAdminSettings();
   const container = useRef<HTMLDivElement>(null);
 
   useGSAP(() => {
@@ -67,45 +69,51 @@ const DevTeamPage = () => {
 
       <div className="w-full px-5 sm:px-10 lg:px-20 relative z-10 flex flex-col items-center mt-12 md:mt-24">
 
-        {/* Row 1 (5 items) */}
-        <div className="flex flex-wrap justify-center gap-8 md:gap-12 mb-12 w-full">
-          <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
-        </div>
+        {pageComponents.devTeam.showMembers && (
+          <>
+            {/* Row 1 (5 items) */}
+            <div className="flex flex-wrap justify-center gap-8 md:gap-12 mb-12 w-full">
+              <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
+              <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
+              <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
+              <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
+              <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
+            </div>
 
-        {/* Row 2 (4 items) */}
-        <div className="flex flex-wrap justify-center gap-8 md:gap-12 mb-20 md:mb-32 w-full max-w-4xl">
-          <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
-          <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
-        </div>
+            {/* Row 2 (4 items) */}
+            <div className="flex flex-wrap justify-center gap-8 md:gap-12 mb-20 md:mb-32 w-full max-w-4xl">
+              <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
+              <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
+              <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
+              <TeamMemberCard name="SABAREESH" role="Web Designer" subtitle="Creative Director, 2024" />
+            </div>
+          </>
+        )}
 
         {/* CATALYST WEB V1 Section */}
-        <div className="v1-section flex flex-col items-center w-full max-w-4xl text-center mb-8">
-          <h2 className={`${enigma.className} text-white text-2xl md:text-3xl lg:text-4xl mb-6 tracking-wide`}>
-            CATALYST WEB V1
-          </h2>
-          <p className={`${CabnetFont.className} text-gray-300 text-sm md:text-base leading-relaxed mb-12 max-w-3xl`}>
-            Catalyst is a hub of activity, where ideas are sparked and brought to life. Our events
-            calendar is packed with opportunities for students to learn, collaborate, and grow. We
-            believe that learning shouldn't be confined to the classroom. Our events offer a unique
-            learning experience that goes beyond textbooks.
-          </p>
+        {pageComponents.devTeam.showV1 && (
+          <div className="v1-section flex flex-col items-center w-full max-w-4xl text-center mb-8">
+            <h2 className={`${enigma.className} text-white text-2xl md:text-3xl lg:text-4xl mb-6 tracking-wide`}>
+              CATALYST WEB V1
+            </h2>
+            <p className={`${CabnetFont.className} text-gray-300 text-sm md:text-base leading-relaxed mb-12 max-w-3xl`}>
+              Catalyst is a hub of activity, where ideas are sparked and brought to life. Our events
+              calendar is packed with opportunities for students to learn, collaborate, and grow. We
+              believe that learning shouldn't be confined to the classroom. Our events offer a unique
+              learning experience that goes beyond textbooks.
+            </p>
 
-          <div className="w-full relative overflow-hidden mb-16 px-4 md:px-0">
-            <Image
-              src="/featured.jpg"
-              alt="Catalyst Web V1 Team"
-              width={1200}
-              height={600}
-              className="w-full h-auto object-cover rounded-sm shadow-2xl"
-            />
+            <div className="w-full relative overflow-hidden mb-16 px-4 md:px-0">
+              <Image
+                src="/featured.jpg"
+                alt="Catalyst Web V1 Team"
+                width={1200}
+                height={600}
+                className="w-full h-auto object-cover rounded-sm shadow-2xl"
+              />
+            </div>
           </div>
-        </div>
+        )}
       </div>
     </div>
   );

@@ -28,14 +28,14 @@ const HeroSection = () => {
   }, { scope: container });
 
   return (
-    <div ref={container} className="pb-20">
-      <div className="w-screen h-[60vh] mt-23 overflow-hidden flex flex-col items-center px-9 relative lg:h-[60vh]">
+    <div ref={container} className="pb-20 lg:pb-18 h-[100dvh] lg:h-auto flex flex-col lg:block">
+      <div className="w-screen flex-1 lg:flex-none lg:h-[60vh] mt-[120px] lg:mt-23 overflow-hidden flex flex-col items-center px-9 relative">
         <Hero3D />
       </div>
-      <section className="flex flex-col items-center">
+      <section className="flex flex-col items-center mt-auto lg:mt-0">
         <div className="flex flex-col items-center">
           <div className="z-10">
-            <h1 className="hero-title text-white text-[12.5dvw] font-primary text-center leading-none">
+            <h1 className="hero-title text-white text-[10.5dvw] font-primary text-center leading-none">
               CATALYST{" "}
             </h1>
           </div>
