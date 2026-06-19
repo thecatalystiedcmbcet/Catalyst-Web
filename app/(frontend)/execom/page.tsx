@@ -63,6 +63,8 @@ const Card = ({ invert = false, data = null as any, loading = true, cardSize = "
         name={data?.name ?? "Member"}
         role={data?.role ?? "Execom Member"}
         image={data?.photo_url ?? data?.photo ?? data?.image ?? "/sab.png"}
+        instagram={data?.instagram ?? "#"}
+        linkedin={data?.linkedin ?? "#"}
         invert={invert}
         cardSize={cardSize}
       />
@@ -188,12 +190,12 @@ const Execom = () => {
   return (
     <div ref={container} className="pb-20">
       {/* ── HERO TITLE ── */}
-      <div className="w-full pt-20 lg:pt-40">
+      <div className="w-full pt-40">
         <WatermarkHeader 
           title="THE CATALYST FAMILY"
           watermark="CATALYST"
-          titleClassName={` nh-title drop-shadow-lg !text-[4vw] md:text-4xl lg:text-5xl`}
-          watermarkClassName={` nh-watermark tracking-[1em] !text-[12vw] md:!text-[12vw] lg:!text-[12vw]`}
+          titleClassName={`font-primary font-extrabold nh-title drop-shadow-lg !text-[4vw] md:text-4xl lg:text-5xl`}
+          watermarkClassName={`font-primary font-extrabold nh-watermark tracking-[1em] !text-[12vw] md:!text-[12vw] lg:!text-[12vw]`}
         />
       </div>
 

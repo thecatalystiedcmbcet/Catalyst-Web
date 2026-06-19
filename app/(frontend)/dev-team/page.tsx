@@ -80,6 +80,8 @@ const Card = ({ invert = false, data = null as any, loading = true, cardSize = "
         role={data?.role ?? "Web Team"}
         subtitle=""
         image={data?.photo_url ?? data?.photo ?? data?.image ?? "/sab.png"}
+        instagram={data?.instagram ?? "#"}
+        linkedin={data?.linkedin ?? "#"}
         invert={invert}
         cardSize={cardSize}
       />
