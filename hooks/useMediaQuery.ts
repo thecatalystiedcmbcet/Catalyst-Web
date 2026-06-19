@@ -7,14 +7,19 @@ export function useMediaQuery(query: string) {
 
   useEffect(() => {
     const media = window.matchMedia(query);
+    let timer: NodeJS.Timeout;
+    
     if (media.matches !== matches) {
-      setMatches(media.matches);
+      timer = setTimeout(() => setMatches(media.matches), 0);
     }
 
     const listener = () => setMatches(media.matches);
     media.addEventListener("change", listener);
 
-    return () => media.removeEventListener("change", listener);
+    return () => {
+      if (timer) clearTimeout(timer);
+      media.removeEventListener("change", listener);
+    };
   }, [matches, query]);
 
   return matches;

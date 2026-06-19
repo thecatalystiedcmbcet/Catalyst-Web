@@ -50,7 +50,7 @@ const Pioneers = () => {
           OUR TEAM
         </h1>
         <p className="text-left font-secondary mb-6 leading-relaxed text-sm md:text-base text-gray-300">
-          Catalyst is more than just a team; it's a dynamic ecosystem of innovation
+          Catalyst is more than just a team; it&apos;s a dynamic ecosystem of innovation
           and entrepreneurship. Our team is a passionate group of young minds,
           driven by a shared vision of transforming ideas into reality. We believe
           that every engineer has the potential to be an innovator, and our role is

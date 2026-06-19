@@ -22,7 +22,7 @@ function TextGenerateEffect({
 }: TextGenerateEffectProps) {
   const localRef = React.useRef<HTMLDivElement>(null);
   React.useImperativeHandle(
-    ref as any,
+    ref,
     () => localRef.current as HTMLDivElement
   );
 
@@ -50,7 +50,7 @@ function TextGenerateEffect({
       ref={localRef}
       className={cn("font-bold", className)}
       data-slot="text-generate-effect"
-      {...(props as any)}
+      {...props}
     >
       <motion.div ref={scope}>
         {wordsArray.map((word, idx) => (

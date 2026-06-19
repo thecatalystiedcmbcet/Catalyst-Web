@@ -34,15 +34,18 @@ const Connect = () => {
     );
   }, { scope: container });
 
-  const handleSubmit = async (e: any) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
+    const target = e.currentTarget;
+    const formData = new FormData(target);
+
     const data = {
-      name: e.target.name.value,
-      email: e.target.email.value,
-      phone: e.target.phone.value,
-      subject: e.target.subject.value,
-      message: e.target.message.value,
+      name: formData.get("name") as string,
+      email: formData.get("email") as string,
+      phone: formData.get("phone") as string,
+      subject: formData.get("subject") as string,
+      message: formData.get("message") as string,
     };
 
     try {
@@ -73,7 +76,7 @@ const Connect = () => {
       );
 
       setShowModal(true); // 👈 trigger modal
-      e.target.reset(); // optional: clear form
+      e.currentTarget.reset(); // optional: clear form
     } catch (err) {
       console.error(err);
       alert("Failed to send");

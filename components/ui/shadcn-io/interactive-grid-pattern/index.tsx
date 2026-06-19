@@ -45,7 +45,7 @@ export function InteractiveGridPattern({
         "absolute inset-0 h-full w-full border border-gray-400/30",
         className
       )}
-      {...(props as any)}
+      {...props}
     >
       {Array.from({ length: horizontal * vertical }).map((_, index) => {
         const x = (index % horizontal) * width;

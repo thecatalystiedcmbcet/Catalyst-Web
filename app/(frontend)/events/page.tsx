@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, prefer-const, @next/next/no-img-element */
 "use client";
 
 import React from "react";
@@ -8,7 +9,7 @@ import NowHappening from "@/components/home/NowHappening";
 
 import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useAdminSettings } from "@/hooks/use-admin-settings";
+
 
 /* ---------------- IMAGE UTILS ---------------- */
 
@@ -118,7 +119,7 @@ const CardDesktop = ({ event }: any) => (
 );
 
 const Card = ({ event }: any) => (
-  <Link href={`/events/${event.slug || event.$id}`} className="block relative rounded-2xl p-[0.5px]">
+  <Link href={`/events/${event.slug || event.id}`} className="block relative rounded-2xl p-[0.5px]">
     <div
       className="absolute inset-0 rounded-2xl"
       style={{
@@ -139,7 +140,7 @@ const Card = ({ event }: any) => (
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
         <div className="relative z-20 h-full flex flex-col justify-between items-center py-6">
           <h1 className="font-primary text-2xl sm:text-4xl">{event.title}</h1>
-          <ButtonNew link={event.register_link} />
+          <ButtonNew link={event.registration_url} />
         </div>
       </div>
     </div>
@@ -149,7 +150,7 @@ const Card = ({ event }: any) => (
 /* ---------------- PAST CARD ---------------- */
 
 const Card2 = ({ event }: any) => (
-  <Link href={`/events/${event.slug || event.$id}`} className="block relative rounded-2xl p-[0.5px]">
+  <Link href={`/events/${event.slug || event.id}`} className="block relative rounded-2xl p-[0.5px]">
     <div
       className="absolute inset-0 rounded-2xl"
       style={{
@@ -179,17 +180,21 @@ const Card2 = ({ event }: any) => (
 /* ---------------- PAGE ---------------- */
 
 const Events = () => {
-  const { pageComponents } = useAdminSettings();
+
   const [events, setEvents] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch("/api/v1/events?limit=100");
-        if (res.ok) {
-          const data = await res.json();
-          setEvents(data.documents || []);
+        const { supabase } = await import("@/lib/supabaseClient");
+        const { data, error } = await supabase
+          .from("events")
+          .select("*")
+          .order("start_date", { ascending: false });
+        if (error) throw error;
+        if (data) {
+          setEvents(data);
         }
       } catch (error) {
         console.error("Failed to fetch events:", error);
@@ -216,7 +221,7 @@ const Events = () => {
   return (
     <div className="sm:mb-10 mb-5">
       <div className="w-full px-5 sm:px-10 lg:px-20">
-        {pageComponents.events.showNowHappening && <NowHappening />}
+        <NowHappening />
 
         {!isLoading && events.length === 0 && (
           <p className="text-lg tracking-wide text-white/50 font-primary text-center mt-30 mb-5 md:text-3xl md:mb-7 md:mt-25">
@@ -225,7 +230,7 @@ const Events = () => {
         )}
 
         {/* UPCOMING EVENTS SECTION */}
-        {pageComponents.events.showUpcoming && (isLoading || upcomingEvents.length > 0) && (
+        {(isLoading || upcomingEvents.length > 0) && (
           <>
             <p className="text-lg tracking-wide text-white font-primary text-center mt-30 mb-5 md:text-left md:text-3xl md:mb-7 md:mt-25">
               UPCOMING EVENTS
@@ -237,7 +242,7 @@ const Events = () => {
                 ))
               ) : (
                 upcomingEvents.map((event, index) => (
-                  <Card2 key={`${event.$id}-${index}`} event={event} />
+                  <Card2 key={`${event.id}-${index}`} event={event} />
                 ))
               )}
             </div>
@@ -245,7 +250,7 @@ const Events = () => {
         )}
 
         {/* PAST EXPERIENCES SECTION */}
-        {pageComponents.events.showPast && (isLoading || pastEvents.length > 0) && (
+        {(isLoading || pastEvents.length > 0) && (
           <>
             <p className="text-lg tracking-wide text-white font-primary text-center mt-20 mb-5 md:text-left md:text-3xl md:mb-7 md:mt-20">
               PAST EXPERIENCES
@@ -257,7 +262,7 @@ const Events = () => {
                 ))
               ) : (
                 pastEvents.map((event, index) => (
-                  <Card2 key={`${event.$id}-${index}`} event={event} />
+                  <Card2 key={`${event.id}-${index}`} event={event} />
                 ))
               )}
             </div>

@@ -1,7 +1,7 @@
 "use client";
 import { Suspense, useRef } from "react";
 import { Canvas } from "@react-three/fiber";
-import LogoContainer from "@/components/LogoContainer";
+import LogoContainer from "@/components/shared/LogoContainer";
 import { Environment } from "@react-three/drei";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useInView } from "framer-motion";

@@ -1,5 +1,5 @@
 import React from "react";
-import Strap from "@/components/Strap";
+import Strap from "@/components/features/Strap";
 import localFont from "next/font/local";
 
 const enigmaFont = localFont({

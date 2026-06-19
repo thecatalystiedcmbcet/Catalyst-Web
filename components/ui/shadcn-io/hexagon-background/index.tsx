@@ -52,7 +52,7 @@ function HexagonBackground({
         'relative size-full overflow-hidden dark:bg-neutral-900 bg-neutral-100',
         className,
       )}
-      {...(props as any)}
+      {...props}
     >
       <style>{`:root { --hexagon-margin: ${hexagonMargin}px; }`}</style>
       <div className="absolute top-0 -left-0 size-full overflow-hidden">
