@@ -49,7 +49,7 @@ function SmoothScrolling({ children }: { children: React.ReactNode }) {
 }
 
 function LenisScrollTriggerSync() {
-  const lenis = useLenis(({ scroll }) => {
+  const lenis = useLenis(() => {
     ScrollTrigger.update();
   });
 

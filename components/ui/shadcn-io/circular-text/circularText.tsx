@@ -46,7 +46,8 @@ const CircularText: React.FC<CircularTextProps> = ({ text }) => {
   const rotation: MotionValue<number> = useMotionValue(0);
 
   useEffect(() => {
-    setMounted(true);
+    const timer = setTimeout(() => setMounted(true), 0);
+    return () => clearTimeout(timer);
   }, []);
 
   useEffect(() => {

@@ -1,5 +1,5 @@
-import Navbar from "@/components/Navbar";
-import MobileMenu from "@/components/MobileMenu";
+import Navbar from "@/components/layout/Navbar";
+import MobileMenu from "@/components/layout/MobileMenu";
 import Footer from "@/components/home/Footer";
 import { StickyBanner } from "@/components/ui/sticky-banner";
 

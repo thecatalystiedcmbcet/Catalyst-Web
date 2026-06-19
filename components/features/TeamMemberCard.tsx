@@ -11,6 +11,7 @@ export interface TeamMemberCardProps {
   instagram?: string;
   linkedin?: string;
   invert?: boolean;
+  cardSize?: "sm" | "md" | "lg";
 }
 
 const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
@@ -21,6 +22,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
   instagram = "#",
   linkedin = "#",
   invert = false,
+  cardSize = "md",
 }) => {
   const textColor = invert ? "text-black" : "text-white";
   const roleColor = invert ? "text-gray-700" : "text-gray-300";
@@ -30,10 +32,16 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
   // Maximum contrast box for the bottom half of the image
   const halfBg = invert ? "bg-black" : "bg-white";
 
+  const sizeClasses = {
+    sm: "w-[100px] md:w-[130px]",
+    md: "w-[130px] md:w-[170px]",
+    lg: "w-[160px] md:w-[220px]"
+  };
+
   return (
-    <div className="team-member-card flex flex-col group w-[160px] md:w-[200px]">
+    <div className={`team-member-card flex flex-col group ${sizeClasses[cardSize]}`}>
       {/* Image area with half bg */}
-      <div className="w-full aspect-[3/4] relative overflow-hidden grayscale transition-all duration-500 group-hover:grayscale-0">
+      <div className="w-full aspect-[3/4] relative overflow-hidden transition-all duration-500">
         <div className={`absolute bottom-0 left-0 right-0 h-1/2 ${halfBg}`} />
         <Image
           src={image}
@@ -47,7 +55,7 @@ const TeamMemberCard: React.FC<TeamMemberCardProps> = ({
 
       {/* Text section */}
       <div className="flex flex-col items-center px-2 pt-3 pb-2 gap-0.5">
-        <h3 className={`font-primary font-extrabold ${textColor} text-xs md:text-sm uppercase tracking-wider text-center leading-tight`}>
+        <h3 className={`font-primary font-normal ${textColor} text-xs md:text-sm uppercase tracking-wider text-center leading-tight`}>
           {name}
         </h3>
         <p className={`font-secondary ${roleColor} text-[11px] md:text-xs text-center`}>

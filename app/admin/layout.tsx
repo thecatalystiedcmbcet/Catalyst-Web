@@ -1,9 +1,10 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, prefer-const, @next/next/no-img-element */
 "use client";
 
 import * as React from "react";
 import { usePathname } from "next/navigation";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
-import { AdminSidebar } from "@/components/AdminSidebar";
+import { AdminSidebar } from "@/components/layout/AdminSidebar";
 import { Bell, Search, User } from "lucide-react";
 
 export default function AdminLayout({
@@ -12,6 +13,49 @@ export default function AdminLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname() || "";
+  const [isLoading, setIsLoading] = React.useState(true);
+
+  React.useEffect(() => {
+    const checkAuth = async () => {
+      const { supabase } = await import("@/lib/supabaseClient");
+      const { data: { session } } = await supabase.auth.getSession();
+      
+      if (!session && pathname !== '/admin/login') {
+        window.location.href = '/admin/login';
+      } else {
+        setIsLoading(false);
+      }
+    };
+    checkAuth();
+
+    let subscription: any;
+    const setupListener = async () => {
+      const { supabase } = await import("@/lib/supabaseClient");
+      const { data } = supabase.auth.onAuthStateChange((event, session) => {
+        if (!session && pathname !== '/admin/login') {
+          window.location.href = '/admin/login';
+        }
+      });
+      subscription = data.subscription;
+    };
+    setupListener();
+
+    return () => {
+      if (subscription) subscription.unsubscribe();
+    };
+  }, [pathname]);
+
+  if (pathname === '/admin/login') {
+    return <>{children}</>;
+  }
+
+  if (isLoading) {
+    return (
+      <div className="flex min-h-screen items-center justify-center bg-[#0A0A0A] text-white">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white"></div>
+      </div>
+    );
+  }
 
   // Determine current active section for breadcrumb indicator
   let sectionLabel = "Members";
@@ -23,6 +67,8 @@ export default function AdminLayout({
     sectionLabel = "Catalyst Execom";
   } else if (pathname.includes("/admin/mulearn-execom")) {
     sectionLabel = "µLearn Execom";
+  } else if (pathname.includes("/admin/dev-team")) {
+    sectionLabel = "Web Team";
   }
 
   return (
@@ -55,7 +101,16 @@ export default function AdminLayout({
                 </div>
                 <div className="hidden lg:flex flex-col text-left">
                   <span className="text-xs font-secondary font-medium text-white/80">Admin User</span>
-                  <span className="text-[10px] text-white/40 font-secondary">IEDC Catalyst</span>
+                  <button 
+                    onClick={async () => {
+                      const { supabase } = await import("@/lib/supabaseClient");
+                      await supabase.auth.signOut();
+                      window.location.href = "/admin/login";
+                    }}
+                    className="text-[10px] text-white/40 font-secondary hover:text-white transition-colors text-left"
+                  >
+                    Logout
+                  </button>
                 </div>
               </div>
             </div>

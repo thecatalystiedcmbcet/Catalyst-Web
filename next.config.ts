@@ -1,6 +1,8 @@
 import type { NextConfig } from "next";
 
-const withBundleAnalyzer = require('@next/bundle-analyzer')({
+import withBundleAnalyzerInit from '@next/bundle-analyzer';
+
+const withBundleAnalyzer = withBundleAnalyzerInit({
   enabled: process.env.ANALYZE === 'true',
 });
 
@@ -13,6 +15,7 @@ const nextConfig: NextConfig = {
 
   // ─── Image optimization ──────────────────────────────────────────────
   images: {
+    unoptimized: process.env.NODE_ENV === "development",
     formats: ["image/avif", "image/webp"],
     minimumCacheTTL: 3600, // 1 hour
     // Allow all remote https image hostnames (e.g. for mock data)

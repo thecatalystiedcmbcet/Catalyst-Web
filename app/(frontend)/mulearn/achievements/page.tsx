@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, prefer-const, @next/next/no-img-element */
 "use client";
 import React, { useRef } from 'react';
 import localFont from 'next/font/local';

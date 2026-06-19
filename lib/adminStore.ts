@@ -43,14 +43,51 @@ export interface ExecomMember {
   role: string;
 }
 
-export type ExecomScope = "catalyst" | "mulearn";
+export type ExecomScope = "catalyst" | "mulearn" | "dev-team";
 
 export interface ExecomSection {
   id: string;
   title: string;
+  bgWhite: boolean;
+  cols: number;
+  size: "sm" | "md" | "lg";
   scope: ExecomScope;
   members: ExecomMember[];
 }
+
+export const encodeSectionTitle = (title: string, bgWhite: boolean, cols: number, size: string) => {
+  const safeCols = cols || 5;
+  const safeSize = (size === "sm" || size === "md" || size === "lg") ? size : "md";
+  return `${bgWhite ? '[bg:white]' : '[bg:trans]'}[cols:${safeCols}][size:${safeSize}] ${title}`;
+};
+
+export const decodeSectionTitle = (rawTitle: string) => {
+  let title = rawTitle || "";
+  let bgWhite = false;
+  let cols = 5;
+  let size: "sm" | "md" | "lg" = "md";
+
+  // First, clean up any buggy [size:undefined] strings that might have gotten saved
+  title = title.replace(/\[size:undefined\]/gi, "");
+
+  const match = title.match(/^\[bg:(white|trans)\](?:\[cols:(\d+)\])?(?:\[size:(sm|md|lg)\])?\s*(.*)$/i);
+  if (match) {
+    bgWhite = match[1].toLowerCase() === 'white';
+    if (match[2]) cols = parseInt(match[2], 10) || 5;
+    if (match[3]) size = match[3] as "sm" | "md" | "lg";
+    title = match[4];
+  } else if (title.startsWith("[bg:white]")) {
+    bgWhite = true;
+    title = title.replace("[bg:white]", "").trimStart();
+  } else if (title.startsWith("[bg:trans]")) {
+    bgWhite = false;
+    title = title.replace("[bg:trans]", "").trimStart();
+  } else {
+    const lower = title.toLowerCase();
+    if (lower.includes("legacy") || lower.includes("alumni")) bgWhite = true;
+  }
+  return { title, bgWhite, cols, size };
+};
 
 // ==========================================
 // DB ROW → APP TYPE MAPPERS
@@ -108,6 +145,7 @@ interface AdminState {
   achievementsLoaded: boolean;
   catalystExecomLoaded: boolean;
   mulLearnExecomLoaded: boolean;
+  devTeamLoaded: boolean;
 
   // Loading status for UI spinners
   isLoadingMembers: boolean;
@@ -142,8 +180,8 @@ interface AdminState {
   addOrganisation: (org: string) => void;
 
   // ---- EXECOM SECTIONS CRUD ----
-  addExecomSection: (title: string, scope: ExecomScope) => Promise<void>;
-  updateExecomSectionTitle: (id: string, title: string) => Promise<void>;
+  addExecomSection: (title: string, scope: ExecomScope, bgWhite: boolean, cols: number, size: string) => Promise<void>;
+  updateExecomSectionTitle: (id: string, title: string, bgWhite: boolean, cols: number, size: string) => Promise<void>;
   deleteExecomSection: (id: string) => Promise<void>;
   reorderExecomSections: (sections: ExecomSection[], scope: ExecomScope) => Promise<void>;
 
@@ -171,6 +209,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   achievementsLoaded: false,
   catalystExecomLoaded: false,
   mulLearnExecomLoaded: false,
+  devTeamLoaded: false,
 
   isLoadingMembers: false,
   isLoadingEvents: false,
@@ -240,8 +279,11 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
 
   fetchExecomSections: async (scope: ExecomScope) => {
     // Per-scope cache guards
-    const loaded =
-      scope === "catalyst" ? get().catalystExecomLoaded : get().mulLearnExecomLoaded;
+    let loaded = false;
+    if (scope === "catalyst") loaded = get().catalystExecomLoaded;
+    else if (scope === "mulearn") loaded = get().mulLearnExecomLoaded;
+    else if (scope === "dev-team") loaded = get().devTeamLoaded;
+
     if (loaded) return;
     set({ isLoadingExecom: true });
     try {
@@ -255,7 +297,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
 
       // 2. Fetch execom_members for these sections with member detail in one query
       const sectionIds = (sections ?? []).map((s) => s.id);
-      let execomMembers: Record<string, ExecomMember[]> = {};
+      const execomMembers: Record<string, ExecomMember[]> = {};
 
       if (sectionIds.length > 0) {
         const { data: emRows, error: emErr } = await supabase
@@ -273,12 +315,18 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       }
 
       // 3. Build ExecomSection objects
-      const builtSections: ExecomSection[] = (sections ?? []).map((sec) => ({
-        id: sec.id,
-        title: sec.title,
-        scope: sec.scope as ExecomScope,
-        members: execomMembers[sec.id] ?? [],
-      }));
+      const builtSections: ExecomSection[] = (sections ?? []).map((sec) => {
+        const decoded = decodeSectionTitle(sec.title);
+        return {
+          id: sec.id,
+          title: decoded.title,
+          bgWhite: decoded.bgWhite,
+          cols: decoded.cols,
+          size: decoded.size,
+          scope: sec.scope as ExecomScope,
+          members: execomMembers[sec.id] ?? [],
+        };
+      });
 
       // 4. Merge with existing sections of the other scope to avoid overwriting
       const otherSections = get().execomSections.filter((s) => s.scope !== scope);
@@ -286,7 +334,9 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
         execomSections: [...otherSections, ...builtSections],
         ...(scope === "catalyst"
           ? { catalystExecomLoaded: true }
-          : { mulLearnExecomLoaded: true }),
+          : scope === "mulearn"
+          ? { mulLearnExecomLoaded: true }
+          : { devTeamLoaded: true }),
       });
     } catch (err) {
       console.error("[fetchExecomSections]", err);
@@ -493,36 +543,45 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   // EXECOM SECTIONS CRUD
   // ==========================================
 
-  addExecomSection: async (title, scope) => {
+  addExecomSection: async (title, scope, bgWhite, cols, size) => {
     // Calculate next order_index
     const currentSections = get().execomSections.filter((s) => s.scope === scope);
     const nextIndex = currentSections.length;
 
+    const dbTitle = encodeSectionTitle(title, bgWhite, cols, size);
+
     const { data, error } = await supabase
       .from("execom_sections")
-      .insert({ title, scope, order_index: nextIndex })
+      .insert({ title: dbTitle, scope, order_index: nextIndex })
       .select()
       .single();
     if (error) throw error;
 
+    const decoded = decodeSectionTitle(data.title);
     const newSection: ExecomSection = {
       id: data.id,
-      title: data.title,
+      title: decoded.title,
+      bgWhite: decoded.bgWhite,
+      cols: decoded.cols,
+      size: decoded.size,
       scope: data.scope,
       members: [],
     };
     set((state) => ({ execomSections: [...state.execomSections, newSection] }));
   },
 
-  updateExecomSectionTitle: async (id, title) => {
+  updateExecomSectionTitle: async (id, title, bgWhite, cols, size) => {
     set((state) => ({
       execomSections: state.execomSections.map((sec) =>
-        sec.id === id ? { ...sec, title } : sec
+        sec.id === id ? { ...sec, title, bgWhite, cols, size: size as "sm" | "md" | "lg" } : sec
       ),
     }));
+    
+    const dbTitle = encodeSectionTitle(title, bgWhite, cols, size);
+    
     const { error } = await supabase
       .from("execom_sections")
-      .update({ title })
+      .update({ title: dbTitle })
       .eq("id", id);
     if (error) throw error;
   },

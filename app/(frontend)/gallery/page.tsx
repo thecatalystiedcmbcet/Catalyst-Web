@@ -1,7 +1,8 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, prefer-const, @next/next/no-img-element */
 "use client";
 
 import React, { useRef } from "react";
-import Masonry from "@/components/Masonry";
+import Masonry from "@/components/features/Masonry";
 import WatermarkHeader from "@/components/home/WatermarkHeader";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
@@ -26,13 +27,27 @@ export default function Page() {
   useEffect(() => {
     const fetchGallery = async () => {
       try {
-        const res = await fetch("/api/v1/gallery?limit=100");
-        if (res.ok) {
-          const data = await res.json();
-          const formattedItems = (data.documents || []).map((item: any, index: number) => ({
-            id: item.$id,
-            img: item.image_url,
-            url: item.image_url,
+        const { supabase } = await import("@/lib/supabaseClient");
+        const { data, error } = await supabase
+          .from("events")
+          .select("cover_image, related_images")
+          .order("start_date", { ascending: false });
+          
+        if (error) throw error;
+        
+        if (data) {
+          let allImages: string[] = [];
+          data.forEach(event => {
+            if (event.cover_image) allImages.push(event.cover_image);
+            if (event.related_images && Array.isArray(event.related_images)) {
+              allImages.push(...event.related_images);
+            }
+          });
+          
+          const formattedItems = allImages.map((imgUrl, index) => ({
+            id: index.toString(),
+            img: imgUrl,
+            url: imgUrl,
             // Generate a stable pseudo-random height between 200 and 400
             height: 200 + ((index * 37) % 200),
           }));

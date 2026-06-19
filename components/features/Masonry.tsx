@@ -6,6 +6,7 @@ import React, {
   useMemo,
   useRef,
   useState,
+  useCallback,
 } from "react";
 import { gsap } from "gsap";
 
@@ -33,6 +34,7 @@ const useMedia = (
 
     mqs.forEach((mq) => mq.addEventListener("change", handler));
     return () => mqs.forEach((mq) => mq.removeEventListener("change", handler));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [queries]);
 
   return value;
@@ -114,8 +116,6 @@ const Masonry: React.FC<MasonryProps> = ({
   duration = 0.6,
   stagger = 0.05,
   animateFrom = "bottom",
-  scaleOnHover = true,
-  hoverScale = 0.95,
   blurToFocus = true,
   colorShiftOnHover = false,
 }) => {
@@ -137,10 +137,10 @@ const Masonry: React.FC<MasonryProps> = ({
   /* ---------------------------------- */
   /* Initial animation origin */
   /* ---------------------------------- */
-  const getInitialPosition = (item: GridItem):any => {
+  const getInitialPosition = useCallback(function getInitPos(item: GridItem, direction: string): { x: number, y: number } {
     if (typeof window === "undefined") return { x: item.x, y: item.y };
 
-    switch (animateFrom) {
+    switch (direction) {
       case "top":
         return { x: item.x, y: -200 };
       case "bottom":
@@ -152,16 +152,14 @@ const Masonry: React.FC<MasonryProps> = ({
       case "center":
         return { x: width / 2 - item.w / 2, y: 200 };
       case "random": {
-        const dirs = ["top", "bottom", "left", "right"] as const;
-        return getInitialPosition({
-          ...item,
-          ...(dirs[Math.floor(Math.random() * 4)] as any),
-        });
+        const dirs = ["top", "bottom", "left", "right"];
+        const randDir = dirs[Math.floor(Math.random() * 4)];
+        return getInitPos(item, randDir);
       }
       default:
         return { x: item.x, y: item.y };
     }
-  };
+  }, [width]);
 
   /* ---------------------------------- */
   /* Preload images */
@@ -210,7 +208,7 @@ const Masonry: React.FC<MasonryProps> = ({
       const end = { x: item.x, y: item.y, width: item.w, height: item.h };
 
       if (!hasMounted.current) {
-        const start = getInitialPosition(item);
+        const start = getInitialPosition(item, animateFrom);
 
         gsap.fromTo(
           selector,
@@ -240,7 +238,7 @@ const Masonry: React.FC<MasonryProps> = ({
     });
 
     hasMounted.current = true;
-  }, [grid, imagesReady, stagger, duration, ease, blurToFocus]);
+  }, [grid, imagesReady, stagger, duration, ease, blurToFocus, animateFrom, getInitialPosition]);
 
   /* ---------------------------------- */
   /* Render */

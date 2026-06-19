@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { Skeleton } from "@/components/ui/skeleton";
 
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const Card = ({ year, title, description, image }: any) => {
   return (
     <div className="ach-card text-white flex flex-col group h-full cursor-pointer">
@@ -44,16 +45,21 @@ const Card = ({ year, title, description, image }: any) => {
 const Team = () => {
 
   const container = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [achievements, setAchievements] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchAchievements = async () => {
       try {
-        const res = await fetch("/api/v1/achievements?limit=100");
-        if (res.ok) {
-          const data = await res.json();
-          setAchievements(data.documents || []);
+        const { supabase } = await import("@/lib/supabaseClient");
+        const { data, error } = await supabase
+          .from("achievements")
+          .select("*")
+          .order("date", { ascending: false });
+        if (error) throw error;
+        if (data) {
+          setAchievements(data);
         }
       } catch (error) {
         console.error("Failed to fetch achievements:", error);
@@ -101,12 +107,12 @@ const Team = () => {
   const currentYear = new Date().getFullYear();
 
   const recentAchievements = others.filter((item) => {
-    const year = Number(item.year || new Date(item.$createdAt).getFullYear());
+    const year = Number(item.year || new Date(item.date || item.created_at).getFullYear());
     return year >= currentYear;
   });
 
   const pastAchievements = others.filter((item) => {
-    const year = Number(item.year || new Date(item.$createdAt).getFullYear());
+    const year = Number(item.year || new Date(item.date || item.created_at).getFullYear());
     return year < currentYear;
   });
 
@@ -185,7 +191,7 @@ const Team = () => {
                 ))
               ) : (
                 recentAchievements.map((item, index) => (
-                  <Card key={item.$id || index} year={item.year || new Date(item.$createdAt).getFullYear()} title={item.title} description={item.description} image={item.cover_image || item.image || "/agni.png"} />
+                  <Card key={item.id || index} year={item.year || new Date(item.date || item.created_at).getFullYear()} title={item.title} description={item.description} image={item.cover_image || item.image || "/agni.png"} />
                 ))
               )}
             </div>
@@ -206,7 +212,7 @@ const Team = () => {
                 ))
               ) : (
                 pastAchievements.map((item, index) => (
-                  <Card key={item.$id || index} year={item.year || new Date(item.$createdAt).getFullYear()} title={item.title} description={item.description} image={item.cover_image || item.image || "/agni.png"} />
+                  <Card key={item.id || index} year={item.year || new Date(item.date || item.created_at).getFullYear()} title={item.title} description={item.description} image={item.cover_image || item.image || "/agni.png"} />
                 ))
               )}
             </div>

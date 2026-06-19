@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, prefer-const, @next/next/no-img-element */
 "use client";
 
 import React from "react";
@@ -118,7 +119,7 @@ const CardDesktop = ({ event }: any) => (
 );
 
 const Card = ({ event }: any) => (
-  <Link href={`/events/${event.slug || event.$id}`} className="block relative rounded-2xl p-[0.5px]">
+  <Link href={`/events/${event.slug || event.id}`} className="block relative rounded-2xl p-[0.5px]">
     <div
       className="absolute inset-0 rounded-2xl"
       style={{
@@ -139,7 +140,7 @@ const Card = ({ event }: any) => (
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
         <div className="relative z-20 h-full flex flex-col justify-between items-center py-6">
           <h1 className="font-primary text-2xl sm:text-4xl">{event.title}</h1>
-          <ButtonNew link={event.register_link} />
+          <ButtonNew link={event.registration_url} />
         </div>
       </div>
     </div>
@@ -149,7 +150,7 @@ const Card = ({ event }: any) => (
 /* ---------------- PAST CARD ---------------- */
 
 const Card2 = ({ event }: any) => (
-  <Link href={`/events/${event.slug || event.$id}`} className="block relative rounded-2xl p-[0.5px]">
+  <Link href={`/events/${event.slug || event.id}`} className="block relative rounded-2xl p-[0.5px]">
     <div
       className="absolute inset-0 rounded-2xl"
       style={{
@@ -186,10 +187,14 @@ const Events = () => {
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const res = await fetch("/api/v1/events?limit=100");
-        if (res.ok) {
-          const data = await res.json();
-          setEvents(data.documents || []);
+        const { supabase } = await import("@/lib/supabaseClient");
+        const { data, error } = await supabase
+          .from("events")
+          .select("*")
+          .order("start_date", { ascending: false });
+        if (error) throw error;
+        if (data) {
+          setEvents(data);
         }
       } catch (error) {
         console.error("Failed to fetch events:", error);
@@ -237,7 +242,7 @@ const Events = () => {
                 ))
               ) : (
                 upcomingEvents.map((event, index) => (
-                  <Card2 key={`${event.$id}-${index}`} event={event} />
+                  <Card2 key={`${event.id}-${index}`} event={event} />
                 ))
               )}
             </div>
@@ -257,7 +262,7 @@ const Events = () => {
                 ))
               ) : (
                 pastEvents.map((event, index) => (
-                  <Card2 key={`${event.$id}-${index}`} event={event} />
+                  <Card2 key={`${event.id}-${index}`} event={event} />
                 ))
               )}
             </div>

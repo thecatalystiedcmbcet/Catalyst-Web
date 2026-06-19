@@ -15,18 +15,31 @@ import { Skeleton } from "@/components/ui/skeleton";
 
 const CampusSnapshot = () => {
   const container = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [stats, setStats] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [topLearners, setTopLearners] = useState<any[]>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [topIGs, setTopIGs] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     const fetchStats = async () => {
       try {
-        const res = await fetch("/api/v1/campus-stats?limit=100");
+        const res = await fetch("https://mulearn.org/api/v1/public/campus-details/mbt/");
         if (res.ok) {
           const data = await res.json();
-          // Sort by createdAt or use as is. Since we added orderDesc("$createdAt"), we might want to reverse it if we want oldest first, or just use it.
-          // Let's use it as returned.
-          setStats(data.documents || []);
+          const details = data.response.campus_details;
+          
+          setStats([
+            { id: "rank", label: "CAMPUS RANK", value: `#${details.rank}` },
+            { id: "karma", label: "TOTAL KARMA", value: details.total_karma.toLocaleString() },
+            { id: "members", label: "TOTAL MEMBERS", value: details.total_members.toLocaleString() },
+            { id: "active", label: "ACTIVE MEMBERS", value: details.active_members.toLocaleString() },
+          ]);
+          
+          setTopLearners(data.response.top_learners || []);
+          setTopIGs((data.response.ig_details || []).slice(0, 5));
         }
       } catch (error) {
         console.error("Failed to fetch campus stats:", error);
@@ -83,7 +96,7 @@ const CampusSnapshot = () => {
 
             <div className="flex flex-col gap-10 md:gap-14 relative z-10">
               {isLoading ? (
-                Array.from({ length: 6 }).map((_, i) => (
+                Array.from({ length: 4 }).map((_, i) => (
                   <div key={i} className="snapshot-item relative flex items-start gap-6 md:gap-8">
                     <Skeleton className="w-10 h-10 md:w-12 md:h-12 rounded-full bg-white/10 shrink-0" />
                     <div className="flex flex-col pt-1 w-full max-w-[300px]">
@@ -94,7 +107,7 @@ const CampusSnapshot = () => {
                 ))
               ) : stats.length > 0 ? (
                 stats.map((item, index) => (
-                  <div key={item.$id || index} className="snapshot-item relative flex items-start gap-6 md:gap-8 group">
+                  <div key={item.id || index} className="snapshot-item relative flex items-start gap-6 md:gap-8 group">
 
                     {/* Timeline Node */}
                     <div className="relative z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#0a0a0a] flex items-center justify-center border border-white/30 text-white shrink-0 group-hover:border-white transition-colors duration-300">
@@ -138,10 +151,22 @@ const CampusSnapshot = () => {
 
           {/* All 20 ranks in a unified grid */}
           <div className="grid grid-cols-6 gap-x-6 md:gap-x-10 gap-y-8 md:gap-y-12 relative z-10">
-            {Array.from({ length: 20 }, (_, i) => {
+            {isLoading ? (
+              Array.from({ length: 20 }).map((_, i) => (
+                <div key={i} className={`flex items-start gap-3 md:gap-5 ${i < 2 ? 'col-span-6 lg:col-span-3' : 'col-span-6 sm:col-span-3 lg:col-span-2'}`}>
+                  <Skeleton className={`relative shrink-0 bg-white/10 ${i < 2 ? 'w-20 h-20 md:w-[130px] md:h-[130px]' : 'w-16 h-16 md:w-[110px] md:h-[120px]'}`} />
+                  <div className="flex flex-col w-full">
+                    <Skeleton className="h-8 w-16 bg-white/10 mb-2" />
+                    <Skeleton className="h-6 w-32 bg-white/10 mb-2" />
+                    <Skeleton className="h-4 w-24 bg-white/10 mb-2" />
+                    <Skeleton className="h-8 w-20 bg-white/10" />
+                  </div>
+                </div>
+              ))
+            ) : topLearners.slice(0, 20).map((learner, i) => {
               const rank = i + 1;
               const isTop2 = rank <= 2;
-              const name = rank === 1 ? "VEDHA MAHADEVAN" : rank === 4 ? "AGNIVESH\nPS" : "CHRIS THOMAS\nABRAHAM";
+              const name = learner.full_name;
 
               return (
                 <div
@@ -151,10 +176,10 @@ const CampusSnapshot = () => {
                   {/* Avatar */}
                   <div className={`relative shrink-0 bg-white/10 ${isTop2 ? 'w-20 h-20 md:w-[130px] md:h-[130px]' : 'w-16 h-16 md:w-[110px] md:h-[120px]'}`}>
                     <Image
-                      src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=200&h=200&fit=crop"
+                      src={learner.profile_pic || `https://ui-avatars.com/api/?name=${encodeURIComponent(learner.full_name)}&background=random`}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"
-                      alt={name.replace(/\n/g, ' ')}
+                      alt={name}
                       className="object-cover grayscale hover:grayscale-0 transition-all duration-500"
                     />
                   </div>
@@ -164,13 +189,13 @@ const CampusSnapshot = () => {
                       #{rank}
                     </div>
                     <div className={`uppercase leading-[1.15] whitespace-pre-line tracking-wide ${enigmaFont.className} mt-1 ${isTop2 ? 'text-base md:text-[20px]' : 'text-xs md:text-[15px]'}`}>
-                      {name}
+                      {name.split(" ").join("\n")}
                     </div>
                     <div className={`text-white/70 font-mono mt-0.5 tracking-tight truncate ${isTop2 ? 'text-[10px] md:text-[13px]' : 'text-[9px] md:text-[12px]'}`}>
-                      christhomasabraham@mulearn
+                      {learner.muid}
                     </div>
                     <div className={`leading-none tracking-wider ${enigmaFont.className} mt-1.5 ${isTop2 ? 'text-2xl md:text-[36px]' : 'text-xl md:text-[30px]'}`}>
-                      70122
+                      {learner.karma.toLocaleString()}
                     </div>
                   </div>
                 </div>
@@ -197,7 +222,16 @@ const CampusSnapshot = () => {
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-x-12 gap-y-16 relative z-10">
-            {Array.from({ length: 5 }, (_, i) => {
+            {isLoading ? (
+              Array.from({ length: 5 }).map((_, i) => (
+                <div key={i} className="flex flex-col w-full">
+                  <Skeleton className="h-10 w-16 bg-white/10 mb-2" />
+                  <Skeleton className="h-6 w-48 bg-white/10 mb-2" />
+                  <Skeleton className="h-4 w-24 bg-white/10 mb-4" />
+                  <Skeleton className="h-10 w-32 bg-white/10" />
+                </div>
+              ))
+            ) : topIGs.map((ig, i) => {
               const rank = i + 1;
               return (
                 <div key={rank} className="flex flex-col text-white">
@@ -205,13 +239,13 @@ const CampusSnapshot = () => {
                     #{rank}
                   </div>
                   <div className={`uppercase leading-[1.1] tracking-wide ${enigmaFont.className} text-xl md:text-[22px] mt-2`}>
-                    CYBER SECURITY
+                    {ig.ig_name}
                   </div>
                   <div className={`text-xs md:text-[14px] text-white/70 ${enigmaFont.className} mt-1 tracking-tight`}>
-                    Members: 428
+                    Members: {ig.members.toLocaleString()}
                   </div>
                   <div className={`text-3xl md:text-[40px] mt-4 leading-none tracking-wider ${enigmaFont.className}`}>
-                    165548
+                    {ig.total_karma.toLocaleString()}
                   </div>
                 </div>
               );

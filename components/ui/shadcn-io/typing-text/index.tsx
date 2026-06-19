@@ -1,6 +1,6 @@
 'use client';
 
-import { ElementType, useEffect, useRef, useState, createElement, useMemo, useCallback } from 'react';
+import { ElementType, useEffect, useRef, useState, useMemo, useCallback } from 'react';
 import { gsap } from 'gsap';
 
 interface TypingTextProps {
@@ -170,28 +170,31 @@ const TypingText = ({
   const shouldHideCursor =
     hideCursorWhileTyping && (currentCharIndex < textArray[currentTextIndex].length || isDeleting);
 
-  return createElement(
-    Component,
-    {
-      ref: containerRef,
-      className: `inline-block whitespace-pre-wrap tracking-tight ${className}`,
-      ...props
-    },
-    <span className="inline" style={{ color: getCurrentTextColor() }}>
-      {displayedText}
-    </span>,
-    showCursor && (
-      <span
-        ref={cursorRef}
-        className={`inline-block opacity-100 ${shouldHideCursor ? 'hidden' : ''} ${
-          cursorCharacter === '|'
-            ? `h-5 w-[1px] translate-y-1 bg-foreground ${cursorClassName}`
-            : `ml-1 ${cursorClassName}`
-        }`}
-      >
-        {cursorCharacter === '|' ? '' : cursorCharacter}
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const Comp = Component as any;
+
+  return (
+    <Comp
+      ref={containerRef}
+      className={`inline-block whitespace-pre-wrap tracking-tight ${className}`}
+      {...props}
+    >
+      <span className="inline" style={{ color: getCurrentTextColor() }}>
+        {displayedText}
       </span>
-    )
+      {showCursor && (
+        <span
+          ref={cursorRef}
+          className={`inline-block opacity-100 ${shouldHideCursor ? 'hidden' : ''} ${
+            cursorCharacter === '|'
+              ? `h-5 w-[1px] translate-y-1 bg-foreground ${cursorClassName}`
+              : `ml-1 ${cursorClassName}`
+          }`}
+        >
+          {cursorCharacter === '|' ? '' : cursorCharacter}
+        </span>
+      )}
+    </Comp>
   );
 };
 

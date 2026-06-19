@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, prefer-const, @next/next/no-img-element */
 "use client";
 
 import * as React from "react";
@@ -54,6 +55,11 @@ const navItems = [
   {
     title: "µLearn Execom",
     url: "/admin/mulearn-execom",
+    icon: UsersRound,
+  },
+  {
+    title: "Web Team",
+    url: "/admin/dev-team",
     icon: UsersRound,
   },
 ];

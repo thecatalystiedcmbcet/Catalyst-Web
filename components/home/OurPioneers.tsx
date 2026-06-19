@@ -1,6 +1,6 @@
 "use client";
 import React, { useRef } from "react";
-import PioneerCard from "@/components/PioneerCard";
+import PioneerCard from "@/components/features/PioneerCard";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 
@@ -39,7 +39,7 @@ const OurPioneers = () => {
         OUR PIONEERS
       </h1>
       <p className="pioneer-desc text-left font-secondary mb-10 leading-relaxed md:text-lg sm:text-lg text-gray-300 max-w-5xl">
-        Catalyst is a hub of activity, where ideas are sparked and brought to life. Our events calendar is packed with opportunities for students to learn, collaborate, and grow. We believe that learning shouldn't be confined to the classroom. Our events offer a unique learning experience that goes beyond textbooks.
+        Catalyst is a hub of activity, where ideas are sparked and brought to life. Our events calendar is packed with opportunities for students to learn, collaborate, and grow. We believe that learning shouldn&apos;t be confined to the classroom. Our events offer a unique learning experience that goes beyond textbooks.
       </p>
       
       <div className="pioneer-grid relative w-full overflow-hidden whitespace-nowrap py-4">

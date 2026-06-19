@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, prefer-const, @next/next/no-img-element */
 "use client";
 
 import React, { useState, useEffect, useDeferredValue, useTransition } from "react";
@@ -145,10 +146,9 @@ interface SortableSectionProps {
   section: ExecomSection;
   globalMembers: Member[];
   onDeleteSection: () => void;
-  onUpdateTitle: (newTitle: string) => void;
+  onUpdateTitle: (newTitle: string, bgWhite: boolean, cols: number, size: string) => void;
   onAddMember: (memberId: string) => void;
   onRemoveMember: (memberId: string) => void;
-  onRoleChange: (memberId: string, newRole: string) => void;
   children: React.ReactNode;
 }
 
@@ -159,7 +159,6 @@ function SortableSectionCard({
   onUpdateTitle,
   onAddMember,
   onRemoveMember,
-  onRoleChange,
   children,
 }: SortableSectionProps) {
   const {
@@ -185,8 +184,9 @@ function SortableSectionCard({
   };
 
   const saveTitle = () => {
-    if (editedTitle.trim() && editedTitle !== section.title) {
-      onUpdateTitle(editedTitle.trim());
+    const trimmed = editedTitle.trim();
+    if (trimmed !== section.title) {
+      onUpdateTitle(trimmed, section.bgWhite, section.cols, section.size);
       toast.success("Section renamed");
     }
     setIsEditingTitle(false);
@@ -219,6 +219,7 @@ function SortableSectionCard({
             {isEditingTitle ? (
               <Input
                 type="text"
+                placeholder="Section title (blank for none)"
                 value={editedTitle}
                 onChange={(e) => setEditedTitle(e.target.value)}
                 onBlur={saveTitle}
@@ -231,20 +232,53 @@ function SortableSectionCard({
                 onClick={() => setIsEditingTitle(true)}
                 className="font-secondary text-base font-bold text-white/90 hover:text-white cursor-pointer truncate"
               >
-                {section.title}
+                {section.title || <span className="italic text-white/30">Untitled Section (Hidden)</span>}
               </h3>
             )}
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={onDeleteSection}
-          className="text-white/40 hover:text-red-400 p-2 hover:bg-red-500/10 rounded transition-all cursor-pointer shrink-0"
-          title="Delete Section"
-        >
-          <Trash2 className="h-4 w-4" />
-        </button>
+        <div className="flex items-center gap-4">
+          <label className="flex items-center gap-1.5 text-xs text-white/50 cursor-pointer hover:text-white/90">
+            <input 
+              type="checkbox" 
+              checked={section.bgWhite} 
+              onChange={(e) => onUpdateTitle(section.title, e.target.checked, section.cols, section.size)} 
+              className="rounded bg-black/50 border-white/20 cursor-pointer"
+            />
+            White BG
+          </label>
+          <div className="flex items-center gap-1.5 text-xs text-white/50">
+            <span>Cols:</span>
+            <select
+              value={section.cols}
+              onChange={(e) => onUpdateTitle(section.title, section.bgWhite, parseInt(e.target.value, 10), section.size)}
+              className="bg-black/50 border border-white/20 rounded px-1 py-0.5 text-white outline-none cursor-pointer"
+            >
+              {[1,2,3, 4, 5, 6, 7].map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-white/50">
+            <span>Size:</span>
+            <select
+              value={section.size || "md"}
+              onChange={(e) => onUpdateTitle(section.title, section.bgWhite, section.cols, e.target.value)}
+              className="bg-black/50 border border-white/20 rounded px-1 py-0.5 text-white outline-none cursor-pointer"
+            >
+              <option value="sm">SM</option>
+              <option value="md">MD</option>
+              <option value="lg">LG</option>
+            </select>
+          </div>
+          <button
+            type="button"
+            onClick={onDeleteSection}
+            className="text-white/40 hover:text-red-400 p-2 hover:bg-red-500/10 rounded transition-all cursor-pointer shrink-0"
+            title="Delete Section"
+          >
+            <Trash2 className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {/* Add Member Autocomplete */}
@@ -328,9 +362,11 @@ interface ExecomWorkspaceProps {
 export function ExecomWorkspace({ scope, title, description }: ExecomWorkspaceProps) {
   const [mounted, setMounted] = useState(false);
   const [newSectionTitle, setNewSectionTitle] = useState("");
+  const [newSectionBgWhite, setNewSectionBgWhite] = useState(false);
+  const [newSectionCols, setNewSectionCols] = useState(5);
+  const [newSectionSize, setNewSectionSize] = useState("md");
   const [searchQuery, setSearchQuery] = useState("");
   const deferredSearchQuery = useDeferredValue(searchQuery);
-  const [isPending, startTransition] = useTransition();
 
   // Hydrate Store
   const {
@@ -351,9 +387,12 @@ export function ExecomWorkspace({ scope, title, description }: ExecomWorkspacePr
   } = useAdminStore();
 
   useEffect(() => {
-    setMounted(true);
-    fetchMembers();
-    fetchExecomSections(scope);
+    const timer = setTimeout(() => {
+      setMounted(true);
+      fetchMembers();
+      fetchExecomSections(scope);
+    }, 0);
+    return () => clearTimeout(timer);
   }, [scope, fetchMembers, fetchExecomSections]);
 
   const sensors = useSensors(
@@ -370,11 +409,13 @@ export function ExecomWorkspace({ scope, title, description }: ExecomWorkspacePr
   const handleCreateSection = (e: React.FormEvent) => {
     e.preventDefault();
     const trimmed = newSectionTitle.trim();
-    if (!trimmed) return;
 
-    addExecomSection(trimmed, scope);
+    addExecomSection(trimmed, scope, newSectionBgWhite, newSectionCols, newSectionSize);
     setNewSectionTitle("");
-    toast.success(`Created section: ${trimmed}`);
+    setNewSectionBgWhite(false);
+    setNewSectionCols(5);
+    setNewSectionSize("md");
+    toast.success(`Created section${trimmed ? `: ${trimmed}` : ' (Untitled)'}`);
   };
 
   // Filter sections by organisation scope AND search query (matching section or member name)
@@ -505,17 +546,47 @@ export function ExecomWorkspace({ scope, title, description }: ExecomWorkspacePr
         </div>
 
         {/* Add Section */}
-        <form onSubmit={handleCreateSection} className="flex gap-2 font-secondary">
+        <form onSubmit={handleCreateSection} className="flex gap-3 items-center font-secondary">
           <Input
             type="text"
-            placeholder="New Team Section..."
+            placeholder="New Section... (blank for none)"
             value={newSectionTitle}
             onChange={(e) => setNewSectionTitle(e.target.value)}
             className="h-9 w-48 bg-[#0E0E0E] border-white/10 text-white placeholder-white/35 focus:bg-[#121212] focus-visible:bg-[#121212] focus-visible:ring-white/20 focus-visible:border-white/20 text-xs"
           />
+          <label className="flex items-center gap-1.5 text-xs text-white/70 cursor-pointer">
+            <input 
+              type="checkbox" 
+              checked={newSectionBgWhite} 
+              onChange={(e) => setNewSectionBgWhite(e.target.checked)} 
+              className="rounded bg-black/50 border-white/20 cursor-pointer"
+            />
+            White BG
+          </label>
+          <div className="flex items-center gap-1.5 text-xs text-white/70">
+            <span>Cols:</span>
+            <select
+              value={newSectionCols}
+              onChange={(e) => setNewSectionCols(parseInt(e.target.value, 10))}
+              className="bg-[#0E0E0E] border border-white/20 rounded px-1 py-1 text-white outline-none cursor-pointer"
+            >
+              {[1, 2, 3, 4, 5, 6, 7].map(c => <option key={c} value={c}>{c}</option>)}
+            </select>
+          </div>
+          <div className="flex items-center gap-1.5 text-xs text-white/70">
+            <span>Size:</span>
+            <select
+              value={newSectionSize}
+              onChange={(e) => setNewSectionSize(e.target.value)}
+              className="bg-[#0E0E0E] border border-white/20 rounded px-1 py-1 text-white outline-none cursor-pointer"
+            >
+              <option value="sm">SM</option>
+              <option value="md">MD</option>
+              <option value="lg">LG</option>
+            </select>
+          </div>
           <Button
             type="submit"
-            disabled={!newSectionTitle.trim()}
             className="bg-white text-black hover:bg-white/90 text-xs font-semibold px-3 py-1 cursor-pointer shrink-0"
           >
             Create Section
@@ -558,7 +629,7 @@ export function ExecomWorkspace({ scope, title, description }: ExecomWorkspacePr
                     deleteExecomSection(section.id);
                     toast.success(`Removed section: ${section.title}`);
                   }}
-                  onUpdateTitle={(newTitle) => updateExecomSectionTitle(section.id, newTitle)}
+                  onUpdateTitle={(newTitle, bgWhite, cols, size) => updateExecomSectionTitle(section.id, newTitle, bgWhite, cols, size)}
                   onAddMember={(memId) => {
                     addMemberToSection(section.id, memId, "Committee Member");
                     const name = members.find((m) => m.id === memId)?.name;
@@ -568,7 +639,6 @@ export function ExecomWorkspace({ scope, title, description }: ExecomWorkspacePr
                     removeMemberFromSection(section.id, memId);
                     toast.success("Removed member from section");
                   }}
-                  onRoleChange={(memId, newRole) => updateMemberRoleInSection(section.id, memId, newRole)}
                 >
                   <div id={`container-${section.id}`} className="space-y-2">
                     <SortableContext

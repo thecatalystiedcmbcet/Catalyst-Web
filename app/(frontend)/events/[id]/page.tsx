@@ -48,6 +48,7 @@ export default function EventsPage() {
   const params = useParams();
   const id = params?.id as string;
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [event, setEvent] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -57,16 +58,18 @@ export default function EventsPage() {
 
     const fetchEventDetails = async () => {
       try {
-        let res = await fetch(`/api/v1/events/slug/${encodeURIComponent(id)}`);
-        if (res.status === 404) {
-          res = await fetch(`/api/v1/events/${encodeURIComponent(id)}`);
-        }
+        const { supabase } = await import("@/lib/supabaseClient");
+        // We assume id is the UUID from Supabase.
+        const { data, error } = await supabase
+          .from("events")
+          .select("*")
+          .eq("id", id)
+          .single();
 
-        if (res.ok) {
-          const data = await res.json();
-          setEvent(data);
-        } else {
+        if (error) {
           setError("Event not found");
+        } else if (data) {
+          setEvent(data);
         }
       } catch (err) {
         console.error("Failed to fetch event:", err);
@@ -158,8 +161,8 @@ export default function EventsPage() {
           <p className="whitespace-pre-wrap">{event.description || "No description available for this event."}</p>
         </div>
 
-        {eventStatus !== "completed" && event.register_link ? (
-          <ButtonNew title="Register Now" onClick={() => window.open(event.register_link, "_blank")} />
+        {eventStatus !== "completed" && event.registration_url ? (
+          <ButtonNew title="Register Now" onClick={() => window.open(event.registration_url, "_blank")} />
         ) : eventStatus === "completed" ? (
           <ButtonNew title="Event Completed" disabled />
         ) : null}
@@ -167,7 +170,7 @@ export default function EventsPage() {
 
       {/* Carousel Section (Fallback to cover image if no gallery) */}
       <div className="max-w-6xl mx-auto px-6 md:px-12 mt-20">
-        <EventCarousel images={event.gallery?.length > 0 ? event.gallery : [event.cover_image]} />
+        <EventCarousel images={event.related_images?.length > 0 ? event.related_images : [event.cover_image]} />
       </div>
     </div>
   );

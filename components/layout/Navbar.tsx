@@ -31,7 +31,7 @@ const ALL_NAV_LINKS: NavLink[] = [
 
 const Navbar = () => {
   const navLinks = ALL_NAV_LINKS;
-  const { isOpen, toggleNavbar } = useNavbarStore();
+  const { toggleNavbar } = useNavbarStore();
   const [isVisible, setIsVisible] = useState(true);
   const navRef = useRef<HTMLDivElement>(null);
 
@@ -71,7 +71,7 @@ const Navbar = () => {
   return (
     <div ref={navRef} className={`flex fixed z-[500] top-4 left-4 right-4 lg:top-0 lg:left-0 lg:right-0 lg:w-screen rounded-[2rem] lg:rounded-none border border-white/20 lg:border-none py-3 px-6 lg:py-4 lg:px-14 justify-between bg-black/80 lg:bg-[#000000] backdrop-blur-2xl lg:backdrop-blur-none items-center text-white transition-transform duration-300 ${isVisible ? 'translate-y-0' : '-translate-y-[150%] lg:translate-y-0'}`}>
       <Link href={"/"} className="font-bold text-2xl">
-        <Image className="h-10 w-auto" style={{ width: 'auto', height: 'auto' }} width={160} height={40} src="/Catalyst_Logo_Navbar.png" alt="Catalyst Logo" />
+        <Image className="h-10 lg:h-12 w-auto" width={160} height={40} src="/Catalyst_Logo_Navbar.png" alt="Catalyst Logo" />
       </Link>
 
       <div className="gap-12 hidden lg:flex">

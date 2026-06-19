@@ -2,7 +2,7 @@ import React from "react";
 import localFont from "next/font/local";
 
 const CabnetFont = localFont({
-  src: "../public/fonts/CabinetGrotesk-Variable.ttf",
+  src: "../../public/fonts/CabinetGrotesk-Variable.ttf",
   weight: "800",
   style: "normal",
 });

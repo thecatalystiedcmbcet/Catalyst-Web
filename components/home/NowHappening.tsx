@@ -20,6 +20,7 @@ function getValidImageUrl(url?: string) {
 
 const NowHappening = () => {
   const container = useRef<HTMLDivElement>(null);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [featuredEvents, setFeaturedEvents] = useState<any[]>([]);
   const [currentIndex, setCurrentIndex] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
@@ -28,12 +29,17 @@ const NowHappening = () => {
   useEffect(() => {
     const fetchFeaturedEvents = async () => {
       try {
-        const res = await fetch("/api/v1/events?featured=true&limit=10");
-        if (res.ok) {
-          const data = await res.json();
-          if (data.documents) {
-            setFeaturedEvents(data.documents);
-          }
+        const { supabase } = await import("@/lib/supabaseClient");
+        const { data, error } = await supabase
+          .from("events")
+          .select("*")
+          .eq("is_featured", true)
+          .order("start_date", { ascending: false })
+          .limit(10);
+          
+        if (error) throw error;
+        if (data) {
+          setFeaturedEvents(data);
         }
       } catch (error) {
         console.error("Failed to fetch featured events:", error);
@@ -109,7 +115,7 @@ const NowHappening = () => {
       ) : featuredEvents.length > 0 ? (
         <div 
           className="nh-card relative z-10 flex flex-col lg:flex-row w-full bg-[#080808] rounded-2xl md:rounded-[1.25rem] border border-zinc-800 overflow-hidden shadow-2xl cursor-pointer hover:border-zinc-600 transition-colors duration-300"
-          onClick={() => router.push(`/events/${currentEvent.slug || currentEvent.$id}`)}
+          onClick={() => router.push(`/events/${currentEvent.slug || currentEvent.id}`)}
         >
           
           {/* Left Content */}

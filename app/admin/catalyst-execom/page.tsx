@@ -1,5 +1,5 @@
 import React from "react";
-import { ExecomWorkspace } from "@/components/ExecomWorkspace";
+import { ExecomWorkspace } from "@/components/features/admin/ExecomWorkspace";
 
 export default function CatalystExecomPage() {
   return (
