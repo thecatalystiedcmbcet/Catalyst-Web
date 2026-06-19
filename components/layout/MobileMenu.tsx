@@ -9,6 +9,7 @@ import { FaChevronDown } from "react-icons/fa";
 const ALL_LINKS = [
   { page: "Home", path: "/" },
   { page: "Events", path: "/events" },
+  { page: "Catalyst Execom", path: "/execom" },
   { page: "Achievements", path: "/achievements" },
   { page: "Web Team", path: "/dev-team" },
   {
