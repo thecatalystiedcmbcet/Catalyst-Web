@@ -159,6 +159,8 @@ const MuLearnExecom = () => {
                       role={em.role || "Execom"} 
                       subtitle=""
                       image={em.member.photo_url || em.member.photo || em.member.image || "/sab.png"} 
+                      instagram={em.member.instagram ?? "#"}
+                      linkedin={em.member.linkedin ?? "#"}
                       invert={section.bgWhite}
                       cardSize={cardSize}
                     />

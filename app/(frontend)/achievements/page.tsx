@@ -56,6 +56,7 @@ const Team = () => {
         const { data, error } = await supabase
           .from("achievements")
           .select("*")
+          .ilike("organisation", "%iedc%")
           .order("date", { ascending: false });
         if (error) throw error;
         if (data) {
