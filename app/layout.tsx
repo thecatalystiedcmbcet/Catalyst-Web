@@ -19,26 +19,31 @@ const monument = localFont({
     },
   ],
   variable: "--font-monument",
+  display: "swap",
+  preload: true,
 });
 
+// Only load the 4 weights actually used on the site (Regular, Medium, SemiBold, Bold).
+// The original 9-weight load was adding 5 unnecessary font-file round-trips.
 const poppins = localFont({
   src: [
-    { path: "../public/fonts/Poppins-Thin.ttf", weight: "100" },
-    { path: "../public/fonts/Poppins-ExtraLight.ttf", weight: "200" },
-    { path: "../public/fonts/Poppins-Light.ttf", weight: "300" },
     { path: "../public/fonts/Poppins-Regular.ttf", weight: "400" },
     { path: "../public/fonts/Poppins-Medium.ttf", weight: "500" },
     { path: "../public/fonts/Poppins-SemiBold.ttf", weight: "600" },
     { path: "../public/fonts/Poppins-Bold.ttf", weight: "700" },
-    { path: "../public/fonts/Poppins-ExtraBold.ttf", weight: "800" },
-    { path: "../public/fonts/Poppins-Black.ttf", weight: "900" },
   ],
   variable: "--font-poppins",
+  display: "swap",
 });
 
 export const metadata: Metadata = {
-  title: "Catalyst",
-  description: "Catalyst Platform",
+  title: {
+    default: "Catalyst | Mar Baselios IEDC",
+    template: "%s | Catalyst",
+  },
+  description:
+    "Catalyst — Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology.",
+  metadataBase: new URL("https://catalyst.mbcet.ac.in"),
 };
 
 export default function RootLayout({
@@ -46,8 +51,20 @@ export default function RootLayout({
 }: {
   children: React.ReactNode;
 }) {
+  const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL?.replace(/\/+$/, "") ?? "";
+  const supabaseOrigin = supabaseUrl ? new URL(supabaseUrl).origin : null;
+
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        {/* Preconnect to Supabase so the first API call skips the DNS+TCP+TLS handshake */}
+        {supabaseOrigin && (
+          <>
+            <link rel="preconnect" href={supabaseOrigin} />
+            <link rel="dns-prefetch" href={supabaseOrigin} />
+          </>
+        )}
+      </head>
       <body className={`${monument.variable} ${poppins.variable}`}>
         <DynamicSmoothScrolling>
           <Suspense fallback={null}>{children}</Suspense>

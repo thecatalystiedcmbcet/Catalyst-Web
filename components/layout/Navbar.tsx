@@ -18,7 +18,7 @@ const ALL_NAV_LINKS: NavLink[] = [
   { page: "Catalyst Execom", path: "/execom" },
   { page: "Web Team", path: "/dev-team" },
   {
-    page: "MuLearn",
+    page: "µLearn",
     path: "/mulearn",
     subLinks: [
       { page: "Execom", path: "/mulearn/execom" },

@@ -4,109 +4,20 @@ import React, { useEffect, useRef } from "react";
 import Image from "next/image";
 import { gsap } from "@/lib/gsap";
 
-const achievements = [
-  {
-    id: "01",
-    category: "INAUGURATION",
-    date: "2009",
-    title: "The Beginning of Catalyst MBCET",
-    description: "Catalyst, the Innovation and Entrepreneurship Centre of MBCET, was inaugurated",
-    image: "/timelineimages/1.png",
-  },
-  {
-    id: "02",
-    category: "WORKSHOP",
-    date: "2013",
-    title: "Catalyst x MIT",
-    description: "The Media Lab of the Massachusetts Institute of Technology (MIT) conducted a Design Innovation and DIY Workshop",
-    image: "/timelineimages/2.png",
-  },
-  {
-    id: "03",
-    category: "WORKSHOP",
-    date: "2014",
-    title: "Catalyst x TATA Centre",
-    description: "Conducted the Massachusetts Institute of Technology (MIT) - TATA Centre Workshop on Innovation, Fabrication, and Entrepreneurship",
-    image: "/timelineimages/3.png",
-  },
-  {
-    id: "04",
-    category: "RECOGNITION",
-    date: "2015",
-    title: "The Beginning of Catalyst IEDC",
-    description: "IEDC Supported by the Kerala Startup Mission",
-    image: "/timelineimages/4.png",
-  },
-  {
-    id: "05",
-    category: "RECOGNITION",
-    date: "2016",
-    title: "Incubation Center",
-    description: "Established an Incubation Centre in association with KSIDC in January",
-    image: "/timelineimages/5.png",
-  },
-  {
-    id: "06",
-    category: "CONCLAVE",
-    date: "2017",
-    title: "Startup and SME Conclave",
-    description: "Kerala’s Biggest Greenroom Startup and SME Conclave",
-    image: "/timelineimages/6.png",
-  },
-  {
-    id: "07",
-    category: "BOOTCAMP",
-    date: "2018",
-    title: "Startup India Yatra Bootcamp",
-    description: "Hosted Startup India Yatra Bootcamp 2018",
-    image: "/timelineimages/7.png",
-  },
-  {
-    id: "08",
-    category: "CONFERENCE",
-    date: "2019",
-    title: "National Children’s Science Congress",
-    description: "The 27th edition of the National Children's Science Congress (NCSC) was held from December 27 to December 31, 2019",
-    image: "/timelineimages/8.png",
-  },
-  {
-    id: "09",
-    category: "EVENT",
-    date: "2020",
-    title: "IDEA Fest 2020",
-    description: "KSUM’s IDEA Fest 2020 was hosted by Catalyst IEDC",
-    image: "/timelineimages/9.png",
-  },
-  {
-    id: "10",
-    category: "ACHIEVEMENT",
-    date: "2021",
-    title: "OxiFine Technology Transfer",
-    description: "OxiFine is a low-cost, IoT-based smart pulse oximeter device developed by Vishnu P. Kumar (Former CTO, Catalyst IEDC).",
-    image: "/timelineimages/10.png",
-  },
-  {
-    id: "11",
-    category: "RECOGNITION",
-    date: "2022",
-    title: "Technology Business Incubator",
-    description: "TBI approval by Kerala Startup Mission",
-    image: "/timelineimages/11.png",
-  },
-  {
-    id: "12",
-    category: "PARTNERSHIP",
-    date: "2025",
-    title: "Permute 2025",
-    description: "Partnered with Permute 2025: India’s Largest Skill Festival",
-    image: "/timelineimages/12.png",
-  },
-];
+export interface TimelineItem {
+  id: string;
+  category: string;
+  date: string;
+  title: string;
+  description: string;
+  image: string;
+}
 
-export default function TimelineDemo() {
+export default function TimelineDemo({ items }: { items: TimelineItem[] }) {
   const containerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!containerRef.current || items.length === 0) return;
     const ctx = gsap.context(() => {
       /* ─────────────────────────────────────────────────────────
          Header animations — stagger each child element in
@@ -253,7 +164,7 @@ export default function TimelineDemo() {
     }, containerRef);
 
     return () => ctx.revert();
-  }, []);
+  }, [items]);
 
   return (
     <div
@@ -314,8 +225,13 @@ export default function TimelineDemo() {
       </div>
 
       {/* ── Timeline items ──────────────────────────────────────── */}
-      {achievements.map((item, idx) => {
-        const isEven = idx % 2 === 0;
+      {items.length === 0 ? (
+        <div className="text-center py-20 text-white/50 uppercase tracking-widest text-sm z-10 relative">
+          Coming Soon
+        </div>
+      ) : (
+        items.map((item, idx) => {
+          const isEven = idx % 2 === 0;
 
         return (
           <div
@@ -368,7 +284,7 @@ export default function TimelineDemo() {
                 }`}
               >
                 {isEven ? (
-                  <TextBlock item={item} align="right" />
+                  <TextBlock item={item} align="right" total={items.length} />
                 ) : (
                   <ImageBlock item={item} />
                 )}
@@ -383,13 +299,14 @@ export default function TimelineDemo() {
                 {isEven ? (
                   <ImageBlock item={item} />
                 ) : (
-                  <TextBlock item={item} align="left" />
+                  <TextBlock item={item} align="left" total={items.length} />
                 )}
               </div>
             </div>
           </div>
         );
-      })}
+      })
+      )}
 
       {/* Bottom breathing room */}
       <div className="h-24" />
@@ -401,9 +318,11 @@ export default function TimelineDemo() {
 function TextBlock({
   item,
   align,
+  total,
 }: {
-  item: (typeof achievements)[0];
+  item: TimelineItem;
   align: "left" | "right";
+  total: number;
 }) {
   const right = align === "right";
   return (
@@ -453,14 +372,14 @@ function TextBlock({
         className="font-secondary text-[10px] tracking-[0.25em] mt-2"
         style={{ color: "rgba(255,255,255,0.15)" }}
       >
-        — {item.id} / {String(achievements.length).padStart(2, "0")}
+        — {item.id} / {String(total).padStart(2, "0")}
       </span>
     </div>
   );
 }
 
 /* ─── Image block ────────────────────────────────────────────────────── */
-function ImageBlock({ item }: { item: (typeof achievements)[0] }) {
+function ImageBlock({ item }: { item: TimelineItem }) {
   return (
     <div
       className="relative w-full aspect-[4/3] overflow-hidden will-change-transform"

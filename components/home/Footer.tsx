@@ -4,9 +4,30 @@ import Link from 'next/link';
 import { FaInstagram, FaLinkedinIn, FaDiscord, FaYoutube } from 'react-icons/fa';
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
+import { supabase } from "@/lib/supabaseClient";
 
 const Footer = () => {
   const container = useRef<HTMLElement>(null);
+  const [socialLinks, setSocialLinks] = React.useState({
+    instagram_url: "#",
+    linkedin_url: "#",
+    discord_url: "#",
+    youtube_url: "#",
+  });
+
+  React.useEffect(() => {
+    const fetchLinks = async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("id", "social_links")
+        .single();
+      if (data) {
+        setSocialLinks(data);
+      }
+    };
+    fetchLinks();
+  }, []);
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -45,16 +66,16 @@ const Footer = () => {
           </h2>
           
           <div className="flex gap-6 items-center justify-center mt-2">
-            <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+            <Link href={socialLinks.instagram_url} target="_blank" className="text-gray-400 hover:text-white transition-colors">
               <FaInstagram className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
-            <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+            <Link href={socialLinks.linkedin_url} target="_blank" className="text-gray-400 hover:text-white transition-colors">
               <FaLinkedinIn className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
-            <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+            <Link href={socialLinks.discord_url} target="_blank" className="text-gray-400 hover:text-white transition-colors">
               <FaDiscord className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
-            <Link href="#" className="text-gray-400 hover:text-white transition-colors">
+            <Link href={socialLinks.youtube_url} target="_blank" className="text-gray-400 hover:text-white transition-colors">
               <FaYoutube className="w-5 h-5 md:w-6 md:h-6" />
             </Link>
           </div>

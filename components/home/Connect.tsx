@@ -84,18 +84,21 @@ const Connect = () => {
   };
 
   return (
-    <section ref={container} className="relative rounded-2xl bg-white text-black overflow-hidden shadow-xl">
+    <section ref={container} className="relative rounded-3xl bg-gradient-to-br from-[#181818] to-[#0a0a0a] text-white overflow-hidden shadow-2xl border border-white/10 group max-w-6xl mx-auto">
+      {/* Dynamic Background Glow */}
+      <div className="absolute -inset-1 bg-gradient-to-r from-white/10 to-transparent blur-2xl opacity-0 group-hover:opacity-100 transition duration-1000"></div>
+
       {/* ✅ Modal */}
       {showModal && (
-        <div className="fixed inset-0 flex items-center justify-center bg-black/50 z-50">
-          <div className="bg-white rounded-xl p-8 text-center shadow-lg max-w-sm">
-            <h3 className="text-xl font-semibold mb-3">🎉 Whoohoo!</h3>
-            <p className="mb-6 text-gray-700">
+        <div className="fixed inset-0 flex items-center justify-center bg-black/80 backdrop-blur-sm z-50">
+          <div className="bg-[#111] border border-white/20 rounded-2xl p-8 text-center shadow-[0_0_40px_rgba(255,255,255,0.1)] max-w-sm transform scale-100 animate-in fade-in zoom-in duration-300">
+            <h3 className="text-2xl font-primary tracking-widest uppercase mb-4 text-white">🎉 Whoohoo!</h3>
+            <p className="mb-8 text-gray-400 font-secondary text-lg">
               Your feedback has been submitted.
             </p>
             <button
               onClick={() => setShowModal(false)}
-              className="bg-black text-white px-4 py-2 rounded-md hover:bg-neutral-800"
+              className="bg-white text-black px-8 py-3 rounded-lg font-secondary font-bold uppercase tracking-widest hover:bg-gray-200 transition-all hover:scale-105"
             >
               Close
             </button>
@@ -103,76 +106,97 @@ const Connect = () => {
         </div>
       )}
 
+      {/* Decorative Image */}
       <Image
         src="/connect.png"
         alt="Contact illustration"
-        width={192}
-        height={192}
-        className="pointer-events-none absolute bottom-0 right-0 w-48 h-auto z-0"
+        width={300}
+        height={300}
+        className="pointer-events-none absolute bottom-[-10%] right-[-5%] w-64 md:w-80 h-auto z-0 opacity-20 invert mix-blend-screen"
         style={{ width: 'auto', height: 'auto' }}
       />
 
-      <div className="connect-content relative z-10 p-8 sm:p-10 text-left bg-white/80 backdrop-blur-sm h-full flex flex-col justify-center">
-        <h2 className="mb-8 text-2xl md:text-3xl font-primary font-normal tracking-wide uppercase">
+      <div className="connect-content relative z-10 p-6 md:p-10 text-left h-full flex flex-col justify-center">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-primary font-normal mb-6 uppercase tracking-[0.1em] text-white">
           GET IN TOUCH WITH US
         </h2>
 
-        <form className="space-y-6 font-secondary" onSubmit={handleSubmit}>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <form className="space-y-5 font-secondary w-full" onSubmit={handleSubmit}>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
             <div className="space-y-2">
-              <Label htmlFor="name" className="font-semibold">
+              <Label htmlFor="name" className="font-semibold text-white/80 text-sm tracking-wide">
                 Full Name <span className="text-red-500">*</span>
               </Label>
-              <Input id="name" placeholder="Your Full Name" className="bg-white border-gray-200 placeholder-gray-300 text-sm md:text-base" required />
+              <Input 
+                id="name" 
+                name="name"
+                placeholder="Your Full Name" 
+                className="bg-black/50 border-white/10 text-white placeholder:text-white/30 h-12 px-4 rounded-lg focus-visible:ring-1 focus-visible:ring-white/50 focus-visible:border-white/50 transition-all duration-300" 
+                required 
+              />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="email" className="font-semibold">
+              <Label htmlFor="email" className="font-semibold text-white/80 text-sm tracking-wide">
                 Email Address <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="email"
+                name="email"
                 type="email"
                 placeholder="name@gmail.com"
-                className="bg-white border-gray-200 placeholder-gray-300 text-sm md:text-base"
+                className="bg-black/50 border-white/10 text-white placeholder:text-white/30 h-12 px-4 rounded-lg focus-visible:ring-1 focus-visible:ring-white/50 focus-visible:border-white/50 transition-all duration-300"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="phone" className="font-semibold">
+              <Label htmlFor="phone" className="font-semibold text-white/80 text-sm tracking-wide">
                 Phone Number <span className="text-red-500">*</span>
               </Label>
               <Input
                 id="phone"
+                name="phone"
                 type="tel"
                 placeholder="+1555123457"
-                className="bg-white border-gray-200 placeholder-gray-300 text-sm md:text-base"
+                className="bg-black/50 border-white/10 text-white placeholder:text-white/30 h-12 px-4 rounded-lg focus-visible:ring-1 focus-visible:ring-white/50 focus-visible:border-white/50 transition-all duration-300"
                 required
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="subject" className="font-semibold">
+              <Label htmlFor="subject" className="font-semibold text-white/80 text-sm tracking-wide">
                 Subject <span className="text-red-500">*</span>
               </Label>
-              <Input id="subject" placeholder="Enter the Subject" className="bg-white border-gray-200 placeholder-gray-300 text-sm md:text-base" required />
+              <Input 
+                id="subject" 
+                name="subject"
+                placeholder="Enter the Subject" 
+                className="bg-black/50 border-white/10 text-white placeholder:text-white/30 h-12 px-4 rounded-lg focus-visible:ring-1 focus-visible:ring-white/50 focus-visible:border-white/50 transition-all duration-300" 
+                required 
+              />
             </div>
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="message" className="font-semibold">Message</Label>
+            <Label htmlFor="message" className="font-semibold text-white/80 text-sm tracking-wide">Message</Label>
             <Textarea
               id="message"
+              name="message"
               placeholder="Tell us how we can help you..!"
-              className="min-h-[120px] resize-y bg-white border-gray-200 placeholder-gray-300 text-sm md:text-base"
+              className="min-h-[100px] resize-y bg-black/50 border-white/10 text-white placeholder:text-white/30 p-4 rounded-lg focus-visible:ring-1 focus-visible:ring-white/50 focus-visible:border-white/50 transition-all duration-300"
               required
             />
           </div>
 
-          <Button type="submit" className="bg-black hover:bg-neutral-800 text-white px-8 py-5 rounded-md font-semibold text-sm">
-            Send Message
-          </Button>
+          <div className="pt-2">
+            <Button 
+              type="submit" 
+              className="bg-white hover:bg-gray-200 text-black px-8 py-5 rounded-lg font-secondary font-bold text-sm uppercase tracking-widest transition-all duration-300 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] hover:-translate-y-1 w-full md:w-auto"
+            >
+              Send Message
+            </Button>
+          </div>
         </form>
       </div>
     </section>

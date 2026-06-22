@@ -1,6 +1,13 @@
 import React from "react";
 import { CountingNumber } from "./ui/shadcn-io/counting-number";
-const Card = () => {
+
+interface CardProps {
+  value?: number;
+  suffix?: string;
+  label?: string;
+}
+
+const Card = ({ value = 20, suffix = "+", label = "Startups" }: CardProps) => {
   return (
     <div className="relative rounded-2xl p-[0.5px]">
       {/* Gradient border */}
@@ -16,11 +23,11 @@ const Card = () => {
       <div className="relative rounded-2xl bg-gradient-to-b from-[#1D1D1D] to-[#0B0B0B] text-white flex flex-col items-center gap-2 px-8 py-12">
         <div className="flex items-center">
           {" "}
-          <CountingNumber number={20} className="text-6xl font-primary" />
-          <p className="text-5xl font-primary">+</p>
+          <CountingNumber number={value} className="text-6xl font-primary" />
+          <p className="text-5xl font-primary">{suffix}</p>
         </div>
 
-        <p className="text-xl">Startups</p>
+        <p className="text-xl">{label}</p>
       </div>
     </div>
   );

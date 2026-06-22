@@ -1,7 +1,31 @@
-import React from "react";
+"use client";
+import React, { useEffect, useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
+import { supabase } from "@/lib/supabaseClient";
 
 const FooterDesk = () => {
+  const [socialLinks, setSocialLinks] = useState({
+    instagram_url: "#",
+    linkedin_url: "#",
+    discord_url: "#",
+    youtube_url: "#",
+  });
+
+  useEffect(() => {
+    const fetchLinks = async () => {
+      const { data } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("id", "social_links")
+        .single();
+      if (data) {
+        setSocialLinks(data);
+      }
+    };
+    fetchLinks();
+  }, []);
+
   return (
     <div className="relative rounded-2xl p-[0.5px] md:mx-15 mb-5 ">
       {/* Border gradient */}
@@ -22,10 +46,18 @@ const FooterDesk = () => {
           </h1>
 
           <div className="flex gap-10 mt-4 opacity-100 items-center justify-center">
-            <Image src="/social/insta.svg" alt="Instagram" width={24} height={24} className="w-6 h-6" />
-            <Image src="/social/link.svg" alt="LinkedIn" width={24} height={24} className="w-6 h-6" />
-            <Image src="/social/dis.svg" alt="Discord" width={32} height={32} className="w-8 h-8" />
-            <Image src="/social/yuo.svg" alt="YouTube" width={32} height={32} className="w-8 h-8" />
+            <Link href={socialLinks.instagram_url} target="_blank" className="hover:opacity-80 transition-opacity">
+              <Image src="/social/insta.svg" alt="Instagram" width={24} height={24} className="w-6 h-6" />
+            </Link>
+            <Link href={socialLinks.linkedin_url} target="_blank" className="hover:opacity-80 transition-opacity">
+              <Image src="/social/link.svg" alt="LinkedIn" width={24} height={24} className="w-6 h-6" />
+            </Link>
+            <Link href={socialLinks.discord_url} target="_blank" className="hover:opacity-80 transition-opacity">
+              <Image src="/social/dis.svg" alt="Discord" width={32} height={32} className="w-8 h-8" />
+            </Link>
+            <Link href={socialLinks.youtube_url} target="_blank" className="hover:opacity-80 transition-opacity">
+              <Image src="/social/yuo.svg" alt="YouTube" width={32} height={32} className="w-8 h-8" />
+            </Link>
           </div>
         </div>
 

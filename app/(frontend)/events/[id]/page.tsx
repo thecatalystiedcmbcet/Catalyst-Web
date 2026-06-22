@@ -1,127 +1,105 @@
-"use client";
 import Link from "next/link";
-import { useParams } from "next/navigation";
-import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
-import { ArrowUpRight, ChevronLeft, ChevronRight } from "lucide-react";
-import { Skeleton } from "@/components/ui/skeleton";
+import { notFound } from "next/navigation";
+import { Metadata } from "next";
+import Image from "next/image";
+import { ArrowUpRight } from "lucide-react";
+import { createPublicClient } from "@/lib/supabase/public";
+import { connection } from "next/server";
+import { EventCarousel } from "./EventCarousel";
+import { getValidImageUrl } from "@/lib/utils";
 
-/* ---------------- IMAGE UTILS ---------------- */
-function getValidImageUrl(url?: string) {
-  if (!url) return "/log.png";
-  if (url.includes("unsplash.com") || url.includes("appwrite.io")) return url;
-  return "/log.png";
+
+type Props = {
+  params: Promise<{ id: string }>;
+};
+
+export async function generateStaticParams() {
+  const supabase = createPublicClient();
+  const { data: events } = await supabase.from("events").select("id");
+
+  if (!events || events.length === 0) return [{ id: "dummy-event" }];
+
+  return events.map((event) => ({
+    id: event.id.toString(),
+  }));
 }
 
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
+  
+  if (!id) return { title: "Event Not Found" };
 
-const ButtonNew = (props: { title: string, onClick?: () => void, disabled?: boolean }) => {
-  return (
-    <Button
-      onClick={props.disabled ? undefined : props.onClick}
-      disabled={props.disabled}
-      className={`
-    mt-8 flex items-center gap-2
-    bg-white px-6 py-5 rounded-md
-    text-sm font-semibold text-black
-    transition-all duration-300
-    ${props.disabled ? 'opacity-50 cursor-not-allowed' : 'hover:bg-gray-200 hover:text-black hover:shadow-lg group'}
-    [&>svg]:h-4 [&>svg]:w-4
-  `}
-    >
-      {props.title}
-      {!props.disabled && <ArrowUpRight className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />}
-    </Button>
-  );
-};
+  const supabase = createPublicClient();
+  const { data: event } = await supabase
+    .from("events")
+    .select("title, description, cover_image")
+    .eq("id", id)
+    .single();
 
-const EventCarousel = ({ images = [] }: { images?: string[] }) => {
-  if (!images || images.length === 0) return null;
+  if (!event) return { title: "Event Not Found" };
 
-  return (
-    <div className="relative w-full flex items-center justify-center overflow-hidden rounded-xl h-[50vh] md:h-[70vh]">
-      <img src={getValidImageUrl(images[0])} className="w-full h-full object-cover rounded-xl shadow-2xl" />
-    </div>
-  );
-};
+  return {
+    title: `${event.title} | Catalyst`,
+    description: event.description?.substring(0, 160) || "Event on Catalyst platform",
+    openGraph: {
+      title: `${event.title} | Catalyst`,
+      description: event.description?.substring(0, 160) || "Event on Catalyst platform",
+      images: [
+        {
+          url: getValidImageUrl(event.cover_image),
+          width: 1200,
+          height: 630,
+          alt: event.title,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${event.title} | Catalyst`,
+      description: event.description?.substring(0, 160) || "Event on Catalyst platform",
+      images: [getValidImageUrl(event.cover_image)],
+    },
+  };
+}
 
-export default function EventsPage() {
-  const params = useParams();
-  const id = params?.id as string;
+export default async function EventsPage({ params }: Props) {
+  const resolvedParams = await params;
+  const id = resolvedParams.id;
 
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const [event, setEvent] = useState<any>(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  if (!id) notFound();
 
-  useEffect(() => {
-    if (!id) return;
-
-    const fetchEventDetails = async () => {
-      try {
-        const { supabase } = await import("@/lib/supabaseClient");
-        // We assume id is the UUID from Supabase.
-        const { data, error } = await supabase
-          .from("events")
-          .select("*")
-          .eq("id", id)
-          .single();
-
-        if (error) {
-          setError("Event not found");
-        } else if (data) {
-          setEvent(data);
-        }
-      } catch (err) {
-        console.error("Failed to fetch event:", err);
-        setError("Failed to load event details.");
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchEventDetails();
-  }, [id]);
-
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-transparent p-10 flex flex-col gap-10">
-        <Skeleton className="w-full h-[55vh] rounded-2xl bg-white/5" />
-        <div className="max-w-5xl mx-auto w-full space-y-4">
-          <Skeleton className="w-1/2 h-10 bg-white/5" />
-          <Skeleton className="w-full h-4 bg-white/5" />
-          <Skeleton className="w-full h-4 bg-white/5" />
-          <Skeleton className="w-3/4 h-4 bg-white/5" />
-        </div>
-      </div>
-    );
-  }
+  const supabase = createPublicClient();
+  const { data: event, error } = await supabase
+    .from("events")
+    .select("*")
+    .eq("id", id)
+    .single();
 
   if (error || !event) {
-    return (
-      <div className="min-h-screen bg-transparent flex flex-col items-center justify-center p-10 text-white">
-        <h1 className="text-3xl font-primary mb-4">{error || "Event not found"}</h1>
-        <Link href="/events">
-          <Button className="bg-white text-black hover:bg-gray-200">Go Back to Events</Button>
-        </Link>
-      </div>
-    );
+    notFound();
   }
 
-  const today = new Date();
-  today.setHours(0, 0, 0, 0);
-
-  const startDate = new Date(event.start_date);
-  startDate.setHours(0, 0, 0, 0);
-
-  const endDate = event.end_date ? new Date(event.end_date) : startDate;
-  endDate.setHours(0, 0, 0, 0);
-
   let eventStatus = "";
-  if (today < startDate) {
-    eventStatus = "upcoming";
-  } else if (today >= startDate && today <= endDate) {
-    eventStatus = "ongoing";
-  } else {
+  try {
+    await connection();
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+
+    const startDate = new Date(event.start_date);
+    startDate.setHours(0, 0, 0, 0);
+
+    const endDate = event.end_date ? new Date(event.end_date) : startDate;
+    endDate.setHours(0, 0, 0, 0);
+
+    if (today < startDate) {
+      eventStatus = "upcoming";
+    } else if (today >= startDate && today <= endDate) {
+      eventStatus = "ongoing";
+    } else {
+      eventStatus = "completed";
+    }
+  } catch (err) {
     eventStatus = "completed";
   }
 
@@ -137,10 +115,13 @@ export default function EventsPage() {
             WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)'
           }}
         >
-          <img
+          <Image
             src={getValidImageUrl(event.cover_image)}
             alt={event.title}
-            className="w-full h-full object-cover object-top"
+            fill
+            sizes="100vw"
+            priority
+            className="object-cover object-top"
           />
         </div>
 
@@ -162,9 +143,19 @@ export default function EventsPage() {
         </div>
 
         {eventStatus !== "completed" && event.registration_url ? (
-          <ButtonNew title="Register Now" onClick={() => window.open(event.registration_url, "_blank")} />
+          <Link
+            href={event.registration_url}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="mt-8 inline-flex items-center gap-2 bg-white px-6 py-5 rounded-md text-sm font-semibold text-black transition-all duration-300 hover:bg-gray-200 hover:shadow-lg group"
+          >
+            Register Now
+            <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+          </Link>
         ) : eventStatus === "completed" ? (
-          <ButtonNew title="Event Completed" disabled />
+          <div className="mt-8 inline-flex items-center gap-2 bg-white px-6 py-5 rounded-md text-sm font-semibold text-black opacity-50 cursor-not-allowed">
+            Event Completed
+          </div>
         ) : null}
       </section>
 
