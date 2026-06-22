@@ -27,10 +27,10 @@ function FamilyText() {
 
   return (
     <section ref={container} className="w-full min-h-[50vh] md:h-screen z-10 flex flex-col items-center justify-center text-center px-6 md:px-4 py-24 md:py-0 mx-auto" style={{ contain: 'layout' }}>
-      <span className="font-secondary text-base sm:text-xl md:text-3xl text-white mb-4 md:mb-6">
+      <span className="font-secondary text-lg sm:text-2xl md:text-3xl lg:text-4xl text-white mb-1 md:mb-2">
         Your life&apos;s best choice
       </span>
-      <h3 className="font-primary text-[1.4rem] sm:text-4xl md:text-5xl lg:text-7xl text-white leading-[1.4] md:leading-[1.1] max-w-4xl uppercase font-normal tracking-wider">
+      <h3 className="font-primary text-[1.5rem] sm:text-4xl md:text-5xl lg:text-7xl text-white leading-[1.1] uppercase tracking-[0.1em]">
         MORE THAN<br />
         JUST A CENTRE,<br />
         WE ARE A FAMILY

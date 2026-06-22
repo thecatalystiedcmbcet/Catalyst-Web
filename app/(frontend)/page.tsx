@@ -1,35 +1,57 @@
-"use client";
-import React from "react";
+import React, { Suspense } from "react";
 import dynamic from "next/dynamic";
+import { Metadata } from "next";
 import Hero from "@/components/home/Hero";
+import AddText from "@/components/home/AddText";
+import About from "@/components/home/About";
+import Events from "@/components/home/Events";
+import TimelineServer, { TimelineSkeleton } from "@/components/home/TimelineServer";
+import StatsServer, { StatsSkeleton } from "@/components/home/StatsServer";
 
-const AddText = dynamic(() => import("@/components/home/AddText"));
-const About = dynamic(() => import("@/components/home/About"));
-const TimelineDemo = dynamic(() => import("@/components/home/TimelineDemo"));
-const Stats = dynamic(() => import("@/components/home/Stats"));
-const Events = dynamic(() => import("@/components/home/Events"));
+// These remain client components with animation — lazy load them since they are below the fold
 const OurPioneers = dynamic(() => import("@/components/home/OurPioneers"));
 const Pioneers = dynamic(() => import("@/components/home/Team"));
 const Connect = dynamic(() => import("@/components/home/Connect"));
 const FamilyText = dynamic(() => import("@/components/home/FamilyText"));
 
-const Page = () => {
+export const metadata: Metadata = {
+  title: "Home | Catalyst",
+  description:
+    "Catalyst — the Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology. Explore events, achievements, and more.",
+  openGraph: {
+    title: "Catalyst | Mar Baselios IEDC",
+    description:
+      "Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology.",
+    type: "website",
+  },
+};
+
+export default function Page() {
   return (
-    <div className="mb-5 md:mb-20 ">
+    <div className="mb-5 md:mb-20">
       <Hero />
       <AddText />
       <About />
-      <TimelineDemo />
-      <Stats />
+
+      {/* Timeline: server-fetched, streamed in with a skeleton fallback */}
+      <Suspense fallback={<TimelineSkeleton />}>
+        <TimelineServer />
+      </Suspense>
+
+      {/* Stats: server-fetched, streamed in with a skeleton fallback */}
+      <Suspense fallback={<StatsSkeleton />}>
+        <StatsServer />
+      </Suspense>
+
       <Events />
       <OurPioneers />
       <FamilyText />
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 px-5 md:px-12 lg:px-20 mt-16 lg:mt-32 items-center w-full max-w-[1400px] mx-auto mb-10 md:mb-20">
+      <div className="w-full max-w-[1400px] mx-auto px-5 md:px-12 lg:px-20 mt-16 lg:mt-32 mb-16">
         <Pioneers />
+      </div>
+      <div className="w-full max-w-[1400px] mx-auto px-5 md:px-12 lg:px-20 mb-10 md:mb-20">
         <Connect />
       </div>
     </div>
   );
-};
-
-export default Page;
+}

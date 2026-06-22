@@ -1,4 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Enigma:ital,wght@0,400&display=swap');
 @import "tailwindcss";
 @import "tw-animate-css";
 
@@ -129,13 +128,18 @@
     -webkit-font-smoothing: antialiased;
     text-rendering: optimizeSpeed;
   }
-  /* Promote 3D-animated sections to their own compositor layer */
+  /* Only promote elements to their own compositor layer when GSAP is actively animating them.
+     Setting will-change globally on every tl-item wastes GPU memory proportional to list length. */
   .tl-item,
   .tl-left,
   .tl-right,
   .tl-img {
-    will-change: transform, opacity;
+    will-change: auto;
     backface-visibility: hidden;
+  }
+  /* Applied by JS only during active GSAP animation */
+  .tl-animating {
+    will-change: transform, opacity;
   }
 }
 @layer utilities {

@@ -18,6 +18,7 @@ import {
   Building,
   ChevronLeft,
   ChevronRight,
+  Star,
 } from "lucide-react";
 
 import { useAdminStore, Achievement } from "@/lib/adminStore";
@@ -51,6 +52,7 @@ const achievementFormSchema = z.object({
   description: z.string().min(5, "Description must be at least 5 characters"),
   date: z.string().min(1, "Date is required"),
   organisation: z.string().min(1, "Organisation is required"),
+  isFeatured: z.boolean(),
 });
 
 // ==========================================
@@ -119,6 +121,7 @@ export default function AdminAchievementsPage() {
       description: "",
       date: "",
       organisation: "",
+      isFeatured: false,
     },
   });
 
@@ -133,6 +136,7 @@ export default function AdminAchievementsPage() {
         description: editingAchievement.description,
         date: editingAchievement.date.slice(0, 10), // Extract YYYY-MM-DD
         organisation: editingAchievement.organisation,
+        isFeatured: editingAchievement.isFeatured,
       });
       setImagePreview(editingAchievement.image);
     } else {
@@ -142,6 +146,7 @@ export default function AdminAchievementsPage() {
         description: "",
         date: "",
         organisation: "",
+        isFeatured: false,
       });
       setImagePreview("");
     }
@@ -198,7 +203,7 @@ export default function AdminAchievementsPage() {
   };
 
   // Submit Actions
-  const onSubmit = useCallback(
+  const onSubmit: import("react-hook-form").SubmitHandler<AchievementFormValues> = useCallback(
     async (data: AchievementFormValues) => {
       startTransition(async () => {
         try {
@@ -366,9 +371,17 @@ export default function AdminAchievementsPage() {
                   className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500"
                 />
                 <div className="absolute inset-0 bg-gradient-to-t from-black via-black/20 to-transparent" />
-                <div className="absolute bottom-3 left-3 flex items-center gap-1.5 bg-black/60 border border-white/10 px-2 py-1 rounded-md text-[10px] text-white/80 font-medium font-secondary uppercase tracking-wider backdrop-blur-md">
-                  <Building className="h-3 w-3" />
-                  {ach.organisation}
+                <div className="absolute bottom-3 left-3 flex items-center gap-2">
+                  <div className="flex items-center gap-1.5 bg-black/60 border border-white/10 px-2 py-1 rounded-md text-[10px] text-white/80 font-medium font-secondary uppercase tracking-wider backdrop-blur-md">
+                    <Building className="h-3 w-3" />
+                    {ach.organisation}
+                  </div>
+                  {ach.isFeatured && (
+                    <div className="flex items-center gap-1 bg-yellow-500/20 border border-yellow-500/30 px-2 py-1 rounded-md text-[10px] text-yellow-400 font-medium font-secondary uppercase tracking-wider backdrop-blur-md">
+                      <Star className="h-3 w-3 fill-yellow-400" />
+                      Featured
+                    </div>
+                  )}
                 </div>
               </div>
 
@@ -653,6 +666,18 @@ export default function AdminAchievementsPage() {
               {errors.image && (
                 <p className="text-[11px] text-red-400 font-semibold">{errors.image.message}</p>
               )}
+            </div>
+
+            {/* Featured Toggle */}
+            <div className="flex items-center justify-between p-3 bg-[#141414] border border-white/10 rounded-lg">
+              <div className="space-y-0.5">
+                <label className="text-sm font-semibold text-white/90">Featured Achievement</label>
+                <p className="text-[11px] text-white/50">Highlight this on the homepage.</p>
+              </div>
+              <label className="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" {...register("isFeatured")} className="sr-only peer" />
+                <div className="w-9 h-5 bg-white/10 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-white/30"></div>
+              </label>
             </div>
 
             {/* Actions */}

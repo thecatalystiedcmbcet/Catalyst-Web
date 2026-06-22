@@ -43,12 +43,12 @@ const OurPioneers = () => {
       </p>
       
       <div className="pioneer-grid relative w-full overflow-hidden whitespace-nowrap py-4">
-        {/* Infinite Scroll Container */}
-        <div className="flex w-max animate-marquee hover:[animation-play-state:paused]">
-          {[...Array(2)].map((_, setIdx) => (
+        {/* Infinite Scroll Container - 3 copies is sufficient for seamless looping */}
+        <div className="flex w-max animate-marquee hover:[animation-play-state:paused]" style={{ animationDuration: '40s' }}>
+          {[...Array(3)].map((_, setIdx) => (
             <div key={setIdx} className="flex gap-4 md:gap-6 pr-4 md:pr-6 items-center">
               {[...Array(6)].map((_, i) => (
-                <PioneerCard key={i} />
+                <PioneerCard key={`${setIdx}-${i}`} />
               ))}
             </div>
           ))}

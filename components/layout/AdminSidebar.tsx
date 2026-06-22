@@ -62,6 +62,21 @@ const navItems = [
     url: "/admin/dev-team",
     icon: UsersRound,
   },
+  {
+    title: "Catalyst Matrix",
+    url: "/admin/matrix",
+    icon: LayoutDashboard,
+  },
+  {
+    title: "Timeline",
+    url: "/admin/timeline",
+    icon: Calendar,
+  },
+  {
+    title: "Global Settings",
+    url: "/admin/settings",
+    icon: Settings,
+  },
 ];
 
 export function AdminSidebar() {

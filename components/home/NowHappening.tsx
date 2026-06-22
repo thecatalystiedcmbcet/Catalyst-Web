@@ -9,14 +9,7 @@ import { gsap } from "@/lib/gsap";
 import WatermarkHeader from "./WatermarkHeader";
 import { Skeleton } from "@/components/ui/skeleton";
 import { ChevronLeft, ChevronRight } from "lucide-react";
-
-/* ---------------- IMAGE UTILS ---------------- */
-
-function getValidImageUrl(url?: string) {
-  if (!url) return "/log.png";
-  if (url.includes("unsplash.com") || url.includes("appwrite.io")) return url;
-  return "/log.png";
-}
+import { getValidImageUrl } from "@/lib/utils";
 
 const NowHappening = () => {
   const container = useRef<HTMLDivElement>(null);
@@ -175,7 +168,7 @@ const NowHappening = () => {
               fill
               sizes="(max-width: 768px) 100vw, 50vw"
               priority
-              unoptimized={getValidImageUrl(currentEvent.cover_image).includes('appwrite.io')}
+              unoptimized={getValidImageUrl(currentEvent.cover_image).includes('appwrite.io') || getValidImageUrl(currentEvent.cover_image).includes('supabase.co')}
               className="object-cover grayscale opacity-75"
             />
             

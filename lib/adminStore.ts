@@ -36,11 +36,38 @@ export interface Achievement {
   description: string;
   date: string;
   organisation: string;
+  isFeatured: boolean;
 }
 
 export interface ExecomMember {
   id: string; // References global Member.id
   role: string;
+}
+
+export interface SiteSettings {
+  id: string;
+  instagram_url: string;
+  linkedin_url: string;
+  discord_url: string;
+  youtube_url: string;
+}
+
+export interface MatrixItem {
+  id: string;
+  value: number;
+  suffix: string;
+  label: string;
+  sort_order: number;
+}
+
+export interface TimelineItem {
+  id: string;
+  category: string;
+  date: string;
+  title: string;
+  description: string;
+  image: string;
+  sort_order: number;
 }
 
 export type ExecomScope = "catalyst" | "mulearn" | "dev-team";
@@ -120,11 +147,32 @@ const mapEvent = (row: any): Event => ({
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapAchievement = (row: any): Achievement => ({
   id: row.id,
-  title: row.title,
+  title: row.title ?? "",
   image: row.image ?? "",
   description: row.description ?? "",
-  date: row.date,
-  organisation: row.organisation,
+  date: row.date ?? row.created_at,
+  organisation: row.organisation ?? "",
+  isFeatured: row.is_featured ?? false,
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapMatrixItem = (row: any): MatrixItem => ({
+  id: row.id,
+  value: row.value,
+  suffix: row.suffix ?? "+",
+  label: row.label ?? "",
+  sort_order: row.sort_order ?? 0,
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapTimelineItem = (row: any): TimelineItem => ({
+  id: row.id,
+  category: row.category ?? "",
+  date: row.date ?? "",
+  title: row.title ?? "",
+  description: row.description ?? "",
+  image: row.image ?? "",
+  sort_order: row.sort_order ?? 0,
 });
 
 // ==========================================
@@ -138,6 +186,9 @@ interface AdminState {
   achievements: Achievement[];
   execomSections: ExecomSection[];
   organisations: string[];
+  siteSettings: SiteSettings | null;
+  matrixItems: MatrixItem[];
+  timelineItems: TimelineItem[];
 
   // Loading guards — prevent duplicate fetches per module
   membersLoaded: boolean;
@@ -146,18 +197,27 @@ interface AdminState {
   catalystExecomLoaded: boolean;
   mulLearnExecomLoaded: boolean;
   devTeamLoaded: boolean;
+  settingsLoaded: boolean;
+  matrixLoaded: boolean;
+  timelineLoaded: boolean;
 
   // Loading status for UI spinners
   isLoadingMembers: boolean;
   isLoadingEvents: boolean;
   isLoadingAchievements: boolean;
   isLoadingExecom: boolean;
+  isLoadingSettings: boolean;
+  isLoadingMatrix: boolean;
+  isLoadingTimeline: boolean;
 
   // ---- FETCH ACTIONS (load from Supabase if not already loaded) ----
   fetchMembers: () => Promise<void>;
   fetchEvents: () => Promise<void>;
   fetchAchievements: () => Promise<void>;
   fetchExecomSections: (scope: ExecomScope) => Promise<void>;
+  fetchSettings: () => Promise<void>;
+  fetchMatrixItems: () => Promise<void>;
+  fetchTimelineItems: () => Promise<void>;
 
   // ---- FILE UPLOAD HELPER ----
   uploadFile: (file: File, folder: string) => Promise<string>;
@@ -185,6 +245,21 @@ interface AdminState {
   deleteExecomSection: (id: string) => Promise<void>;
   reorderExecomSections: (sections: ExecomSection[], scope: ExecomScope) => Promise<void>;
 
+  // ---- SETTINGS CRUD ----
+  updateSettings: (updates: Partial<SiteSettings>) => Promise<void>;
+
+  // ---- MATRIX CRUD ----
+  addMatrixItem: (item: Omit<MatrixItem, "id">) => Promise<void>;
+  updateMatrixItem: (id: string, updates: Partial<MatrixItem>) => Promise<void>;
+  deleteMatrixItem: (id: string) => Promise<void>;
+  reorderMatrixItems: (items: MatrixItem[]) => Promise<void>;
+
+  // ---- TIMELINE CRUD ----
+  addTimelineItem: (item: Omit<TimelineItem, "id">) => Promise<void>;
+  updateTimelineItem: (id: string, updates: Partial<TimelineItem>) => Promise<void>;
+  deleteTimelineItem: (id: string) => Promise<void>;
+  reorderTimelineItems: (items: TimelineItem[]) => Promise<void>;
+
   // ---- EXECOM MEMBERS MANAGEMENT ----
   addMemberToSection: (sectionId: string, memberId: string, role?: string) => Promise<void>;
   updateMemberRoleInSection: (sectionId: string, memberId: string, role: string) => Promise<void>;
@@ -203,6 +278,9 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   achievements: [],
   execomSections: [],
   organisations: [],
+  siteSettings: null,
+  matrixItems: [],
+  timelineItems: [],
 
   membersLoaded: false,
   eventsLoaded: false,
@@ -210,11 +288,17 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   catalystExecomLoaded: false,
   mulLearnExecomLoaded: false,
   devTeamLoaded: false,
+  settingsLoaded: false,
+  matrixLoaded: false,
+  timelineLoaded: false,
 
   isLoadingMembers: false,
   isLoadingEvents: false,
   isLoadingAchievements: false,
   isLoadingExecom: false,
+  isLoadingSettings: false,
+  isLoadingMatrix: false,
+  isLoadingTimeline: false,
 
   // ==========================================
   // FETCH ACTIONS
@@ -237,6 +321,28 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       console.error("[fetchMembers]", err);
     } finally {
       set({ isLoadingMembers: false });
+    }
+  },
+
+  fetchSettings: async () => {
+    if (get().settingsLoaded) return;
+    set({ isLoadingSettings: true });
+    try {
+      const { data, error } = await supabase
+        .from("site_settings")
+        .select("*")
+        .eq("id", "social_links")
+        .single();
+      if (error && error.code !== "PGRST116") throw error; // Ignore not found initially
+      if (data) {
+        set({ siteSettings: data as SiteSettings, settingsLoaded: true });
+      } else {
+        set({ settingsLoaded: true });
+      }
+    } catch (err) {
+      console.error("[fetchSettings]", err);
+    } finally {
+      set({ isLoadingSettings: false });
     }
   },
 
@@ -496,6 +602,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
         description: newAch.description,
         date: newAch.date,
         organisation: newAch.organisation,
+        is_featured: newAch.isFeatured,
       })
       .select()
       .single();
@@ -521,6 +628,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
         ...(updates.description !== undefined && { description: updates.description }),
         ...(updates.date !== undefined && { date: updates.date }),
         ...(updates.organisation !== undefined && { organisation: updates.organisation }),
+        ...(updates.isFeatured !== undefined && { is_featured: updates.isFeatured }),
       })
       .eq("id", id);
     if (error) throw error;
@@ -615,6 +723,22 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   },
 
   // ==========================================
+  // SETTINGS CRUD
+  // ==========================================
+  updateSettings: async (updates) => {
+    // Optimistic UI
+    set((state) => ({
+      siteSettings: state.siteSettings ? { ...state.siteSettings, ...updates } : { id: "social_links", instagram_url: "#", linkedin_url: "#", discord_url: "#", youtube_url: "#", ...updates }
+    }));
+    
+    const { error } = await supabase
+      .from("site_settings")
+      .upsert({ id: "social_links", ...updates });
+      
+    if (error) throw error;
+  },
+
+  // ==========================================
   // EXECOM MEMBERS MANAGEMENT
   // ==========================================
 
@@ -692,6 +816,128 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
           .update({ order_index: index })
           .eq("section_id", sectionId)
           .eq("member_id", m.id)
+      )
+    );
+  },
+
+  // ==========================================
+  // MATRIX CRUD & FETCH
+  // ==========================================
+  fetchMatrixItems: async () => {
+    if (get().matrixLoaded) return;
+    set({ isLoadingMatrix: true });
+    try {
+      const { data, error } = await supabase
+        .from("catalyst_matrix")
+        .select("*")
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      set({ matrixItems: (data || []).map(mapMatrixItem), matrixLoaded: true });
+    } catch (error) {
+      console.error("Error fetching matrix items:", error);
+    } finally {
+      set({ isLoadingMatrix: false });
+    }
+  },
+
+  addMatrixItem: async (item) => {
+    const { data, error } = await supabase
+      .from("catalyst_matrix")
+      .insert({ ...item })
+      .select("*")
+      .single();
+    if (error) throw error;
+    set((state) => ({ matrixItems: [...state.matrixItems, mapMatrixItem(data)] }));
+  },
+
+  updateMatrixItem: async (id, updates) => {
+    set((state) => ({
+      matrixItems: state.matrixItems.map((m) => (m.id === id ? { ...m, ...updates } : m)),
+    }));
+    const { error } = await supabase
+      .from("catalyst_matrix")
+      .update(updates)
+      .eq("id", id);
+    if (error) throw error;
+  },
+
+  deleteMatrixItem: async (id) => {
+    set((state) => ({
+      matrixItems: state.matrixItems.filter((m) => m.id !== id),
+    }));
+    const { error } = await supabase.from("catalyst_matrix").delete().eq("id", id);
+    if (error) throw error;
+  },
+
+  reorderMatrixItems: async (items) => {
+    set({ matrixItems: items });
+    await Promise.all(
+      items.map((m, index) =>
+        supabase
+          .from("catalyst_matrix")
+          .update({ sort_order: index })
+          .eq("id", m.id)
+      )
+    );
+  },
+
+  // ==========================================
+  // TIMELINE CRUD & FETCH
+  // ==========================================
+  fetchTimelineItems: async () => {
+    if (get().timelineLoaded) return;
+    set({ isLoadingTimeline: true });
+    try {
+      const { data, error } = await supabase
+        .from("catalyst_timeline")
+        .select("*")
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      set({ timelineItems: (data || []).map(mapTimelineItem), timelineLoaded: true });
+    } catch (error) {
+      console.error("Error fetching timeline items:", error);
+    } finally {
+      set({ isLoadingTimeline: false });
+    }
+  },
+
+  addTimelineItem: async (item) => {
+    const { data, error } = await supabase
+      .from("catalyst_timeline")
+      .insert({ ...item })
+      .select("*")
+      .single();
+    if (error) throw error;
+    set((state) => ({ timelineItems: [...state.timelineItems, mapTimelineItem(data)] }));
+  },
+
+  updateTimelineItem: async (id, updates) => {
+    set((state) => ({
+      timelineItems: state.timelineItems.map((m) => (m.id === id ? { ...m, ...updates } : m)),
+    }));
+    const { error } = await supabase
+      .from("catalyst_timeline")
+      .update(updates)
+      .eq("id", id);
+    if (error) throw error;
+  },
+
+  deleteTimelineItem: async (id) => {
+    set((state) => ({
+      timelineItems: state.timelineItems.filter((m) => m.id !== id),
+    }));
+    const { error } = await supabase.from("catalyst_timeline").delete().eq("id", id);
+    if (error) throw error;
+  },
+
+  reorderTimelineItems: async (items) => {
+    set({ timelineItems: items });
+    await Promise.all(
+      items.map((m, index) =>
+        supabase
+          .from("catalyst_timeline")
+          .update({ sort_order: index })
+          .eq("id", m.id)
       )
     );
   },

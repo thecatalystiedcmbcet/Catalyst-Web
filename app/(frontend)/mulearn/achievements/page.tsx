@@ -6,6 +6,8 @@ import WatermarkHeader from '@/components/home/WatermarkHeader';
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
 
 const enigma = localFont({
   src: "../../../../public/fonts/MonumentExtended-Ultrabold.otf",
@@ -22,30 +24,35 @@ const poppins = localFont({
 
 const Card = ({ year, title, description, image }: any) => {
   return (
-    <div className="mu-ach-card text-white flex flex-col group h-full cursor-pointer">
-      {/* Image Container */}
-      <div className="relative w-full aspect-video overflow-hidden mb-4 md:mb-6">
+    <div className="mu-ach-card relative flex flex-col group h-full cursor-pointer bg-[#0c0c0c] rounded-3xl border border-white/5 hover:border-white/20 hover:bg-[#111] transition-all duration-500 overflow-hidden">
+      
+      {/* Image Section */}
+      <div className="relative w-full aspect-[16/9] overflow-hidden">
         <img
           className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-105"
           src={image}
           alt={title}
         />
-        {/* Subtle overlay on hover */}
-        <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+        {/* Gradient overlay to blend image into background */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0c0c0c] via-transparent to-transparent group-hover:from-[#111] transition-colors duration-500" />
       </div>
 
-      {/* Content Container */}
-      <div className="flex flex-col flex-grow">
-        <h1 className={`${enigma.className} text-3xl sm:text-4xl md:text-[40px] mb-2 text-white`}>
-          {year}
-        </h1>
-        <p className={`${poppins.className} text-base sm:text-lg md:text-xl font-semibold mb-3 text-white`}>
+      {/* Content Section */}
+      <div className="flex flex-col flex-grow px-5 sm:px-6 pb-6 pt-0 z-10 relative">
+        <div className="-mt-6 mb-3">
+           <span className={`${enigma.className} text-3xl sm:text-4xl text-white drop-shadow-2xl`}>
+             {year}
+           </span>
+        </div>
+        
+        <h3 className={`${poppins.className} text-base sm:text-lg font-semibold mb-2 text-white leading-snug group-hover:text-zinc-200 transition-colors`}>
           {title}
-        </p>
-        <p className={`${poppins.className} text-sm sm:text-base md:text-[15px] font-normal text-zinc-400 text-pretty leading-relaxed`}>
+        </h3>
+        <p className={`${poppins.className} text-xs sm:text-sm font-normal text-zinc-400 leading-relaxed line-clamp-3`}>
           {description}
         </p>
       </div>
+      
     </div>
   );
 };
@@ -54,6 +61,30 @@ const MuLearnAchievements = () => {
   const container = useRef<HTMLDivElement>(null);
   const [achievements, setAchievements] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  // Auto-scroll
+  useEffect(() => {
+    const featured = achievements.filter((a) => a.is_featured === true);
+    if (featured.length > 1) {
+      const interval = setInterval(() => {
+        setCurrentIndex((prev) => (prev + 1) % featured.length);
+      }, 5000);
+      return () => clearInterval(interval);
+    }
+  }, [achievements]);
+
+  const handleNext = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const featured = achievements.filter((a) => a.is_featured === true);
+    setCurrentIndex((prev) => (prev + 1) % featured.length);
+  };
+
+  const handlePrev = (e?: React.MouseEvent) => {
+    if (e) e.stopPropagation();
+    const featured = achievements.filter((a) => a.is_featured === true);
+    setCurrentIndex((prev) => (prev - 1 + featured.length) % featured.length);
+  };
 
   useEffect(() => {
     const fetchAchievements = async () => {
@@ -108,8 +139,12 @@ const MuLearnAchievements = () => {
     );
   }, { scope: container });
 
-  const featured = achievements.find((a) => a.is_featured === true) || achievements[0] || null;
-  const others = achievements.filter((a) => a !== featured);
+  let featured = achievements.filter((a) => a.is_featured === true);
+  if (featured.length === 0 && achievements.length > 0) {
+    featured = [achievements[0]];
+  }
+  const others = achievements.filter((a) => !featured.includes(a));
+  const currentFeatured = featured.length > 0 ? featured[currentIndex] : null;
 
   return (
     <div ref={container} className="w-full overflow-hidden pb-10">
@@ -131,40 +166,72 @@ const MuLearnAchievements = () => {
         {(
           isLoading ? (
             <Skeleton className="mu-ach-featured h-[400px] w-full rounded-2xl bg-white/5" />
-          ) : featured ? (
-            <div className="mu-ach-featured relative z-10 flex flex-col lg:flex-row w-full bg-[#080808] rounded-2xl md:rounded-[1.25rem] border border-zinc-800 overflow-hidden shadow-2xl ">
+          ) : currentFeatured ? (
+            <div className="mu-ach-featured relative z-10 flex flex-col lg:flex-row w-full bg-[#080808] rounded-2xl md:rounded-[1.25rem] border border-zinc-800 overflow-hidden shadow-2xl lg:h-[420px]">
               
               {/* Left Content */}
-              <div className="flex flex-col items-start justify-center p-6 md:p-8 lg:p-10 w-full lg:w-[45%] bg-[#080808]">
+              <div className="flex flex-col items-start justify-center p-8 md:p-12 lg:p-16 w-full lg:w-[45%] bg-[#080808]">
                 <div className="flex flex-col items-start w-full">
-                  <div className="flex items-center gap-[4px] mb-2 tracking-widest">
+                  <div className="flex items-center gap-[6px] mb-2 tracking-widest">
                     <span className={`${enigma.className} text-[10px] md:text-xs text-white uppercase font-bold`}>LATEST</span>
                     <span className={`${enigma.className} text-[10px] md:text-xs text-white uppercase font-bold`}>ACHIEVEMENT</span>
                   </div>
                   
-                  <div className="w-full h-[1px] bg-zinc-400 mb-3" /> 
+                  <div className="w-full h-[1px] bg-zinc-400 mb-4" /> 
                   
-                  <h3 className={`${poppins.className} text-2xl sm:text-3xl md:text-4xl text-white leading-tight tracking-wide mb-2`}>
-                    {featured.title}
+                  <h3 className={`${poppins.className} text-[2rem] sm:text-3xl md:text-4xl lg:text-[2.5rem] text-white leading-tight tracking-wide mb-2 line-clamp-3`}>
+                    {currentFeatured.title}
                   </h3>
                   
-                  <div className="w-full h-[1px] bg-zinc-400 mt-3 mb-3" /> 
+                  <div className="w-full h-[1px] bg-zinc-400 mt-4 mb-4" /> 
                   
-                  <p className={`${poppins.className} text-xs sm:text-sm md:text-base text-zinc-400 leading-relaxed mb-2`}>
-                    {featured.description}
+                  <p className={`${poppins.className} text-sm sm:text-base text-zinc-400 leading-relaxed mb-4 line-clamp-4`}>
+                    {currentFeatured.description}
                   </p>
                 </div>
               </div>
 
               {/* Right Image */}
-              <div className="w-full lg:w-[55%] h-56 sm:h-64 lg:h-auto relative bg-[#080808]">
+              <div className="w-full lg:w-[55%] h-64 sm:h-80 lg:h-full relative bg-[#080808] overflow-hidden">
                 {/* Fading gradient edge for smooth blend on desktop */}
                 <div className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#080808] via-[#080808]/80 to-transparent z-10" />
                 <img 
-                  src={featured.cover_image || featured.image || "/agni.png"} 
-                  alt={featured.title} 
+                  src={currentFeatured.cover_image || currentFeatured.image || "/agni.png"} 
+                  alt={currentFeatured.title} 
                   className="w-full h-full object-cover grayscale opacity-75"
                 />
+
+                {/* Carousel Navigation Buttons */}
+                {featured.length > 1 && (
+                  <div className="absolute bottom-4 right-4 z-20 flex gap-2">
+                    <Button 
+                      onClick={handlePrev}
+                      size="icon"
+                      className="bg-black/50 hover:bg-black text-white rounded-full backdrop-blur-sm border border-white/20 w-10 h-10 transition-colors"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </Button>
+                    <Button 
+                      onClick={handleNext}
+                      size="icon"
+                      className="bg-black/50 hover:bg-black text-white rounded-full backdrop-blur-sm border border-white/20 w-10 h-10 transition-colors"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </Button>
+                  </div>
+                )}
+                
+                {/* Pagination Indicators */}
+                {featured.length > 1 && (
+                  <div className="absolute bottom-6 left-6 lg:left-8 z-20 flex gap-2">
+                    {featured.map((_, idx) => (
+                      <div 
+                        key={idx} 
+                        className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "w-6 bg-white" : "w-1.5 bg-white/40"}`}
+                      />
+                    ))}
+                  </div>
+                )}
               </div>
             </div>
           ) : null

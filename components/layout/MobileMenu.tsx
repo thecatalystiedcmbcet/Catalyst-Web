@@ -13,7 +13,7 @@ const ALL_LINKS = [
   { page: "Achievements", path: "/achievements" },
   { page: "Web Team", path: "/dev-team" },
   {
-    page: "MuLearn",
+    page: "µLearn",
     path: "/mulearn",
     subLinks: [
       { page: "Execom", path: "/mulearn/execom" },
