@@ -83,6 +83,7 @@ import {
 // ==========================================
 const eventFormSchema = z.object({
   title: z.string().min(2, "Title must be at least 2 characters"),
+  logoUrl: z.string().optional(),
   coverImage: z.string().min(1, "A cover image is required"),
   description: z.string().min(5, "Description must be at least 5 characters"),
   registrationUrl: z.string().url("Must be a valid registration URL").or(z.literal("")).optional(),
@@ -178,6 +179,12 @@ export default function AdminEventsPage() {
   const [coverProgress, setCoverProgress] = useState(0);
   const [coverPreview, setCoverPreview] = useState("");
 
+  // Logo Upload State
+  const [isLogoUploading, setIsLogoUploading] = useState(false);
+  const [logoProgress, setLogoProgress] = useState(0);
+  const [logoPreview, setLogoPreview] = useState("");
+  const [pendingLogoFile, setPendingLogoFile] = useState<File | null>(null);
+
   // File Upload State
   const [isRelatedUploading, setIsRelatedUploading] = useState(false);
   const [relatedProgress, setRelatedProgress] = useState(0);
@@ -208,6 +215,7 @@ export default function AdminEventsPage() {
     resolver: zodResolver(eventFormSchema),
     defaultValues: {
       title: "",
+      logoUrl: "",
       coverImage: "",
       description: "",
       registrationUrl: "",
@@ -227,6 +235,7 @@ export default function AdminEventsPage() {
     if (editingEvent) {
       reset({
         title: editingEvent.title,
+        logoUrl: editingEvent.logoUrl || "",
         coverImage: editingEvent.coverImage,
         description: editingEvent.description,
         registrationUrl: editingEvent.registrationUrl || "",
@@ -237,9 +246,11 @@ export default function AdminEventsPage() {
         relatedImages: editingEvent.relatedImages || [],
       });
       setCoverPreview(editingEvent.coverImage);
+      setLogoPreview(editingEvent.logoUrl || "");
     } else {
       reset({
         title: "",
+        logoUrl: "",
         coverImage: "",
         description: "",
         registrationUrl: "",
@@ -250,9 +261,13 @@ export default function AdminEventsPage() {
         relatedImages: [],
       });
       setCoverPreview("");
+      setLogoPreview("");
     }
     setCoverProgress(0);
     setIsCoverUploading(false);
+    setLogoProgress(0);
+    setIsLogoUploading(false);
+    setPendingLogoFile(null);
     setRelatedProgress(0);
     setIsRelatedUploading(false);
     setPendingCoverFile(null);
@@ -276,6 +291,27 @@ export default function AdminEventsPage() {
         clearInterval(interval);
         setIsCoverUploading(false);
         setValue("coverImage", tempUrl, { shouldValidate: true });
+      }
+    }, 60);
+  };
+
+  // Logo Photo Selection
+  const handleLogoSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const tempUrl = URL.createObjectURL(file);
+    setLogoPreview(tempUrl);
+    setPendingLogoFile(file);
+    setIsLogoUploading(true);
+    setLogoProgress(0);
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += 25;
+      setLogoProgress(progress);
+      if (progress >= 100) {
+        clearInterval(interval);
+        setIsLogoUploading(false);
+        setValue("logoUrl", tempUrl, { shouldValidate: true });
       }
     }, 60);
   };
@@ -330,6 +366,7 @@ export default function AdminEventsPage() {
       startTransition(async () => {
         try {
           let finalCoverUrl = data.coverImage;
+          let finalLogoUrl = data.logoUrl;
           let finalRelatedUrls = data.relatedImages;
 
           // Upload cover if a new file was staged
@@ -337,6 +374,13 @@ export default function AdminEventsPage() {
             setIsCoverUploading(true);
             finalCoverUrl = await uploadFile(pendingCoverFile, "events/covers");
             setIsCoverUploading(false);
+          }
+
+          // Upload logo if a new file was staged
+          if (pendingLogoFile) {
+            setIsLogoUploading(true);
+            finalLogoUrl = await uploadFile(pendingLogoFile, "events/logos");
+            setIsLogoUploading(false);
           }
 
           // Upload any staged related images, replacing local blob URLs with CDN URLs
@@ -359,6 +403,7 @@ export default function AdminEventsPage() {
           const formattedData = {
             ...data,
             coverImage: finalCoverUrl,
+            logoUrl: finalLogoUrl,
             relatedImages: finalRelatedUrls,
             startDate: new Date(data.startDate).toISOString(),
             endDate: new Date(data.endDate).toISOString(),
@@ -374,16 +419,18 @@ export default function AdminEventsPage() {
           setIsFormOpen(false);
           setEditingEvent(null);
           setPendingCoverFile(null);
+          setPendingLogoFile(null);
           setPendingRelatedFiles([]);
         } catch (err) {
           console.error(err);
           toast.error("Failed to save event. Check console for details.");
           setIsCoverUploading(false);
+          setIsLogoUploading(false);
           setIsRelatedUploading(false);
         }
       });
     },
-    [pendingCoverFile, pendingRelatedFiles, editingEvent, uploadFile, updateEvent, addEvent]
+    [pendingCoverFile, pendingLogoFile, pendingRelatedFiles, editingEvent, uploadFile, updateEvent, addEvent]
   );
 
   // Delete Action
@@ -921,6 +968,54 @@ export default function AdminEventsPage() {
                   onCheckedChange={(val) => setValue("isFeatured", val)}
                 />
               </div>
+            </div>
+
+            {/* Logo Image Upload (Simulated progress) */}
+            <div className="space-y-1">
+              <label className="text-xs font-semibold text-white/70">Event Logo (Optional)</label>
+              <div className="flex gap-4 items-center p-3 bg-[#141414] rounded-lg border border-white/10">
+                <div className="relative h-20 w-20 shrink-0 rounded-md border border-white/10 bg-white/5 flex items-center justify-center overflow-hidden">
+                  {logoPreview ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={logoPreview} alt="Logo Preview" className="h-full w-full object-contain p-1" />
+                  ) : (
+                    <ImageIcon className="h-6 w-6 text-white/20" />
+                  )}
+                  {isLogoUploading && (
+                    <div className="absolute inset-0 bg-black/60 flex items-center justify-center text-xs font-bold text-white">
+                      {logoProgress}%
+                    </div>
+                  )}
+                </div>
+
+                <div className="flex-1 space-y-2">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="logo-upload-file"
+                    onChange={handleLogoSelect}
+                    disabled={isLogoUploading}
+                    className="hidden"
+                  />
+                  <label
+                    htmlFor="logo-upload-file"
+                    className={`inline-flex items-center gap-1.5 px-3 py-2 bg-white/5 border border-white/10 hover:bg-white/10 rounded-lg text-xs font-medium text-white/80 cursor-pointer ${
+                      isLogoUploading ? "pointer-events-none opacity-50" : ""
+                    }`}
+                  >
+                    <Upload className="h-3 w-3" />
+                    Upload Logo
+                  </label>
+                  {isLogoUploading && (
+                    <div className="w-full bg-white/10 h-1 rounded-full overflow-hidden">
+                      <div className="bg-white h-full" style={{ width: `${logoProgress}%` }} />
+                    </div>
+                  )}
+                </div>
+              </div>
+              {errors.logoUrl && (
+                <p className="text-[11px] text-red-400 font-semibold">{errors.logoUrl.message}</p>
+              )}
             </div>
 
             {/* Cover Image Upload (Simulated progress) */}

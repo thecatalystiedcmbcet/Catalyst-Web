@@ -9,7 +9,7 @@ export default async function Events() {
     const supabase = createPublicClient();
     const { data, error } = await supabase
       .from("events")
-      .select("id, title, cover_image")
+      .select("id, title, cover_image, logo_url")
       .order("start_date", { ascending: false })
       .limit(10); // Show up to 10 latest events in the marquee
 

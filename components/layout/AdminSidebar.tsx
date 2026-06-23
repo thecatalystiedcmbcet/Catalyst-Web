@@ -13,6 +13,8 @@ import {
   ArrowLeft,
   Settings,
   Shield,
+  BarChart,
+  Rocket,
 } from "lucide-react";
 
 import {
@@ -73,9 +75,19 @@ const navItems = [
     icon: Calendar,
   },
   {
+    title: "Campus Statistics",
+    url: "/admin/campus-statistics",
+    icon: BarChart,
+  },
+  {
     title: "Global Settings",
     url: "/admin/settings",
     icon: Settings,
+  },
+  {
+    title: "Our Pioneers",
+    url: "/admin/pioneers",
+    icon: Rocket,
   },
 ];
 

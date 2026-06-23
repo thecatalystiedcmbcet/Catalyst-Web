@@ -52,8 +52,8 @@ const CampusSnapshotClient: React.FC<CampusSnapshotClientProps> = ({ stats, topL
       { opacity: 1, y: 0, duration: 0.8, ease: "power3.out" }
     ).fromTo(
       ".snapshot-line",
-      { height: 0 },
-      { height: "100%", duration: 1.5, ease: "power3.inOut" },
+      { scaleY: 0 },
+      { scaleY: 1, duration: 1.5, ease: "power3.inOut" },
       "-=0.4"
     ).fromTo(
       ".snapshot-item",
@@ -80,12 +80,14 @@ const CampusSnapshotClient: React.FC<CampusSnapshotClientProps> = ({ stats, topL
           </div>
 
           <div className="relative mt-4 md:mt-8 w-full">
-            <div className="snapshot-line absolute left-[17px] md:left-[21px] top-5 bottom-5 w-1 bg-white origin-top z-0 shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
-
             <div className="flex flex-col gap-10 md:gap-14 relative z-10">
               {stats.length > 0 ? (
                 stats.map((item, index) => (
                   <div key={item.id || index} className="snapshot-item relative flex items-start gap-6 md:gap-8 group">
+                    {/* Connecting Line */}
+                    {index !== stats.length - 1 && (
+                      <div className="snapshot-line absolute left-[20px] md:left-[24px] top-[20px] md:top-[24px] bottom-[calc(-2.5rem-20px)] md:bottom-[calc(-3.5rem-24px)] w-[4px] bg-white -translate-x-1/2 origin-top z-0 shadow-[0_0_10px_rgba(255,255,255,0.8)]" />
+                    )}
 
                     {/* Timeline Node */}
                     <div className="relative z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#0a0a0a] flex items-center justify-center border border-white/30 text-white shrink-0 group-hover:border-white transition-colors duration-300">

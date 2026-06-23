@@ -19,6 +19,7 @@ export type EventStatus = "upcoming" | "ongoing" | "completed" | "cancelled";
 export interface Event {
   id: string;
   title: string;
+  logoUrl?: string;
   coverImage: string;
   description: string;
   registrationUrl?: string;
@@ -67,6 +68,25 @@ export interface TimelineItem {
   title: string;
   description: string;
   image: string;
+  sort_order: number;
+}
+
+export interface CampusStatistic {
+  id: string;
+  value: string;
+  title: string;
+  description: string;
+  sort_order: number;
+}
+
+export interface Pioneer {
+  id: string;
+  name: string;
+  subtitle: string;
+  logo_url: string;
+  instagram_url: string;
+  linkedin_url: string;
+  portfolio_url: string;
   sort_order: number;
 }
 
@@ -134,6 +154,7 @@ const mapMember = (row: any): Member => ({
 const mapEvent = (row: any): Event => ({
   id: row.id,
   title: row.title,
+  logoUrl: row.logo_url ?? undefined,
   coverImage: row.cover_image ?? "",
   description: row.description ?? "",
   registrationUrl: row.registration_url ?? undefined,
@@ -175,6 +196,27 @@ const mapTimelineItem = (row: any): TimelineItem => ({
   sort_order: row.sort_order ?? 0,
 });
 
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapCampusStatistic = (row: any): CampusStatistic => ({
+  id: row.id,
+  value: row.value ?? "",
+  title: row.title ?? "",
+  description: row.description ?? "",
+  sort_order: row.sort_order ?? 0,
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapPioneer = (row: any): Pioneer => ({
+  id: row.id,
+  name: row.name ?? "",
+  subtitle: row.subtitle ?? "",
+  logo_url: row.logo_url ?? "",
+  instagram_url: row.instagram_url ?? "",
+  linkedin_url: row.linkedin_url ?? "",
+  portfolio_url: row.portfolio_url ?? "",
+  sort_order: row.sort_order ?? 0,
+});
+
 // ==========================================
 // ZUSTAND STATE INTERFACE
 // ==========================================
@@ -189,6 +231,8 @@ interface AdminState {
   siteSettings: SiteSettings | null;
   matrixItems: MatrixItem[];
   timelineItems: TimelineItem[];
+  campusStatistics: CampusStatistic[];
+  pioneers: Pioneer[];
 
   // Loading guards — prevent duplicate fetches per module
   membersLoaded: boolean;
@@ -200,6 +244,8 @@ interface AdminState {
   settingsLoaded: boolean;
   matrixLoaded: boolean;
   timelineLoaded: boolean;
+  campusStatisticsLoaded: boolean;
+  pioneersLoaded: boolean;
 
   // Loading status for UI spinners
   isLoadingMembers: boolean;
@@ -209,6 +255,8 @@ interface AdminState {
   isLoadingSettings: boolean;
   isLoadingMatrix: boolean;
   isLoadingTimeline: boolean;
+  isLoadingCampusStatistics: boolean;
+  isLoadingPioneers: boolean;
 
   // ---- FETCH ACTIONS (load from Supabase if not already loaded) ----
   fetchMembers: () => Promise<void>;
@@ -218,6 +266,8 @@ interface AdminState {
   fetchSettings: () => Promise<void>;
   fetchMatrixItems: () => Promise<void>;
   fetchTimelineItems: () => Promise<void>;
+  fetchCampusStatistics: () => Promise<void>;
+  fetchPioneers: () => Promise<void>;
 
   // ---- FILE UPLOAD HELPER ----
   uploadFile: (file: File, folder: string) => Promise<string>;
@@ -260,6 +310,18 @@ interface AdminState {
   deleteTimelineItem: (id: string) => Promise<void>;
   reorderTimelineItems: (items: TimelineItem[]) => Promise<void>;
 
+  // ---- CAMPUS STATISTICS CRUD ----
+  addCampusStatistic: (item: Omit<CampusStatistic, "id">) => Promise<void>;
+  updateCampusStatistic: (id: string, updates: Partial<CampusStatistic>) => Promise<void>;
+  deleteCampusStatistic: (id: string) => Promise<void>;
+  reorderCampusStatistics: (items: CampusStatistic[]) => Promise<void>;
+
+  // ---- PIONEERS CRUD ----
+  addPioneer: (item: Omit<Pioneer, "id">) => Promise<void>;
+  updatePioneer: (id: string, updates: Partial<Pioneer>) => Promise<void>;
+  deletePioneer: (id: string) => Promise<void>;
+  reorderPioneers: (items: Pioneer[]) => Promise<void>;
+
   // ---- EXECOM MEMBERS MANAGEMENT ----
   addMemberToSection: (sectionId: string, memberId: string, role?: string) => Promise<void>;
   updateMemberRoleInSection: (sectionId: string, memberId: string, role: string) => Promise<void>;
@@ -281,6 +343,8 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   siteSettings: null,
   matrixItems: [],
   timelineItems: [],
+  campusStatistics: [],
+  pioneers: [],
 
   membersLoaded: false,
   eventsLoaded: false,
@@ -291,6 +355,8 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   settingsLoaded: false,
   matrixLoaded: false,
   timelineLoaded: false,
+  campusStatisticsLoaded: false,
+  pioneersLoaded: false,
 
   isLoadingMembers: false,
   isLoadingEvents: false,
@@ -299,6 +365,8 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   isLoadingSettings: false,
   isLoadingMatrix: false,
   isLoadingTimeline: false,
+  isLoadingCampusStatistics: false,
+  isLoadingPioneers: false,
 
   // ==========================================
   // FETCH ACTIONS
@@ -531,6 +599,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       .from("events")
       .insert({
         title: newEvent.title,
+        logo_url: newEvent.logoUrl || null,
         cover_image: newEvent.coverImage,
         description: newEvent.description,
         registration_url: newEvent.registrationUrl || null,
@@ -555,6 +624,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       .from("events")
       .update({
         ...(updates.title !== undefined && { title: updates.title }),
+        ...(updates.logoUrl !== undefined && { logo_url: updates.logoUrl || null }),
         ...(updates.coverImage !== undefined && { cover_image: updates.coverImage }),
         ...(updates.description !== undefined && { description: updates.description }),
         ...(updates.registrationUrl !== undefined && {
@@ -941,4 +1011,127 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
       )
     );
   },
+
+  // ==========================================
+  // CAMPUS STATISTICS CRUD & FETCH
+  // ==========================================
+  fetchCampusStatistics: async () => {
+    if (get().campusStatisticsLoaded) return;
+    set({ isLoadingCampusStatistics: true });
+    try {
+      const { data, error } = await supabase
+        .from("campus_statistics")
+        .select("*")
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      set({ campusStatistics: (data || []).map(mapCampusStatistic), campusStatisticsLoaded: true });
+    } catch (error) {
+      console.error("Error fetching campus statistics:", error);
+    } finally {
+      set({ isLoadingCampusStatistics: false });
+    }
+  },
+
+  addCampusStatistic: async (item) => {
+    const { data, error } = await supabase
+      .from("campus_statistics")
+      .insert({ ...item })
+      .select("*")
+      .single();
+    if (error) throw error;
+    set((state) => ({ campusStatistics: [...state.campusStatistics, mapCampusStatistic(data)] }));
+  },
+
+  updateCampusStatistic: async (id, updates) => {
+    set((state) => ({
+      campusStatistics: state.campusStatistics.map((m) => (m.id === id ? { ...m, ...updates } : m)),
+    }));
+    const { error } = await supabase
+      .from("campus_statistics")
+      .update(updates)
+      .eq("id", id);
+    if (error) throw error;
+  },
+
+  deleteCampusStatistic: async (id) => {
+    set((state) => ({
+      campusStatistics: state.campusStatistics.filter((m) => m.id !== id),
+    }));
+    const { error } = await supabase.from("campus_statistics").delete().eq("id", id);
+    if (error) throw error;
+  },
+
+  reorderCampusStatistics: async (items) => {
+    set({ campusStatistics: items });
+    await Promise.all(
+      items.map((m, index) =>
+        supabase
+          .from("campus_statistics")
+          .update({ sort_order: index })
+          .eq("id", m.id)
+      )
+    );
+  },
+
+  // ==========================================
+  // PIONEERS CRUD & FETCH
+  // ==========================================
+  fetchPioneers: async () => {
+    if (get().pioneersLoaded) return;
+    set({ isLoadingPioneers: true });
+    try {
+      const { data, error } = await supabase
+        .from("pioneers")
+        .select("*")
+        .order("sort_order", { ascending: true });
+      if (error) throw error;
+      set({ pioneers: (data || []).map(mapPioneer), pioneersLoaded: true });
+    } catch (error) {
+      console.error("Error fetching pioneers:", error);
+    } finally {
+      set({ isLoadingPioneers: false });
+    }
+  },
+
+  addPioneer: async (item) => {
+    const { data, error } = await supabase
+      .from("pioneers")
+      .insert({ ...item })
+      .select("*")
+      .single();
+    if (error) throw error;
+    set((state) => ({ pioneers: [...state.pioneers, mapPioneer(data)] }));
+  },
+
+  updatePioneer: async (id, updates) => {
+    set((state) => ({
+      pioneers: state.pioneers.map((m) => (m.id === id ? { ...m, ...updates } : m)),
+    }));
+    const { error } = await supabase
+      .from("pioneers")
+      .update(updates)
+      .eq("id", id);
+    if (error) throw error;
+  },
+
+  deletePioneer: async (id) => {
+    set((state) => ({
+      pioneers: state.pioneers.filter((m) => m.id !== id),
+    }));
+    const { error } = await supabase.from("pioneers").delete().eq("id", id);
+    if (error) throw error;
+  },
+
+  reorderPioneers: async (items) => {
+    set({ pioneers: items });
+    await Promise.all(
+      items.map((m, index) =>
+        supabase
+          .from("pioneers")
+          .update({ sort_order: index })
+          .eq("id", m.id)
+      )
+    );
+  },
 }));
+

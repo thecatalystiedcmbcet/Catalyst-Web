@@ -69,6 +69,8 @@ export default function AdminLayout({
     sectionLabel = "µLearn Execom";
   } else if (pathname.includes("/admin/dev-team")) {
     sectionLabel = "Web Team";
+  } else if (pathname.includes("/admin/campus-statistics")) {
+    sectionLabel = "Campus Statistics";
   }
 
   return (
