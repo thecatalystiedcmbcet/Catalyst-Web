@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Suspense } from "react";
 import localFont from "next/font/local";
+import GlobalCanvas from "@/components/shared/GlobalCanvas";
 
 import DynamicSmoothScrolling from "@/components/DynamicSmoothScrolling";
 import "./globals.css";

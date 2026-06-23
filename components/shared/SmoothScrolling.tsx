@@ -30,9 +30,10 @@ function SmoothScrollingContent() {
         touchMultiplier: 1.2,
         infinite: false,
         wheelMultiplier: 1,
+        autoRaf: true,
       }}
     >
-      <LenisScrollTriggerSync />
+      {/* <LenisScrollTriggerSync /> */}
     </ReactLenis>
   );
 }
@@ -53,21 +54,7 @@ function LenisScrollTriggerSync() {
     ScrollTrigger.update();
   });
 
-  useEffect(() => {
-    if (!lenis) return;
-
-    const update = (time: number) => {
-      lenis.raf(time * 1000);
-    };
-
-    gsap.ticker.add(update);
-    gsap.ticker.lagSmoothing(0);
-
-    return () => {
-      gsap.ticker.remove(update);
-    };
-  }, [lenis]);
-
+  // Manual GSAP ticker syncing removed as requested for testing
   return null;
 }
 
