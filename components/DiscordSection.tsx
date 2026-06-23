@@ -1,8 +1,7 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { supabase } from "@/lib/supabaseClient";
 import { ArrowUpRight } from "lucide-react";
 import localFont from "next/font/local";
 
@@ -18,23 +17,13 @@ const CabnetFont = localFont({
   style: "normal",
 });
 
-const DiscordSection = () => {
-  const [discordUrl, setDiscordUrl] = useState("#");
-
-  useEffect(() => {
-    const fetchLinks = async () => {
-      const { data } = await supabase
-        .from("site_settings")
-        .select("*")
-        .eq("id", "social_links")
-        .single();
-      if (data && data.discord_url) {
-        setDiscordUrl(data.discord_url);
-      }
-    };
-    fetchLinks();
-  }, []);
-
+// Accept discord URL as a prop; caller fetches it server-side.
+// Falls back to the real URL so there's never a "#" flash.
+const DiscordSection = ({
+  discordUrl = "https://discord.gg/catalyst",
+}: {
+  discordUrl?: string;
+}) => {
   return (
     <div className="flex flex-col md:flex-row items-center justify-center relative w-full -mt-[62px] md:-mt-[248px] overflow-hidden md:overflow-visible pt-25 md:pt-0">
       <div className="w-full relative md:absolute flex flex-col items-center md:items-start text-center md:text-left md:pl-10 lg:bottom-20 xl:pl-20 z-10 px-6 md:px-0">
@@ -45,8 +34,8 @@ const DiscordSection = () => {
           Here, you can find more about our campus events, tasks and
           many more interesting easter eggs!
         </h1>
-        <Link 
-          href={discordUrl} 
+        <Link
+          href={discordUrl}
           target="_blank"
           className="group mt-6 md:mt-8 px-6 py-3.5 bg-white text-black font-semibold text-sm md:text-base rounded-xl hover:bg-gray-200 transition-all duration-300 flex items-center gap-2 drop-shadow-lg w-fit"
         >

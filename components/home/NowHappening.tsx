@@ -53,31 +53,37 @@ const NowHappening = () => {
     }
   }, [featuredEvents.length]);
 
+  // Animate header — always safe, elements are always present
   useGSAP(() => {
-    const tl = gsap.timeline({
+    gsap.timeline({
       scrollTrigger: {
         trigger: container.current,
         start: "top 80%",
         once: true,
       },
-    });
+    })
+      .fromTo(
+        ".nh-watermark",
+        { y: 50, opacity: 0 },
+        { y: 0, opacity: 1, duration: 1, ease: "power3.out" }
+      )
+      .fromTo(
+        ".nh-title",
+        { y: 30, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
+        "-=0.6"
+      );
+  }, { scope: container });
 
-    tl.fromTo(
-      ".nh-watermark",
-      { y: 50, opacity: 0 },
-      { y: 0, opacity: 1, duration: 1, ease: "power3.out" }
-    ).fromTo(
-      ".nh-title",
-      { y: 30, opacity: 0 },
-      { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
-      "-=0.6"
-    ).fromTo(
+  // Animate the card only after data has loaded and the element exists in the DOM
+  useGSAP(() => {
+    if (!featuredEvents.length) return;
+    gsap.fromTo(
       ".nh-card",
       { y: 40, opacity: 0, scale: 0.98 },
-      { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out" },
-      "-=0.4"
+      { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out" }
     );
-  }, { scope: container });
+  }, { scope: container, dependencies: [featuredEvents.length] });
 
   const handleNext = (e?: React.MouseEvent) => {
     if (e) e.stopPropagation();

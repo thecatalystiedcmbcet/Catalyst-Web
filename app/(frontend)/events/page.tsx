@@ -130,7 +130,7 @@ const Card = ({ event }: { event: any }) => (
 );
 
 /* ---------------- PAST CARD ---------------- */
-const Card2 = ({ event }: { event: any }) => (
+const Card2 = ({ event, priority = false }: { event: any; priority?: boolean }) => (
   <Link href={`/events/${event.slug || event.id}`} className="block relative rounded-2xl p-[0.5px]">
     <div
       className="absolute inset-0 rounded-2xl"
@@ -145,6 +145,8 @@ const Card2 = ({ event }: { event: any }) => (
           alt={event.title}
           fill
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          priority={priority}
+          loading={priority ? "eager" : "lazy"}
           className="object-cover opacity-50"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
@@ -214,7 +216,7 @@ export default async function Events() {
             </p>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
               {ongoingEvents.map((event, index) => (
-                <Card2 key={`${event.id}-${index}`} event={event} />
+                <Card2 key={`${event.id}-${index}`} event={event} priority={index === 0} />
               ))}
             </div>
           </>
@@ -228,7 +230,7 @@ export default async function Events() {
             </p>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
               {upcomingEvents.map((event, index) => (
-                <Card2 key={`${event.id}-${index}`} event={event} />
+                <Card2 key={`${event.id}-${index}`} event={event} priority={index === 0} />
               ))}
             </div>
           </>
@@ -242,7 +244,7 @@ export default async function Events() {
             </p>
             <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-3">
               {completedEvents.map((event, index) => (
-                <Card2 key={`${event.id}-${index}`} event={event} />
+                <Card2 key={`${event.id}-${index}`} event={event} priority={index < 3} />
               ))}
             </div>
           </>

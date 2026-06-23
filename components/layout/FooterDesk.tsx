@@ -1,31 +1,17 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
-import { supabase } from "@/lib/supabaseClient";
+import type { SocialLinks } from "@/components/home/Footer";
 
-const FooterDesk = () => {
-  const [socialLinks, setSocialLinks] = useState({
-    instagram_url: "#",
-    linkedin_url: "#",
-    discord_url: "#",
-    youtube_url: "#",
-  });
+const DEFAULT_LINKS: SocialLinks = {
+  instagram_url: "https://www.instagram.com/catalyst_mbcet/",
+  linkedin_url: "https://www.linkedin.com/company/catalyst-mbcet/",
+  discord_url: "https://discord.gg/catalyst",
+  youtube_url: "https://www.youtube.com/@catalystmbcet",
+};
 
-  useEffect(() => {
-    const fetchLinks = async () => {
-      const { data } = await supabase
-        .from("site_settings")
-        .select("*")
-        .eq("id", "social_links")
-        .single();
-      if (data) {
-        setSocialLinks(data);
-      }
-    };
-    fetchLinks();
-  }, []);
-
+const FooterDesk = ({ socialLinks = DEFAULT_LINKS }: { socialLinks?: SocialLinks }) => {
   return (
     <div className="relative rounded-2xl p-[0.5px] md:mx-15 mb-5 ">
       {/* Border gradient */}
