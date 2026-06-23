@@ -1,41 +1,35 @@
 import React from "react";
 import Strap from "@/components/features/Strap";
 import localFont from "next/font/local";
+import { createClient } from "@/lib/supabase/server";
 
 const enigmaFont = localFont({
   src: "../public/fonts/enigma.otf",
   display: "swap",
 });
 
-const stats = [
-  {
-    value: "#1",
-    title: "THE BEST COLLEGE",
-    desc: "We are the proud toppers in GTech μLearn"
-  },
-  {
-    value: "20,00,000+",
-    title: "KARMA POINTS MINED",
-    desc: "The best in the platform"
-  },
-  {
-    value: "2,200+",
-    title: "ACTIVE LEARNERS",
-    desc: "The most by any campus"
-  },
-  {
-    value: "110+",
-    title: "INTEREST GROUPS",
-    desc: "The highest number of IGs ever"
-  },
-  {
-    value: "3",
-    title: "INTERNS",
-    desc: "Contributing towards the Core"
-  }
-];
 
-const CampusStatistics = () => {
+
+const CampusStatistics = async () => {
+  const supabase = await createClient();
+  let data = null;
+  
+  try {
+    const response = await supabase
+      .from("campus_statistics")
+      .select("*")
+      .order("sort_order", { ascending: true });
+    data = response.data;
+  } catch (error) {
+    console.error("Failed to fetch campus statistics:", error);
+  }
+
+  const stats = data || [];
+
+  if (stats.length === 0) {
+    return null; // Return nothing if there are no stats configured
+  }
+
   return (
     <section className="relative w-full mt-[120px] md:mt-[350px] pt-24 md:pt-32 pb-[120px] md:pb-[350px]">
       {/* Tilted Background and Ribbons */}
@@ -86,12 +80,14 @@ const CampusStatistics = () => {
 
         {/* Timeline */}
         <div className="relative mt-24 md:mt-32 w-full max-w-3xl pl-4 md:pl-16">
-          {/* Vertical Line */}
-          <div className="absolute left-[34px] md:left-[86px] top-2 bottom-2 w-[4px] bg-white rounded-full shadow-[0_0_15px_rgba(255,255,255,0.5)]" />
-
           <div className="flex flex-col gap-16 md:gap-20 relative">
             {stats.map((stat, idx) => (
               <div key={idx} className="relative flex items-start gap-8 md:gap-12 group">
+                {/* Connecting Line */}
+                {idx !== stats.length - 1 && (
+                  <div className="absolute left-[20px] md:left-[24px] top-[20px] md:top-[24px] bottom-[calc(-4rem-20px)] md:bottom-[calc(-5rem-24px)] w-[4px] bg-white -translate-x-1/2 shadow-[0_0_15px_rgba(255,255,255,0.5)] z-0" />
+                )}
+
                 {/* Timeline Node */}
                 <div className="relative z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#111] flex items-center justify-center border-2 border-white/40 text-white shrink-0 shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:border-white transition-colors duration-300">
                   <span className={`text-sm md:text-base ${enigmaFont.className}`}>μ</span>
@@ -104,7 +100,7 @@ const CampusStatistics = () => {
                     {stat.title}
                   </h3>
                   <p className={`font-normal text-white/80 text-sm md:text-base ${enigmaFont.className}`}>
-                    {stat.desc}
+                    {stat.description || stat.desc}
                   </p>
                 </div>
               </div>

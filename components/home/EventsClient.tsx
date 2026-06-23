@@ -40,6 +40,7 @@ export type BasicEvent = {
   id: string;
   title: string;
   cover_image: string;
+  logo_url?: string;
   slug?: string;
 };
 
@@ -103,7 +104,7 @@ export default function EventsClient({ events }: { events: BasicEvent[] }) {
               {displayEvents.map((evt) => (
                 <Link key={`${setIdx}-${evt.id}`} href={`/events/${evt.slug || evt.id}`}>
                   <EventCard 
-                    imgSrc={getValidImageUrl(evt.cover_image)} 
+                    imgSrc={getValidImageUrl(evt.logo_url || evt.cover_image)} 
                     alt={evt.title} 
                   />
                 </Link>
