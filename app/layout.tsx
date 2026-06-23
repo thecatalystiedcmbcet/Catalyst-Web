@@ -20,7 +20,7 @@ const monument = localFont({
   ],
   variable: "--font-monument",
   display: "swap",
-  preload: true,
+  preload: false,
 });
 
 // Only load the 4 weights actually used on the site (Regular, Medium, SemiBold, Bold).
@@ -34,6 +34,7 @@ const poppins = localFont({
   ],
   variable: "--font-poppins",
   display: "swap",
+  preload: false,
 });
 
 export const metadata: Metadata = {

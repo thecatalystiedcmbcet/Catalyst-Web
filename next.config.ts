@@ -48,6 +48,16 @@ const nextConfig: NextConfig = {
           },
         ],
       },
+      {
+        // Cache 3D model and HDR assets aggressively — they are large and immutable
+        source: "/(.*)\\.(glb|gltf|hdr|bin|exr)",
+        headers: [
+          {
+            key: "Cache-Control",
+            value: "public, max-age=31536000, immutable",
+          },
+        ],
+      },
     ];
   },
 };

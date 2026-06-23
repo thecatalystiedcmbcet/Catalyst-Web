@@ -1,33 +1,26 @@
 "use client";
-import React, { useRef } from 'react';
-import Link from 'next/link';
-import { FaInstagram, FaLinkedinIn, FaDiscord, FaYoutube } from 'react-icons/fa';
+import React, { useRef } from "react";
+import Link from "next/link";
+import { FaInstagram, FaLinkedinIn, FaDiscord, FaYoutube } from "react-icons/fa";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
-import { supabase } from "@/lib/supabaseClient";
 
-const Footer = () => {
+export type SocialLinks = {
+  instagram_url: string;
+  linkedin_url: string;
+  discord_url: string;
+  youtube_url: string;
+};
+
+const DEFAULT_LINKS: SocialLinks = {
+  instagram_url: "https://www.instagram.com/catalyst_mbcet/",
+  linkedin_url: "https://www.linkedin.com/company/catalyst-mbcet/",
+  discord_url: "https://discord.gg/catalyst",
+  youtube_url: "https://www.youtube.com/@catalystmbcet",
+};
+
+const Footer = ({ socialLinks = DEFAULT_LINKS }: { socialLinks?: SocialLinks }) => {
   const container = useRef<HTMLElement>(null);
-  const [socialLinks, setSocialLinks] = React.useState({
-    instagram_url: "#",
-    linkedin_url: "#",
-    discord_url: "#",
-    youtube_url: "#",
-  });
-
-  React.useEffect(() => {
-    const fetchLinks = async () => {
-      const { data } = await supabase
-        .from("site_settings")
-        .select("*")
-        .eq("id", "social_links")
-        .single();
-      if (data) {
-        setSocialLinks(data);
-      }
-    };
-    fetchLinks();
-  }, []);
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -58,13 +51,13 @@ const Footer = () => {
   return (
     <footer ref={container} className="w-full px-4 md:px-8 lg:px-12 pb-8 mt-20">
       <div className="footer-card bg-[#0f0f0f] rounded-[2.5rem] pt-20 px-8 md:px-16 pb-32 md:pb-[14vw] overflow-hidden relative flex flex-col items-center border border-neutral-800/50 shadow-2xl text-center">
-        
+
         {/* Top Section */}
         <div className="footer-content z-10 flex flex-col items-center space-y-6">
           <h2 className="text-white text-xl md:text-3xl font-primary font-normal tracking-widest uppercase">
             CATALYST MAR BASELIOS IEDC
           </h2>
-          
+
           <div className="flex gap-6 items-center justify-center mt-2">
             <Link href={socialLinks.instagram_url} target="_blank" className="text-gray-400 hover:text-white transition-colors">
               <FaInstagram className="w-5 h-5 md:w-6 md:h-6" />
