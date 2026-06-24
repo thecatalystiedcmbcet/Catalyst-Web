@@ -91,7 +91,68 @@ const eventFormSchema = z.object({
   endDate: z.string().min(1, "End date and time is required"),
   status: z.enum(["upcoming", "ongoing", "completed", "cancelled"]),
   isFeatured: z.boolean(),
+  isRegistrationOpen: z.boolean(),
   relatedImages: z.array(z.string()),
+}).superRefine((data, ctx) => {
+  if (!data.startDate || !data.endDate) return;
+
+  const start = new Date(data.startDate);
+  const end = new Date(data.endDate);
+  const now = new Date();
+
+  // 1. Chronological check
+  if (end <= start) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "End date must be after the start date",
+      path: ["endDate"],
+    });
+  }
+
+  // 2. Upcoming status check
+  if (data.status === "upcoming" && start <= now) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "An upcoming event's start date must be in the future",
+      path: ["startDate"],
+    });
+  }
+
+  // 3. Ongoing status checks
+  if (data.status === "ongoing") {
+    if (start > now) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "An ongoing event cannot have a start date in the future",
+        path: ["startDate"],
+      });
+    }
+    if (end < now) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        message: "An ongoing event cannot have an end date in the past",
+        path: ["endDate"],
+      });
+    }
+  }
+
+  // 4. Completed status check
+  if (data.status === "completed" && end > now) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "A completed event's end date must be in the past",
+      path: ["endDate"],
+    });
+  }
+
+  // 5. Registration open check
+  if (data.isRegistrationOpen && data.status !== "upcoming") {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      message: "Registration can only be open for upcoming events",
+      path: ["isRegistrationOpen"],
+    });
+  }
 });
 
 type EventFormValues = z.infer<typeof eventFormSchema>;
@@ -223,11 +284,16 @@ export default function AdminEventsPage() {
       endDate: "",
       status: "upcoming",
       isFeatured: false,
+      isRegistrationOpen: false,
       relatedImages: [],
     },
   });
 
   const watchIsFeatured = watch("isFeatured");
+  const watchIsRegistrationOpen = watch("isRegistrationOpen");
+  const watchStatus = watch("status");
+  const watchStartDate = watch("startDate");
+  const watchEndDate = watch("endDate");
   const watchRelatedImages = watch("relatedImages") || [];
 
   // Sync Form when Editing
@@ -243,6 +309,7 @@ export default function AdminEventsPage() {
         endDate: editingEvent.endDate.slice(0, 16),
         status: editingEvent.status,
         isFeatured: editingEvent.isFeatured,
+        isRegistrationOpen: editingEvent.isRegistrationOpen,
         relatedImages: editingEvent.relatedImages || [],
       });
       setCoverPreview(editingEvent.coverImage);
@@ -258,6 +325,7 @@ export default function AdminEventsPage() {
         endDate: "",
         status: "upcoming",
         isFeatured: false,
+        isRegistrationOpen: false,
         relatedImages: [],
       });
       setCoverPreview("");
@@ -273,6 +341,15 @@ export default function AdminEventsPage() {
     setPendingCoverFile(null);
     setPendingRelatedFiles([]);
   }, [editingEvent, isFormOpen, reset]);
+
+  // Force registration open to false if status is not upcoming
+  useEffect(() => {
+    if (watchStatus !== "upcoming") {
+      setValue("isRegistrationOpen", false);
+    }
+  }, [watchStatus, setValue]);
+
+
 
   // Cover Photo Selection — stage file and show local preview
   const handleCoverSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -946,8 +1023,8 @@ export default function AdminEventsPage() {
               </div>
             </div>
 
-            {/* Status & Featured Row */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-center">
+            {/* Status & Featured & Registration Row */}
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 items-start">
               <div className="space-y-1">
                 <label className="text-xs font-semibold text-white/70">Event Status</label>
                 <select
@@ -959,14 +1036,31 @@ export default function AdminEventsPage() {
                   <option value="completed">Completed</option>
                   <option value="cancelled">Cancelled</option>
                 </select>
+                {errors.status && (
+                  <p className="text-[11px] text-red-400 font-semibold">{errors.status.message}</p>
+                )}
               </div>
 
-              <div className="flex items-center justify-between sm:justify-end gap-3 pt-4 sm:pt-0">
-                <span className="text-xs font-semibold text-white/70">Featured Event</span>
+              <div className="flex items-center justify-between sm:justify-end gap-3 pt-2">
+                <span className="text-xs font-semibold text-white/70">Featured</span>
                 <Switch
                   checked={watchIsFeatured}
                   onCheckedChange={(val) => setValue("isFeatured", val)}
                 />
+              </div>
+
+              <div className="space-y-1 flex flex-col justify-center pt-2">
+                <div className="flex items-center justify-between sm:justify-end gap-3 w-full">
+                  <span className="text-xs font-semibold text-white/70">Registration Open</span>
+                  <Switch
+                    checked={watchIsRegistrationOpen}
+                    onCheckedChange={(val) => setValue("isRegistrationOpen", val)}
+                    disabled={watchStatus !== "upcoming"}
+                  />
+                </div>
+                {errors.isRegistrationOpen && (
+                  <p className="text-[11px] text-red-400 font-semibold text-right w-full">{errors.isRegistrationOpen.message}</p>
+                )}
               </div>
             </div>
 
