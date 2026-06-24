@@ -4,6 +4,7 @@ import Footer from "@/components/home/Footer";
 import type { SocialLinks } from "@/components/home/Footer";
 import { StickyBanner } from "@/components/ui/sticky-banner";
 import { createPublicClient } from "@/lib/supabase/public";
+import Link from "next/link";
 
 const DEFAULT_SOCIAL_LINKS: SocialLinks = {
   instagram_url: "https://www.instagram.com/catalyst_mbcet/",
@@ -11,6 +12,15 @@ const DEFAULT_SOCIAL_LINKS: SocialLinks = {
   discord_url: "https://discord.gg/catalyst",
   youtube_url: "https://www.youtube.com/@catalystmbcet",
 };
+
+interface RegistrationOpenEvent {
+  id: string;
+  title: string;
+  registration_url?: string;
+  status: string;
+  is_registration_open: boolean;
+  description: string;
+}
 
 async function getSocialLinks(): Promise<SocialLinks> {
   try {
@@ -26,6 +36,22 @@ async function getSocialLinks(): Promise<SocialLinks> {
   }
 }
 
+async function getRegistrationOpenEvents(): Promise<RegistrationOpenEvent[]> {
+  try {
+    const supabase = createPublicClient();
+    const { data } = await supabase
+      .from("events")
+      .select("id, title, registration_url, status, is_registration_open, description")
+      .in("status", ["upcoming", "ongoing"])
+      .eq("is_registration_open", true)
+      .order("start_date", { ascending: true });
+    return data || [];
+  } catch (error) {
+    console.error("Error fetching registration open events:", error);
+    return [];
+  }
+}
+
 export default async function FrontendLayout({
   children,
 }: {
@@ -33,6 +59,7 @@ export default async function FrontendLayout({
 }) {
   // Fetch once on the server — no client-side flash, no # placeholder links
   const socialLinks = await getSocialLinks();
+  const registrationOpenEvents = await getRegistrationOpenEvents();
 
   return (
     <div className="relative min-h-screen bg-background overflow-x-hidden">
@@ -52,10 +79,32 @@ export default async function FrontendLayout({
         {/* Navbar must always win */}
         <div className="relative z-50">
           <Navbar />
-          <StickyBanner>
-            Relevent 2025 – Register Now – Gateway to Leadership and
-            Innovation
-          </StickyBanner>
+          {registrationOpenEvents.length > 0 && (
+            <StickyBanner>
+              <span className="inline-flex items-center gap-8 pr-8">
+                {registrationOpenEvents.map((event, idx) => {
+                  const cleanDesc = event.description
+                    ? event.description.length > 100
+                      ? event.description.slice(0, 100) + "..."
+                      : event.description
+                    : "";
+                  return (
+                    <span key={event.id} className="inline-flex items-center">
+                      {idx > 0 && <span className="mx-4 text-black/40">•</span>}
+                      <Link
+                        href={event.registration_url || `/events/${event.id}`}
+                        target={event.registration_url ? "_blank" : undefined}
+                        rel={event.registration_url ? "noopener noreferrer" : undefined}
+                        className="hover:underline font-medium text-black hover:text-black/80 transition-colors"
+                      >
+                        {event.title} – Register Now{cleanDesc ? ` – ${cleanDesc}` : ""}
+                      </Link>
+                    </span>
+                  );
+                })}
+              </span>
+            </StickyBanner>
+          )}
           <MobileMenu />
         </div>
 

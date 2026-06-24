@@ -150,6 +150,11 @@ const Card2 = ({ event, priority = false }: { event: any; priority?: boolean }) 
           className="object-cover opacity-50"
         />
         <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
+        {event.status === 'cancelled' && (
+          <div className="absolute top-3 right-3 bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-bold z-20">
+            CANCELLED
+          </div>
+        )}
       </div>
       <div className="absolute bottom-0 w-full h-[50px] bg-white text-black flex items-center justify-center font-primary text-sm tracking-wide">
         {formatDateRange(event.start_date, event.end_date)}
@@ -175,27 +180,17 @@ export default async function Events() {
   const today = new Date();
   today.setHours(0, 0, 0, 0);
 
-  const ongoingEvents = validEvents.filter((e) => {
-    const startDate = new Date(e.start_date);
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = e.end_date ? new Date(e.end_date) : startDate;
-    endDate.setHours(0, 0, 0, 0);
-    return today >= startDate && today <= endDate;
-  });
-
-  const upcomingEvents = validEvents.filter((e) => {
-    const startDate = new Date(e.start_date);
-    startDate.setHours(0, 0, 0, 0);
-    return startDate > today;
-  });
-
-  const completedEvents = validEvents.filter((e) => {
-    const startDate = new Date(e.start_date);
-    startDate.setHours(0, 0, 0, 0);
-    const endDate = e.end_date ? new Date(e.end_date) : startDate;
-    endDate.setHours(0, 0, 0, 0);
-    return endDate < today;
-  });
+  const ongoingEvents = validEvents.filter((e) => e.status === "ongoing");
+  const upcomingEvents = validEvents.filter((e) => e.status === "upcoming");
+  const completedEvents = validEvents
+    .filter((e) => e.status === "completed" || e.status === "cancelled")
+    .sort((a, b) => {
+      // Put cancelled events at the bottom
+      if (a.status === "cancelled" && b.status !== "cancelled") return 1;
+      if (b.status === "cancelled" && a.status !== "cancelled") return -1;
+      // Maintain default sort (by date desc) if both have same status
+      return 0;
+    });
 
   return (
     <div className="sm:mb-10 mb-5">

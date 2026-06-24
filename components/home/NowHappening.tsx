@@ -145,23 +145,28 @@ const NowHappening = () => {
               </p>
             </div>
             
-            <Button 
-              className="bg-white text-black hover:bg-zinc-200 px-5 py-6 md:py-6 rounded-md flex items-center gap-1 font-secondary font-medium transition-all text-sm md:text-base group"
-              onClick={(e) => {
-                e.stopPropagation();
-                if (currentEvent.register_link) {
-                  window.open(currentEvent.register_link, "_blank");
-                }
-              }}
-            >
-              Register Now
-              <svg 
-                className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-[2px] group-hover:-translate-y-[2px]" 
-                fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+            {currentEvent.status === "upcoming" && (
+              <Button 
+                className={`bg-white text-black hover:bg-zinc-200 px-5 py-6 md:py-6 rounded-md flex items-center gap-1 font-secondary font-medium transition-all text-sm md:text-base group ${!(currentEvent.is_registration_open && currentEvent.registration_url) ? 'opacity-50 cursor-not-allowed hover:bg-white' : ''}`}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (currentEvent.is_registration_open && currentEvent.registration_url) {
+                    window.open(currentEvent.registration_url, "_blank");
+                  }
+                }}
+                disabled={!(currentEvent.is_registration_open && currentEvent.registration_url)}
               >
-                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
-              </svg>
-            </Button>
+                {currentEvent.is_registration_open && currentEvent.registration_url ? "Register Now" : "Registration Open Soon"}
+                {currentEvent.is_registration_open && currentEvent.registration_url && (
+                  <svg 
+                    className="w-4 h-4 transition-transform duration-300 group-hover:translate-x-[2px] group-hover:-translate-y-[2px]" 
+                    fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2.5}
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 19.5l15-15m0 0H8.25m11.25 0v11.25" />
+                  </svg>
+                )}
+              </Button>
+            )}
           </div>
 
           {/* Right Image */}

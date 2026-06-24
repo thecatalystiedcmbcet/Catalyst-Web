@@ -80,28 +80,7 @@ export default async function EventsPage({ params }: Props) {
     notFound();
   }
 
-  let eventStatus = "";
-  try {
-    await connection();
-    const today = new Date();
-    today.setHours(0, 0, 0, 0);
-
-    const startDate = new Date(event.start_date);
-    startDate.setHours(0, 0, 0, 0);
-
-    const endDate = event.end_date ? new Date(event.end_date) : startDate;
-    endDate.setHours(0, 0, 0, 0);
-
-    if (today < startDate) {
-      eventStatus = "upcoming";
-    } else if (today >= startDate && today <= endDate) {
-      eventStatus = "ongoing";
-    } else {
-      eventStatus = "completed";
-    }
-  } catch (err) {
-    eventStatus = "completed";
-  }
+  const eventStatus = event.status || "completed";
 
   return (
     <div className="mb-20 min-h-screen bg-transparent">
@@ -142,21 +121,35 @@ export default async function EventsPage({ params }: Props) {
           <p className="whitespace-pre-wrap">{event.description || "No description available for this event."}</p>
         </div>
 
-        {eventStatus !== "completed" && event.registration_url ? (
-          <Link
-            href={event.registration_url}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="mt-8 inline-flex items-center gap-2 bg-white px-6 py-5 rounded-md text-sm font-semibold text-black transition-all duration-300 hover:bg-gray-200 hover:shadow-lg group"
-          >
-            Register Now
-            <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
-          </Link>
-        ) : eventStatus === "completed" ? (
+        {eventStatus === "upcoming" ? (
+          event.is_registration_open && event.registration_url ? (
+            <Link
+              href={event.registration_url}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="mt-8 inline-flex items-center gap-2 bg-white px-6 py-5 rounded-md text-sm font-semibold text-black transition-all duration-300 hover:bg-gray-200 hover:shadow-lg group"
+            >
+              Register Now
+              <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
+            </Link>
+          ) : (
+            <div className="mt-8 inline-flex items-center gap-2 bg-white px-6 py-5 rounded-md text-sm font-semibold text-black opacity-50 cursor-not-allowed">
+              Registration Open Soon
+            </div>
+          )
+        ) : eventStatus === "ongoing" ? (
+          <div className="mt-8 inline-flex items-center gap-2 bg-white px-6 py-5 rounded-md text-sm font-semibold text-black opacity-50 cursor-not-allowed">
+            Registration Closed
+          </div>
+        ) : eventStatus === "cancelled" ? (
+          <div className="mt-8 inline-flex items-center gap-2 bg-gray-500/20 text-gray-400 border border-gray-500/50 px-6 py-5 rounded-md text-sm font-semibold cursor-not-allowed">
+            Event Cancelled
+          </div>
+        ) : (
           <div className="mt-8 inline-flex items-center gap-2 bg-white px-6 py-5 rounded-md text-sm font-semibold text-black opacity-50 cursor-not-allowed">
             Event Completed
           </div>
-        ) : null}
+        )}
       </section>
 
       {/* Carousel Section (Fallback to cover image if no gallery) */}

@@ -28,6 +28,7 @@ export interface Event {
   endDate: string;
   status: EventStatus;
   isFeatured: boolean;
+  isRegistrationOpen: boolean;
 }
 
 export interface Achievement {
@@ -163,6 +164,7 @@ const mapEvent = (row: any): Event => ({
   endDate: row.end_date,
   status: row.status as EventStatus,
   isFeatured: row.is_featured ?? false,
+  isRegistrationOpen: row.is_registration_open ?? false,
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -608,6 +610,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
         end_date: newEvent.endDate,
         status: newEvent.status,
         is_featured: newEvent.isFeatured,
+        is_registration_open: newEvent.isRegistrationOpen,
       })
       .select()
       .single();
@@ -635,6 +638,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
         ...(updates.endDate !== undefined && { end_date: updates.endDate }),
         ...(updates.status !== undefined && { status: updates.status }),
         ...(updates.isFeatured !== undefined && { is_featured: updates.isFeatured }),
+        ...(updates.isRegistrationOpen !== undefined && { is_registration_open: updates.isRegistrationOpen }),
       })
       .eq("id", id);
     if (error) throw error;
