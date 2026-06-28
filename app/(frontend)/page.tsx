@@ -46,10 +46,10 @@ export default function Page() {
       <Events />
       <OurPioneers />
       <FamilyText />
-      <div className="w-full max-w-[1400px] mx-auto px-5 md:px-12 lg:px-20 mt-16 lg:mt-32 mb-16">
+      <div className="mt-16 lg:mt-32 mb-16">
         <Pioneers />
       </div>
-      <div className="w-full max-w-[1400px] mx-auto px-5 md:px-12 lg:px-20 mb-10 md:mb-20">
+      <div className="mb-10 md:mb-20">
         <Connect />
       </div>
     </div>

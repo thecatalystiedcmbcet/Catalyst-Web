@@ -84,7 +84,7 @@ const Connect = () => {
   };
 
   return (
-    <section ref={container} className="relative rounded-3xl bg-gradient-to-br from-[#181818] to-[#0a0a0a] text-white overflow-hidden shadow-2xl border border-white/10 group max-w-6xl mx-auto">
+    <section ref={container} className="relative rounded-3xl bg-gradient-to-br from-[#181818] to-[#0a0a0a] text-white overflow-hidden shadow-2xl border border-white/10 group mx-4 sm:mx-16 md:mx-24 lg:mx-40 mt-20 mb-10">
       {/* Dynamic Background Glow */}
       <div className="absolute -inset-1 bg-gradient-to-r from-white/10 to-transparent blur-2xl opacity-0 group-hover:opacity-100 transition duration-1000"></div>
 

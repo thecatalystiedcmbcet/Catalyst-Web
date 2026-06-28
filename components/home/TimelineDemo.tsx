@@ -194,7 +194,7 @@ export default function TimelineDemo({ items }: { items: TimelineItem[] }) {
         <h2 className="text-3xl sm:text-6xl md:text-7xl font-primary text-white tracking-tight leading-[1] break-words hyphens-auto">
           HISTORY &amp;
           <br />
-          <span className="text-white/40">ACHIEVEMENTS</span>
+          <span className="text-white/40">MILESTONES</span>
         </h2>
         {/* Decorative divider */}
         <div className="flex items-center justify-center gap-4 mt-8">
