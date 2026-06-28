@@ -31,7 +31,7 @@ const About = () => {
   return (
     <section 
       ref={container} 
-      className="w-full max-w-7xl h-screen mx-auto px-6 sm:px-10 lg:px-16 relative text-white py-16 md:py-24 min-h-[70vh] flex flex-col justify-center"
+      className="h-screen relative text-white py-16 md:py-24 min-h-[70vh] flex flex-col justify-center mx-5 md:px-9 sm:mx-15"
       style={{ contain: 'layout' }}
     >
       {/* Background patterns */}
@@ -41,7 +41,7 @@ const About = () => {
         <div className="absolute top-[40%] right-[-10%] w-[40rem] h-[40rem] rounded-full bg-white/[0.01]"></div>
       </div>
 
-      <div className="relative z-10 flex flex-col items-start text-left max-w-6xl mx-auto">
+      <div className="relative z-10 flex flex-col items-start text-justify w-full">
         <h2 className="text-5xl md:text-6xl lg:text-7xl font-primary font-normal mb-10 about-title uppercase tracking-[0.1em] text-white">
           About Us
         </h2>

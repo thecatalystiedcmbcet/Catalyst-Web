@@ -57,6 +57,26 @@ const Card = ({ year, title, description, image }: any) => {
   );
 };
 
+const renderTitle = (title: string) => {
+  if (!title) return "";
+  const regex = /(µ|μ)/g;
+  const parts = title.split(regex);
+  return (
+    <>
+      {parts.map((part, i) => {
+        if (part === "µ" || part === "μ") {
+          return (
+            <span key={i} className="font-sans font-semibold text-[0.9em] inline-block align-baseline mx-[2px]">
+              {part}
+            </span>
+          );
+        }
+        return part;
+      })}
+    </>
+  );
+};
+
 const MuLearnAchievements = () => {
   const container = useRef<HTMLDivElement>(null);
   const [achievements, setAchievements] = useState<any[]>([]);
@@ -109,6 +129,8 @@ const MuLearnAchievements = () => {
   }, []);
 
   useGSAP(() => {
+    if (isLoading || achievements.length === 0) return;
+
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: container.current,
@@ -126,18 +148,28 @@ const MuLearnAchievements = () => {
       { y: 30, opacity: 0 },
       { y: 0, opacity: 1, duration: 0.8, ease: "power3.out" },
       "-=0.6"
-    ).fromTo(
-      ".mu-ach-featured",
-      { y: 40, opacity: 0, scale: 0.98 },
-      { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out" },
-      "-=0.4"
-    ).fromTo(
-      ".mu-ach-card",
-      { y: 40, opacity: 0, scale: 0.98 },
-      { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out", stagger: 0.15 },
-      "-=0.4"
     );
-  }, { scope: container });
+
+    const hasFeatured = container.current?.querySelector(".mu-ach-featured");
+    if (hasFeatured) {
+      tl.fromTo(
+        ".mu-ach-featured",
+        { y: 40, opacity: 0, scale: 0.98 },
+        { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out" },
+        "-=0.4"
+      );
+    }
+
+    const hasCards = container.current?.querySelector(".mu-ach-card");
+    if (hasCards) {
+      tl.fromTo(
+        ".mu-ach-card",
+        { y: 40, opacity: 0, scale: 0.98 },
+        { y: 0, opacity: 1, scale: 1, duration: 1, ease: "power3.out", stagger: 0.15 },
+        "-=0.4"
+      );
+    }
+  }, { scope: container, dependencies: [achievements, isLoading] });
 
   let featured = achievements.filter((a) => a.is_featured === true);
   if (featured.length === 0 && achievements.length > 0) {
@@ -167,38 +199,53 @@ const MuLearnAchievements = () => {
           isLoading ? (
             <Skeleton className="mu-ach-featured h-[400px] w-full rounded-2xl bg-white/5" />
           ) : currentFeatured ? (
-            <div className="mu-ach-featured relative z-10 flex flex-col lg:flex-row w-full bg-[#080808] rounded-2xl md:rounded-[1.25rem] border border-zinc-800 overflow-hidden shadow-2xl lg:h-[420px]">
+            <div className="mu-ach-featured group relative z-10 flex flex-col lg:flex-row w-full bg-[#0a0a0c]/85 rounded-3xl border border-white/5 overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.01)] hover:shadow-[0_0_60px_rgba(255,255,255,0.04)] hover:border-white/20 transition-all duration-500 cursor-pointer">
               
               {/* Left Content */}
-              <div className="flex flex-col items-start justify-center p-8 md:p-12 lg:p-16 w-full lg:w-[45%] bg-[#080808]">
-                <div className="flex flex-col items-start w-full">
-                  <div className="flex items-center gap-[6px] mb-2 tracking-widest">
-                    <span className={`${enigma.className} text-[10px] md:text-xs text-white uppercase font-bold`}>LATEST</span>
-                    <span className={`${enigma.className} text-[10px] md:text-xs text-white uppercase font-bold`}>ACHIEVEMENT</span>
+              <div className="flex flex-col items-start justify-center p-6 md:p-8 lg:p-12 w-full lg:w-[45%] bg-[#0a0a0c]/50 relative overflow-hidden backdrop-blur-sm">
+                {/* Visual Glow Accent */}
+                <div className="absolute -top-24 -left-24 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none group-hover:bg-white/10 transition-colors duration-500" />
+                
+                <div className="flex flex-col items-start w-full relative z-10">
+                  {/* Glowing Badge */}
+                  <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-white/10 to-white/5 border border-white/15 text-zinc-200 mb-5 shadow-[0_0_15px_rgba(255,255,255,0.03)]">
+                    <span className="relative flex h-2 w-2">
+                      <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-white/70 opacity-75"></span>
+                      <span className="relative inline-flex rounded-full h-2.5 w-2.5 bg-white"></span>
+                    </span>
+                    <span className={`${poppins.className} text-[10px] md:text-xs uppercase font-semibold tracking-widest`}>
+                      FEATURED ACHIEVEMENT
+                    </span>
                   </div>
                   
-                  <div className="w-full h-[1px] bg-zinc-400 mb-4" /> 
-                  
-                  <h3 className={`${poppins.className} text-[2rem] sm:text-3xl md:text-4xl lg:text-[2.5rem] text-white leading-tight tracking-wide mb-2 line-clamp-3`}>
-                    {currentFeatured.title}
+                  <h3 className={`${enigma.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-tight tracking-wide mb-3 font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-100 to-zinc-300 group-hover:from-white group-hover:to-white transition-all duration-300`}>
+                    {renderTitle(currentFeatured.title)}
                   </h3>
                   
-                  <div className="w-full h-[1px] bg-zinc-400 mt-4 mb-4" /> 
-                  
-                  <p className={`${poppins.className} text-sm sm:text-base text-zinc-400 leading-relaxed mb-4 line-clamp-4`}>
+                  <p className={`${poppins.className} text-xs sm:text-sm md:text-base text-zinc-400 group-hover:text-zinc-300 transition-colors duration-300 leading-relaxed mb-6 font-normal line-clamp-3 md:line-clamp-4`}>
                     {currentFeatured.description}
                   </p>
+
+                  <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-zinc-400 group-hover:text-white transition-colors duration-300">
+                    <span className={`${poppins.className} tracking-widest uppercase`}>Explore Story</span>
+                    <svg className="w-4 h-4 transform group-hover:translate-x-1.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                    </svg>
+                  </div>
                 </div>
               </div>
 
               {/* Right Image */}
-              <div className="w-full lg:w-[55%] h-64 sm:h-80 lg:h-full relative bg-[#080808] overflow-hidden">
+              <div className="w-full lg:w-[55%] h-64 sm:h-80 lg:h-auto min-h-[300px] lg:min-h-[400px] relative bg-[#0a0a0c] overflow-hidden">
                 {/* Fading gradient edge for smooth blend on desktop */}
-                <div className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#080808] via-[#080808]/80 to-transparent z-10" />
+                <div className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0a0a0c] via-[#0a0a0c]/85 to-transparent z-10" />
+                {/* Fading gradient top for smooth blend on mobile */}
+                <div className="lg:hidden absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#0a0a0c] to-transparent z-10" />
+                
                 <img 
                   src={currentFeatured.cover_image || currentFeatured.image || "/agni.png"} 
                   alt={currentFeatured.title} 
-                  className="w-full h-full object-cover grayscale opacity-75"
+                  className="absolute inset-0 w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 group-hover:scale-102 transition-all duration-700 ease-out"
                 />
 
                 {/* Carousel Navigation Buttons */}
@@ -207,14 +254,14 @@ const MuLearnAchievements = () => {
                     <Button 
                       onClick={handlePrev}
                       size="icon"
-                      className="bg-black/50 hover:bg-black text-white rounded-full backdrop-blur-sm border border-white/20 w-10 h-10 transition-colors"
+                      className="bg-black/60 hover:bg-white/10 hover:text-white text-white rounded-full backdrop-blur-md border border-white/10 hover:border-white/20 w-10 h-10 transition-all duration-300"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </Button>
                     <Button 
                       onClick={handleNext}
                       size="icon"
-                      className="bg-black/50 hover:bg-black text-white rounded-full backdrop-blur-sm border border-white/20 w-10 h-10 transition-colors"
+                      className="bg-black/60 hover:bg-white/10 hover:text-white text-white rounded-full backdrop-blur-md border border-white/10 hover:border-white/20 w-10 h-10 transition-all duration-300"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </Button>
