@@ -11,11 +11,23 @@ const poppins = Poppins({
 
 interface PioneerCardProps {
   pioneer?: Pioneer;
+  onTap?: (pioneer: Pioneer) => void;
 }
 
-const PioneerCard = ({ pioneer }: PioneerCardProps) => {
+const PioneerCard = ({ pioneer, onTap }: PioneerCardProps) => {
+  const handleClick = (e: React.MouseEvent) => {
+    if (window.innerWidth < 768 && onTap && pioneer) {
+      e.preventDefault();
+      e.stopPropagation();
+      onTap(pioneer);
+    }
+  };
+
   return (
-    <div className="relative rounded-3xl p-[1px] w-[180px] h-[180px] md:w-[220px] md:h-[220px] flex-shrink-0 group">
+    <div 
+      onClick={handleClick}
+      className="relative rounded-3xl p-[1px] w-[180px] h-[180px] md:w-[220px] md:h-[220px] flex-shrink-0 group cursor-pointer md:cursor-default"
+    >
       {/* Gradient border */}
       <div
         className="absolute inset-0 rounded-3xl"

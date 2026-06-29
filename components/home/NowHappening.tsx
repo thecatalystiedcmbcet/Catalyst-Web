@@ -99,7 +99,7 @@ const NowHappening = () => {
   const currentEvent = featuredEvents[currentIndex];
 
   return (
-    <div ref={container} className="relative w-full flex flex-col items-center justify-center pt-40">
+    <div ref={container} className="relative w-full flex flex-col items-center justify-center pt-28 md:pt-40">
       {/* Header & Watermark Container */}
       <WatermarkHeader 
         title={headerTitle}
@@ -189,7 +189,7 @@ const NowHappening = () => {
           </div>
 
           {/* Right Image Column */}
-          <div className="w-full lg:w-[55%] h-64 sm:h-80 lg:h-auto min-h-[300px] lg:min-h-[450px] relative bg-[#0a0a0c] overflow-hidden z-10">
+          <div className="w-full lg:w-[55%] h-80 sm:h-80 lg:h-auto min-h-[300px] lg:min-h-[450px] relative bg-[#0a0a0c] overflow-hidden z-10">
             {/* Fading gradient edge for smooth blend on desktop */}
             <div className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0a0a0c] via-[#0a0a0c]/85 to-transparent z-10 pointer-events-none" />
             {/* Fading gradient top for smooth blend on mobile */}

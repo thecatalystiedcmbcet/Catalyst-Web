@@ -25,7 +25,7 @@ const poppins = localFont({
 const Card = ({ year, title, description, image }: any) => {
   return (
     <div className="mu-ach-card relative flex flex-col group h-full cursor-pointer bg-[#0c0c0c] rounded-3xl border border-white/5 hover:border-white/20 hover:bg-[#111] transition-all duration-500 overflow-hidden">
-      
+
       {/* Image Section */}
       <div className="relative w-full aspect-[16/9] overflow-hidden">
         <img
@@ -40,11 +40,11 @@ const Card = ({ year, title, description, image }: any) => {
       {/* Content Section */}
       <div className="flex flex-col flex-grow px-5 sm:px-6 pb-6 pt-0 z-10 relative">
         <div className="-mt-6 mb-3">
-           <span className={`${enigma.className} text-3xl sm:text-4xl text-white drop-shadow-2xl`}>
-             {year}
-           </span>
+          <span className={`${enigma.className} text-3xl sm:text-4xl text-white drop-shadow-2xl`}>
+            {year}
+          </span>
         </div>
-        
+
         <h3 className={`${poppins.className} text-base sm:text-lg font-semibold mb-2 text-white leading-snug group-hover:text-zinc-200 transition-colors`}>
           {title}
         </h3>
@@ -52,7 +52,7 @@ const Card = ({ year, title, description, image }: any) => {
           {description}
         </p>
       </div>
-      
+
     </div>
   );
 };
@@ -180,8 +180,8 @@ const MuLearnAchievements = () => {
 
   return (
     <div ref={container} className="w-full overflow-hidden pb-10">
-      <div className="w-full px-5 sm:px-10 lg:px-20 pt-40">
-        <WatermarkHeader 
+      <div className="w-full px-5 sm:px-10 lg:px-20 pt-28 md:pt-40">
+        <WatermarkHeader
           title="ACHIEVEMENTS"
           watermark="MULEARN"
           titleClassName="nh-title"
@@ -200,12 +200,12 @@ const MuLearnAchievements = () => {
             <Skeleton className="mu-ach-featured h-[400px] w-full rounded-2xl bg-white/5" />
           ) : currentFeatured ? (
             <div className="mu-ach-featured group relative z-10 flex flex-col lg:flex-row w-full bg-[#0a0a0c]/85 rounded-3xl border border-white/5 overflow-hidden shadow-[0_0_50px_rgba(255,255,255,0.01)] hover:shadow-[0_0_60px_rgba(255,255,255,0.04)] hover:border-white/20 transition-all duration-500 cursor-pointer">
-              
+
               {/* Left Content */}
               <div className="flex flex-col items-start justify-center p-6 md:p-8 lg:p-12 w-full lg:w-[45%] bg-[#0a0a0c]/50 relative overflow-hidden backdrop-blur-sm">
                 {/* Visual Glow Accent */}
                 <div className="absolute -top-24 -left-24 w-48 h-48 bg-white/5 rounded-full blur-3xl pointer-events-none group-hover:bg-white/10 transition-colors duration-500" />
-                
+
                 <div className="flex flex-col items-start w-full relative z-10">
                   {/* Glowing Badge */}
                   <div className="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-gradient-to-r from-white/10 to-white/5 border border-white/15 text-zinc-200 mb-5 shadow-[0_0_15px_rgba(255,255,255,0.03)]">
@@ -217,21 +217,21 @@ const MuLearnAchievements = () => {
                       FEATURED ACHIEVEMENT
                     </span>
                   </div>
-                  
+
                   <h3 className={`${enigma.className} text-xl sm:text-2xl md:text-3xl lg:text-4xl leading-tight tracking-wide mb-3 font-bold text-transparent bg-clip-text bg-gradient-to-r from-white via-zinc-100 to-zinc-300 group-hover:from-white group-hover:to-white transition-all duration-300`}>
                     {renderTitle(currentFeatured.title)}
                   </h3>
-                  
+
                   <p className={`${poppins.className} text-xs sm:text-sm md:text-base text-zinc-400 group-hover:text-zinc-300 transition-colors duration-300 leading-relaxed mb-6 font-normal line-clamp-3 md:line-clamp-4`}>
                     {currentFeatured.description}
                   </p>
 
-                  <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-zinc-400 group-hover:text-white transition-colors duration-300">
+                  {/* <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-zinc-400 group-hover:text-white transition-colors duration-300">
                     <span className={`${poppins.className} tracking-widest uppercase`}>Explore Story</span>
                     <svg className="w-4 h-4 transform group-hover:translate-x-1.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
@@ -241,24 +241,24 @@ const MuLearnAchievements = () => {
                 <div className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0a0a0c] via-[#0a0a0c]/85 to-transparent z-10" />
                 {/* Fading gradient top for smooth blend on mobile */}
                 <div className="lg:hidden absolute inset-x-0 top-0 h-16 bg-gradient-to-b from-[#0a0a0c] to-transparent z-10" />
-                
-                <img 
-                  src={currentFeatured.cover_image || currentFeatured.image || "/agni.png"} 
-                  alt={currentFeatured.title} 
+
+                <img
+                  src={currentFeatured.cover_image || currentFeatured.image || "/agni.png"}
+                  alt={currentFeatured.title}
                   className="absolute inset-0 w-full h-full object-cover grayscale opacity-60 group-hover:grayscale-0 group-hover:opacity-90 group-hover:scale-102 transition-all duration-700 ease-out"
                 />
 
                 {/* Carousel Navigation Buttons */}
                 {featured.length > 1 && (
                   <div className="absolute bottom-4 right-4 z-20 flex gap-2">
-                    <Button 
+                    <Button
                       onClick={handlePrev}
                       size="icon"
                       className="bg-black/60 hover:bg-white/10 hover:text-white text-white rounded-full backdrop-blur-md border border-white/10 hover:border-white/20 w-10 h-10 transition-all duration-300"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </Button>
-                    <Button 
+                    <Button
                       onClick={handleNext}
                       size="icon"
                       className="bg-black/60 hover:bg-white/10 hover:text-white text-white rounded-full backdrop-blur-md border border-white/10 hover:border-white/20 w-10 h-10 transition-all duration-300"
@@ -267,13 +267,13 @@ const MuLearnAchievements = () => {
                     </Button>
                   </div>
                 )}
-                
+
                 {/* Pagination Indicators */}
                 {featured.length > 1 && (
                   <div className="absolute bottom-6 left-6 lg:left-8 z-20 flex gap-2">
                     {featured.map((_, idx) => (
-                      <div 
-                        key={idx} 
+                      <div
+                        key={idx}
                         className={`h-1.5 rounded-full transition-all duration-300 ${idx === currentIndex ? "w-6 bg-white" : "w-1.5 bg-white/40"}`}
                       />
                     ))}

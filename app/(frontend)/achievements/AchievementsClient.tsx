@@ -146,7 +146,7 @@ export default function AchievementsClient({
 
   return (
     <div ref={container} className="w-full overflow-hidden pb-10">
-      <div className="w-full px-5 sm:px-10 lg:px-20 pt-40">
+      <div className="w-full px-5 sm:px-10 lg:px-20 pt-28 md:pt-40">
         <WatermarkHeader
           title="ACHIEVEMENTS"
           watermark="CATALYST"
@@ -189,17 +189,17 @@ export default function AchievementsClient({
                     {currentFeatured.description}
                   </p>
 
-                  <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-zinc-400 group-hover:text-white transition-colors duration-300">
+                  {/* <div className="flex items-center gap-2 text-xs sm:text-sm font-semibold text-zinc-400 group-hover:text-white transition-colors duration-300">
                     <span className="font-secondary tracking-widest uppercase">Explore Story</span>
                     <svg className="w-4 h-4 transform group-hover:translate-x-1.5 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
                     </svg>
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
               {/* Right Image */}
-              <div className="w-full lg:w-[55%] h-64 sm:h-80 lg:h-auto min-h-[300px] lg:min-h-[400px] relative bg-[#0a0a0c] overflow-hidden">
+              <div className="w-full lg:w-[55%] h-80 sm:h-80 lg:h-auto min-h-[300px] lg:min-h-[400px] relative bg-[#0a0a0c] overflow-hidden">
                 {/* Fading gradient edge for smooth blend on desktop */}
                 <div className="hidden lg:block absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-[#0a0a0c] via-[#0a0a0c]/85 to-transparent z-10" />
                 {/* Fading gradient top for smooth blend on mobile */}

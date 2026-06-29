@@ -98,7 +98,7 @@ export default function GalleryClient({ items, enigmaClassName }: { items: any[]
   return (
     <div ref={container} className="mb-5 w-full pb-20 selection:bg-white selection:text-black">
       {/* Watermark Title Header */}
-      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 lg:px-12 pt-40">
+      <div className="max-w-[1400px] mx-auto px-4 sm:px-6 md:px-10 lg:px-12 pt-28 md:pt-40">
         <WatermarkHeader 
           title="GALLERY"
           watermark="CATALYST"

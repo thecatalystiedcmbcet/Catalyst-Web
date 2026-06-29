@@ -28,7 +28,6 @@ export default async function GalleryPage() {
   let allImages: string[] = [];
   if (data) {
     data.forEach(event => {
-      if (event.cover_image) allImages.push(event.cover_image);
       if (event.related_images && Array.isArray(event.related_images)) {
         allImages.push(...event.related_images);
       }

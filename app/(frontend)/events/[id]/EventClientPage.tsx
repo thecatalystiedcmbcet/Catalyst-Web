@@ -174,7 +174,7 @@ export default function EventClientPage({ event }: EventClientPageProps) {
   const visibleIndices = getVisibleIndices();
 
   return (
-    <div className="relative min-h-screen text-white bg-transparent overflow-x-hidden selection:bg-white selection:text-black font-secondary pb-32">
+    <div className="relative min-h-screen text-white bg-transparent overflow-x-hidden selection:bg-white selection:text-black font-secondary pb-12 md:pb-32">
       
       {/* 1. HERO SECTION (Full-Width Cover Image Background fading to Solid Black) */}
       <section className="relative w-full h-[75vh] md:h-[90vh]">

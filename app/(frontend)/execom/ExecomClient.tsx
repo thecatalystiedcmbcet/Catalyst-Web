@@ -101,7 +101,7 @@ const ExecomClient: React.FC<ExecomClientProps> = ({ sections }) => {
 
   return (
     <div ref={container} className="pb-20">
-      <div className="w-full pt-40">
+      <div className="w-full pt-28 md:pt-40">
         <WatermarkHeader 
           title="THE CATALYST FAMILY"
           watermark="CATALYST"

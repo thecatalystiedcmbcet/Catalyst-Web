@@ -85,13 +85,15 @@ const CampusStatistics = async () => {
               <div key={idx} className="relative flex items-start gap-8 md:gap-12 group">
                 {/* Connecting Line */}
                 {idx !== stats.length - 1 && (
-                  <div className="absolute left-[20px] md:left-[24px] top-[20px] md:top-[24px] bottom-[calc(-4rem-20px)] md:bottom-[calc(-5rem-24px)] w-[4px] bg-white -translate-x-1/2 shadow-[0_0_15px_rgba(255,255,255,0.5)] z-0" />
+                  <div className="absolute left-[20px] md:left-[24px] top-[20px] md:top-[24px] bottom-[calc(-4rem-20px)] md:bottom-[calc(-5rem-24px)] w-[4px] bg-white -translate-x-1/2 shadow-[0_0_8px_rgba(255,255,255,0.4)] z-0" />
                 )}
 
                 {/* Timeline Node */}
-                <div className="relative z-10 w-10 h-10 md:w-12 md:h-12 rounded-full bg-[#111] flex items-center justify-center border-2 border-white/40 text-white shrink-0 shadow-[0_0_20px_rgba(255,255,255,0.1)] group-hover:border-white transition-colors duration-300">
-                  <span className={`text-sm md:text-base ${enigmaFont.className}`}>μ</span>
-                </div>
+                <svg className="relative z-10 w-10 h-10 md:w-12 md:h-12 shrink-0 drop-shadow-[4px_4px_8px_rgba(0,0,0,0.6)]" viewBox="0 0 47 48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <circle cx="23.9089" cy="23.0925" r="23.0925" fill="#D9D9D9"/>
+                  <circle cx="23.0925" cy="24.7226" r="23.0925" fill="#171717"/>
+                  <path d="M29.8469 25.2624C30.3631 25.2624 30.7816 25.6809 30.7816 26.1971V26.8462C30.7816 27.7066 30.0841 28.4041 29.2237 28.4041C27.9255 28.4041 26.9648 27.9713 26.3417 27.1058C25.5281 28.2137 24.2732 28.7676 22.5768 28.7676C21.4958 28.7676 20.24 29.5493 20.24 30.6302V31.9222C20.24 32.8471 19.4902 33.5969 18.5653 33.5969C17.6404 33.5969 16.8906 32.8471 16.8906 31.9222V17.0966C16.8906 16.1717 17.6404 15.4219 18.5653 15.4219C19.4902 15.4219 20.24 16.1717 20.24 17.0966V22.9515C20.24 23.817 20.4737 24.4834 20.9411 24.9508C21.4084 25.4182 22.0316 25.6518 22.8105 25.6518C23.676 25.6518 24.3684 25.3835 24.8877 24.8469C25.4069 24.3103 25.6666 23.5055 25.6666 22.4323V17.0966C25.6666 16.1717 26.4164 15.4219 27.3413 15.4219C28.2662 15.4219 29.016 16.1717 29.016 17.0966V24.4315C29.016 24.9854 29.2929 25.2624 29.8469 25.2624Z" fill="white"/>
+                </svg>
 
                 {/* Content */}
                 <div className="flex flex-col -mt-1 md:-mt-2">

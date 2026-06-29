@@ -19,9 +19,9 @@ import { getValidImageUrl } from "@/lib/utils";
 function getOrdinalSuffix(day: number) {
   if (day > 3 && day < 21) return 'th';
   switch (day % 10) {
-    case 1:  return "st";
-    case 2:  return "nd";
-    case 3:  return "rd";
+    case 1: return "st";
+    case 2: return "nd";
+    case 3: return "rd";
     default: return "th";
   }
 }
@@ -32,7 +32,7 @@ function formatDateRange(startStr: string, endStr?: string) {
   const startDay = start.getDate();
   const startMonth = start.toLocaleString('en-US', { month: 'long' });
   const startYear = start.getFullYear();
-  
+
   if (!endStr) {
     return `${startDay}${getOrdinalSuffix(startDay)} ${startMonth} ${startYear}`;
   }
@@ -117,9 +117,9 @@ const Card = ({ event }: { event: any }) => (
           alt={event.title}
           fill
           sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover opacity-50"
+          className="object-cover opacity-80"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
         <div className="relative z-20 h-full flex flex-col justify-between items-center py-6">
           <h1 className="font-primary text-2xl sm:text-4xl">{event.title}</h1>
           <ButtonNew link={event.registration_url} />
@@ -147,9 +147,9 @@ const Card2 = ({ event, priority = false }: { event: any; priority?: boolean }) 
           sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
           priority={priority}
           loading={priority ? "eager" : "lazy"}
-          className="object-cover opacity-50"
+          className="object-cover opacity-85"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-black via-black/70 to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/55 via-black/15 to-transparent" />
         {event.status === 'cancelled' && (
           <div className="absolute top-3 right-3 bg-gray-500 text-white px-3 py-1 rounded-full text-xs font-bold z-20">
             CANCELLED

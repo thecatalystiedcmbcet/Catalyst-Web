@@ -48,7 +48,7 @@ const Pioneers = () => {
 
   return (
     <div ref={container} className="h-full text-white flex flex-col justify-center py-10 lg:py-0 mx-5 md:px-9 sm:mx-15">
-      <div className="team-content flex flex-col items-start text-justify w-full">
+      <div className="team-content flex flex-col items-start  w-full">
         <h1 className="text-5xl md:text-6xl lg:text-7xl font-primary font-normal mb-10 uppercase tracking-[0.1em] text-white">
           OUR TEAM
         </h1>

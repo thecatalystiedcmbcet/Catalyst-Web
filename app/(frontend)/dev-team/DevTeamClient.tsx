@@ -139,7 +139,7 @@ const DevTeamClient: React.FC<DevTeamClientProps> = ({ sections }) => {
   }, { scope: container });
 
   return (
-    <div ref={container} className="min-h-screen bg-transparent pb-16 relative px-5 sm:px-10 lg:px-20 pt-40">
+    <div ref={container} className="min-h-screen bg-transparent pb-16 relative px-5 sm:px-10 lg:px-20 pt-28 md:pt-40">
       <WatermarkHeader
         title="WEB WORKFORCE"
         watermark="CATALYST"
