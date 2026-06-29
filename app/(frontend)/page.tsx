@@ -17,18 +17,51 @@ const FamilyText = dynamic(() => import("@/components/home/FamilyText"));
 export const metadata: Metadata = {
   title: "Home | Catalyst",
   description:
-    "Catalyst — the Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology. Explore events, achievements, and more.",
+    "Catalyst — the Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology. Explore events, achievements, and statistics.",
+  alternates: {
+    canonical: "/",
+  },
   openGraph: {
-    title: "Catalyst | Mar Baselios IEDC",
+    title: "Home | Catalyst",
+    description:
+      "Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology. Explore events, achievements, and statistics.",
+    type: "website",
+    url: "https://catalyst.mbcet.ac.in",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Home | Catalyst",
     description:
       "Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology.",
-    type: "website",
   },
 };
 
 export default function Page() {
+  const jsonLd = {
+    "@context": "https://schema.org",
+    "@type": "EducationalOrganization",
+    "name": "Catalyst MBCET IEDC",
+    "url": "https://catalyst.mbcet.ac.in",
+    "logo": "https://catalyst.mbcet.ac.in/Catalyst_Logo_Navbar.png",
+    "sameAs": [
+      "https://www.instagram.com/catalyst_mbcet/",
+      "https://www.linkedin.com/company/catalyst-mbcet/",
+      "https://www.youtube.com/@catalystmbcet"
+    ],
+    "description": "Catalyst is the Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology, empowering students to build innovative and entrepreneurial solutions.",
+    "parentOrganization": {
+      "@type": "EducationalOrganization",
+      "name": "Mar Baselios College of Engineering and Technology",
+      "url": "https://mbcet.ac.in"
+    }
+  };
+
   return (
     <div className="mb-5 md:mb-20">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <Hero />
       <AddText />
       <About />

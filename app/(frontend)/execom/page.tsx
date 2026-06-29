@@ -6,7 +6,21 @@ import { SectionData } from '../dev-team/DevTeamClient';
 
 export const metadata: Metadata = {
   title: "Execom | Catalyst",
-  description: "Meet the Catalyst Family.",
+  description: "Meet the Executive Committee workforce leading the Catalyst Innovation and Entrepreneurship Development Centre at MBCET.",
+  alternates: {
+    canonical: "/execom",
+  },
+  openGraph: {
+    title: "Execom | Catalyst",
+    description: "Meet the Executive Committee workforce leading the Catalyst Innovation and Entrepreneurship Development Centre at MBCET.",
+    url: "https://catalyst.mbcet.ac.in/execom",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Execom | Catalyst",
+    description: "Meet the Executive Committee workforce leading the Catalyst Innovation and Entrepreneurship Development Centre at MBCET.",
+  },
 };
 
 export default async function ExecomPage() {

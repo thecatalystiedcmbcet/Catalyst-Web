@@ -4,7 +4,21 @@ import { Metadata } from "next";
 
 export const metadata: Metadata = {
   title: "Campus Snapshot | Catalyst",
-  description: "Live stats from the MuLearn Foundation Platform for MBCET.",
+  description: "Live GTech μLearn campus rankings, total karma points, active member statistics, and top learners from MBCET.",
+  alternates: {
+    canonical: "/campus-snapshot",
+  },
+  openGraph: {
+    title: "Campus Snapshot | Catalyst",
+    description: "Live GTech μLearn campus rankings, total karma points, active member statistics, and top learners from MBCET.",
+    url: "https://catalyst.mbcet.ac.in/campus-snapshot",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Campus Snapshot | Catalyst",
+    description: "Live GTech μLearn campus rankings, total karma points, active member statistics, and top learners from MBCET.",
+  },
 };
 
 export default async function CampusSnapshotPage() {

@@ -10,7 +10,21 @@ import { createPublicClient } from "@/lib/supabase/public";
 
 export const metadata: Metadata = {
   title: "Events | Catalyst",
-  description: "Explore upcoming and past events at Catalyst.",
+  description: "Discover upcoming workshops, hackathons, speaker sessions, and past events hosted by Catalyst MBCET IEDC.",
+  alternates: {
+    canonical: "/events",
+  },
+  openGraph: {
+    title: "Events | Catalyst",
+    description: "Discover upcoming workshops, hackathons, speaker sessions, and past events hosted by Catalyst MBCET IEDC.",
+    url: "https://catalyst.mbcet.ac.in/events",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Events | Catalyst",
+    description: "Discover upcoming workshops, hackathons, speaker sessions, and past events hosted by Catalyst MBCET IEDC.",
+  },
 };
 
 import { getValidImageUrl } from "@/lib/utils";

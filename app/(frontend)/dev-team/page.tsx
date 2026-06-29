@@ -5,7 +5,21 @@ import { Metadata } from 'next';
 
 export const metadata: Metadata = {
   title: "Dev Team | Catalyst",
-  description: "Meet the minds behind Catalyst Web.",
+  description: "Meet the developers, designers, and creators who built and maintain the Catalyst Web platform at MBCET.",
+  alternates: {
+    canonical: "/dev-team",
+  },
+  openGraph: {
+    title: "Dev Team | Catalyst",
+    description: "Meet the developers, designers, and creators who built and maintain the Catalyst Web platform at MBCET.",
+    url: "https://catalyst.mbcet.ac.in/dev-team",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Dev Team | Catalyst",
+    description: "Meet the developers, designers, and creators who built and maintain the Catalyst Web platform at MBCET.",
+  },
 };
 
 export default async function DevTeamPage() {

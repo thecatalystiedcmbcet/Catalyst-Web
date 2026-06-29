@@ -1,8 +1,28 @@
 import React from "react";
+import { Metadata } from "next";
 import CampusStatistics from "@/components/CampusStatistics";
 import DiscordSection from "@/components/DiscordSection";
 import Link from "next/link";
 import localFont from "next/font/local";
+
+export const metadata: Metadata = {
+  title: "μLearn | Catalyst",
+  description: "GTech μLearn MBCET campus chapter. Explore peer-to-peer micro-learning, rankings, events, and workforce achievements.",
+  alternates: {
+    canonical: "/mulearn",
+  },
+  openGraph: {
+    title: "μLearn | Catalyst",
+    description: "GTech μLearn MBCET campus chapter. Explore peer-to-peer micro-learning, rankings, events, and workforce achievements.",
+    url: "https://catalyst.mbcet.ac.in/mulearn",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "μLearn | Catalyst",
+    description: "GTech μLearn MBCET campus chapter. Explore peer-to-peer micro-learning, rankings, events, and workforce achievements.",
+  },
+};
 
 const monumentFont = localFont({
   src: "../../../public/fonts/MonumentExtended-Ultrabold.otf",

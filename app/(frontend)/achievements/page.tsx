@@ -5,7 +5,21 @@ import AchievementsClient from "./AchievementsClient";
 
 export const metadata: Metadata = {
   title: "Achievements | Catalyst",
-  description: "Explore the achievements and milestones of Catalyst.",
+  description: "Explore the awards, achievements, milestones, and startup successes of Catalyst MBCET IEDC.",
+  alternates: {
+    canonical: "/achievements",
+  },
+  openGraph: {
+    title: "Achievements | Catalyst",
+    description: "Explore the awards, achievements, milestones, and startup successes of Catalyst MBCET IEDC.",
+    url: "https://catalyst.mbcet.ac.in/achievements",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Achievements | Catalyst",
+    description: "Explore the awards, achievements, milestones, and startup successes of Catalyst MBCET IEDC.",
+  },
 };
 
 export default async function AchievementsPage() {

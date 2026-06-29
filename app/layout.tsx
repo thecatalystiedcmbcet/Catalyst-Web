@@ -45,8 +45,67 @@ export const metadata: Metadata = {
     template: "%s | Catalyst",
   },
   description:
-    "Catalyst — Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology.",
+    "Catalyst — Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology. Empowering students with innovation, entrepreneurship, and technical skills.",
   metadataBase: new URL("https://catalyst.mbcet.ac.in"),
+  alternates: {
+    canonical: "/",
+  },
+  keywords: [
+    "Catalyst",
+    "IEDC",
+    "MBCET",
+    "Mar Baselios College of Engineering and Technology",
+    "Innovation",
+    "Entrepreneurship",
+    "Startup",
+    "Technology Hub",
+    "Trivandrum",
+    "Kerala IEDC",
+    "Student Startups",
+  ],
+  authors: [{ name: "Catalyst Dev Team" }],
+  creator: "Catalyst Dev Team",
+  publisher: "Mar Baselios IEDC",
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  openGraph: {
+    title: "Catalyst | Mar Baselios IEDC",
+    description:
+      "Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology. Explore events, achievements, and statistics.",
+    url: "https://catalyst.mbcet.ac.in",
+    siteName: "Catalyst MBCET IEDC",
+    images: [
+      {
+        url: "/featured.jpg",
+        width: 1200,
+        height: 630,
+        alt: "Catalyst Mar Baselios IEDC",
+      },
+    ],
+    locale: "en_US",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Catalyst | Mar Baselios IEDC",
+    description:
+      "Innovation and Entrepreneurship Development Centre of Mar Baselios College of Engineering and Technology.",
+    images: ["/featured.jpg"],
+  },
+  icons: {
+    icon: "/favicon.png",
+    shortcut: "/favicon.png",
+    apple: "/favicon.png",
+  },
 };
 
 export default function RootLayout({

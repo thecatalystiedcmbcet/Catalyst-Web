@@ -11,7 +11,21 @@ const enigma = localFont({
 
 export const metadata: Metadata = {
   title: "Gallery | Catalyst",
-  description: "View the Catalyst gallery of events and achievements.",
+  description: "Explore the visual gallery of events, workshops, milestones, and achievements organized by Catalyst MBCET IEDC.",
+  alternates: {
+    canonical: "/gallery",
+  },
+  openGraph: {
+    title: "Gallery | Catalyst",
+    description: "Explore the visual gallery of events, workshops, milestones, and achievements organized by Catalyst MBCET IEDC.",
+    url: "https://catalyst.mbcet.ac.in/gallery",
+    type: "website",
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Gallery | Catalyst",
+    description: "Explore the visual gallery of events, workshops, milestones, and achievements organized by Catalyst MBCET IEDC.",
+  },
 };
 
 export default async function GalleryPage() {
