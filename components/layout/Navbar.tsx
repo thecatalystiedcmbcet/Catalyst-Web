@@ -21,6 +21,7 @@ const ALL_NAV_LINKS: NavLink[] = [
     page: "µLearn",
     path: "/mulearn",
     subLinks: [
+      { page: "µLearn Home", path: "/mulearn" },
       { page: "Execom", path: "/mulearn/execom" },
       { page: "Achievements", path: "/mulearn/achievements" },
       { page: "Campus Snapshot", path: "/campus-snapshot" },
@@ -80,7 +81,7 @@ const Navbar = () => {
             <div key={index} className="relative w-fit group py-2">
               <div className="flex items-center gap-1 cursor-pointer">
                 <Link
-                  className="text-base font-light text-white"
+                  className="text-sm font-secondary font-light text-white"
                   href={link.path}
                 >
                   {link.page}
@@ -100,7 +101,7 @@ const Navbar = () => {
                       <Link
                         key={subIndex}
                         href={subLink.path}
-                        className="px-5 py-3 text-sm text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
+                        className="px-5 py-3 text-sm font-secondary text-gray-300 hover:text-white hover:bg-white/10 transition-colors"
                       >
                         {subLink.page}
                       </Link>

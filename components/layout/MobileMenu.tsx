@@ -16,6 +16,7 @@ const ALL_LINKS = [
     page: "µLearn",
     path: "/mulearn",
     subLinks: [
+      { page: "µLearn Home", path: "/mulearn" },
       { page: "Execom", path: "/mulearn/execom" },
       { page: "Achievements", path: "/mulearn/achievements" },
       { page: "Campus Snapshot", path: "/campus-snapshot" },
@@ -103,8 +104,9 @@ const MobileMenu = () => {
               href={link.path}
               onClick={toggleNavbar}
               className="
-                text-5xl
+                text-4xl
                 text-white
+                font-secondary
                 font-light
                 tracking-tighter
                 transform
@@ -141,7 +143,7 @@ const MobileMenu = () => {
                   key={subIndex}
                   href={subLink.path}
                   onClick={toggleNavbar}
-                  className="text-3xl text-gray-300 font-light tracking-tighter hover:text-white"
+                  className="text-2xl text-gray-300 font-secondary font-light tracking-tighter hover:text-white"
                 >
                   {subLink.page}
                 </Link>

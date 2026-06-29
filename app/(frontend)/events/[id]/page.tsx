@@ -1,17 +1,16 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Metadata } from "next";
-import Image from "next/image";
-import { ArrowUpRight } from "lucide-react";
-import { createPublicClient } from "@/lib/supabase/public";
 import { connection } from "next/server";
-import { EventCarousel } from "./EventCarousel";
+import { createPublicClient } from "@/lib/supabase/public";
 import { getValidImageUrl } from "@/lib/utils";
-
+import EventClientPage from "./EventClientPage";
 
 type Props = {
   params: Promise<{ id: string }>;
 };
+
+const isUUID = (val: string) =>
+  /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(val);
 
 export async function generateStaticParams() {
   const supabase = createPublicClient();
@@ -28,7 +27,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const resolvedParams = await params;
   const id = resolvedParams.id;
   
-  if (!id) return { title: "Event Not Found" };
+  if (!id || !isUUID(id)) return { title: "Event Not Found" };
 
   const supabase = createPublicClient();
   const { data: event } = await supabase
@@ -64,10 +63,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 }
 
 export default async function EventsPage({ params }: Props) {
+  await connection();
   const resolvedParams = await params;
   const id = resolvedParams.id;
 
-  if (!id) notFound();
+  if (!id || !isUUID(id)) notFound();
 
   const supabase = createPublicClient();
   const { data: event, error } = await supabase
@@ -80,82 +80,20 @@ export default async function EventsPage({ params }: Props) {
     notFound();
   }
 
-  const eventStatus = event.status || "completed";
+  // Map database row (snake_case) to client properties (camelCase)
+  const mappedEvent = {
+    id: event.id,
+    title: event.title,
+    description: event.description || "",
+    coverImage: event.cover_image || "",
+    relatedImages: event.related_images || [],
+    startDate: event.start_date,
+    endDate: event.end_date,
+    status: (event.status || "completed") as "upcoming" | "ongoing" | "completed" | "cancelled",
+    isRegistrationOpen: event.is_registration_open || false,
+    registrationUrl: event.registration_url || undefined,
+    logoUrl: event.logo_url || undefined,
+  };
 
-  return (
-    <div className="mb-20 min-h-screen bg-transparent">
-      {/* Hero Section */}
-      <section className="relative w-full h-[55vh] md:h-[65vh]">
-        {/* Masking the image so it fades its opacity to 0 at the bottom */}
-        <div 
-          className="absolute inset-0 pointer-events-none"
-          style={{
-            maskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)',
-            WebkitMaskImage: 'linear-gradient(to bottom, rgba(0,0,0,1) 40%, rgba(0,0,0,0) 100%)'
-          }}
-        >
-          <Image
-            src={getValidImageUrl(event.cover_image)}
-            alt={event.title}
-            fill
-            sizes="100vw"
-            priority
-            className="object-cover object-top"
-          />
-        </div>
-
-        {/* Text */}
-        <div className="absolute bottom-4 md:bottom-10 w-full text-center z-10 px-4">
-          <h1 className="text-5xl md:text-7xl lg:text-[5rem] font-primary font-extrabold tracking-widest text-white uppercase drop-shadow-xl">
-            {event.title}
-          </h1>
-          <p className="text-xl md:text-2xl font-secondary text-gray-300 mt-2 md:mt-4 drop-shadow-md">
-            {event.subtitle || new Date(event.start_date).toLocaleDateString()}
-          </p>
-        </div>
-      </section>
-
-      {/* Content Section */}
-      <section className="max-w-5xl mx-auto px-6 md:px-12 mt-12 md:mt-20">
-        <div className="text-gray-300 font-secondary text-sm md:text-base leading-loose space-y-6">
-          <p className="whitespace-pre-wrap">{event.description || "No description available for this event."}</p>
-        </div>
-
-        {eventStatus === "upcoming" ? (
-          event.is_registration_open && event.registration_url ? (
-            <Link
-              href={event.registration_url}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="mt-8 inline-flex items-center gap-2 bg-white px-6 py-5 rounded-md text-sm font-semibold text-black transition-all duration-300 hover:bg-gray-200 hover:shadow-lg group"
-            >
-              Register Now
-              <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1" />
-            </Link>
-          ) : (
-            <div className="mt-8 inline-flex items-center gap-2 bg-white px-6 py-5 rounded-md text-sm font-semibold text-black opacity-50 cursor-not-allowed">
-              Registration Open Soon
-            </div>
-          )
-        ) : eventStatus === "ongoing" ? (
-          <div className="mt-8 inline-flex items-center gap-2 bg-white px-6 py-5 rounded-md text-sm font-semibold text-black opacity-50 cursor-not-allowed">
-            Registration Closed
-          </div>
-        ) : eventStatus === "cancelled" ? (
-          <div className="mt-8 inline-flex items-center gap-2 bg-gray-500/20 text-gray-400 border border-gray-500/50 px-6 py-5 rounded-md text-sm font-semibold cursor-not-allowed">
-            Event Cancelled
-          </div>
-        ) : (
-          <div className="mt-8 inline-flex items-center gap-2 bg-white px-6 py-5 rounded-md text-sm font-semibold text-black opacity-50 cursor-not-allowed">
-            Event Completed
-          </div>
-        )}
-      </section>
-
-      {/* Carousel Section (Fallback to cover image if no gallery) */}
-      <div className="max-w-6xl mx-auto px-6 md:px-12 mt-20">
-        <EventCarousel images={event.related_images?.length > 0 ? event.related_images : [event.cover_image]} />
-      </div>
-    </div>
-  );
+  return <EventClientPage event={mappedEvent} />;
 }
