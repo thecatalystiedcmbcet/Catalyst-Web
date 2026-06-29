@@ -28,6 +28,7 @@ const monument = localFont({
 // The original 9-weight load was adding 5 unnecessary font-file round-trips.
 const poppins = localFont({
   src: [
+    { path: "../public/fonts/Poppins-Light.ttf", weight: "300" },
     { path: "../public/fonts/Poppins-Regular.ttf", weight: "400" },
     { path: "../public/fonts/Poppins-Medium.ttf", weight: "500" },
     { path: "../public/fonts/Poppins-SemiBold.ttf", weight: "600" },

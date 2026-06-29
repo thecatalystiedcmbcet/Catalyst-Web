@@ -3,7 +3,7 @@ import React, { useRef } from "react";
 import Link from "next/link";
 import { FaInstagram, FaLinkedinIn, FaDiscord, FaYoutube } from "react-icons/fa";
 import { useGSAP } from "@gsap/react";
-import { gsap } from "@/lib/gsap";
+import { gsap, ScrollTrigger } from "@/lib/gsap";
 
 export type SocialLinks = {
   instagram_url: string;
@@ -21,6 +21,18 @@ const DEFAULT_LINKS: SocialLinks = {
 
 const Footer = ({ socialLinks = DEFAULT_LINKS }: { socialLinks?: SocialLinks }) => {
   const container = useRef<HTMLElement>(null);
+
+  React.useEffect(() => {
+    // Refresh ScrollTrigger to recalculate footer trigger offset position
+    // after content is rendered and heights settle.
+    const timer = setTimeout(() => {
+      if (typeof window !== "undefined") {
+        ScrollTrigger.refresh();
+      }
+    }, 200);
+
+    return () => clearTimeout(timer);
+  }, []);
 
   useGSAP(() => {
     const tl = gsap.timeline({
