@@ -17,7 +17,7 @@ const nextConfig: NextConfig = {
   images: {
     unoptimized: process.env.NODE_ENV === "development",
     formats: ["image/avif", "image/webp"],
-    minimumCacheTTL: 3600, // 1 hour
+    minimumCacheTTL: 31536000, // 1 year
     // Allow all remote https image hostnames (e.g. for mock data)
     remotePatterns: [
       {

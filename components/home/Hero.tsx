@@ -55,12 +55,12 @@ const HeroSection = () => {
       <section className="flex flex-col items-center mt-auto lg:mt-0">
         <div className="flex flex-col items-center">
           <div className="z-10">
-            <h1 className="hero-title text-white text-[9dvw] font-primary text-center leading-none">
+            <h1 className="hero-title text-white text-[8dvw] font-primary text-center leading-none">
               CATALYST{" "}
             </h1>
           </div>
-          <div className="z-10 -mt-2 md:-mt-6">
-            <h2 className="hero-subtitle text-white/40 text-xl xl:text-4xl font-primary text-center lg:text-3xl">
+          <div className="z-10 -mt-2 md:-mt-4">
+            <h2 className="hero-subtitle text-white/40 text-xl xl:text-4xl font-primary text-center lg:text-2xl">
               MAR BASELIOS IEDC
             </h2>
           </div>
