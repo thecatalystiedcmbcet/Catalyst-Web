@@ -42,13 +42,13 @@ const HeroSection = () => {
 
   return (
     <div ref={container} className="pb-20 lg:pb-18 h-[100dvh] lg:h-auto flex flex-col lg:block">
-      <div className="w-screen flex-1 lg:flex-none lg:h-[60vh] mt-[180px] lg:mt-40 overflow-hidden flex flex-col items-center justify-center px-9 relative">
+      <div className="w-screen flex-1 lg:flex-none lg:h-[60vh] mt-[180px] lg:mt-28 overflow-hidden flex flex-col items-center justify-center px-9 relative">
         <Image
           src="/hero_logo.png"
           alt="Catalyst Logo"
           width={800}
           height={800}
-          className="hero-logo w-[75%] md:w-[40%] lg:w-[30%] max-w-[400px] h-auto object-contain"
+          className="hero-logo w-[75%] md:w-[40%] lg:w-[29%] max-w-[400px] h-auto object-contain"
           priority
         />
       </div>
