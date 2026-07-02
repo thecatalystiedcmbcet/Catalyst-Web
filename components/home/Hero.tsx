@@ -48,7 +48,7 @@ const HeroSection = () => {
           alt="Catalyst Logo"
           width={800}
           height={800}
-          className="hero-logo w-[75%] md:w-[40%] lg:w-[29%] max-w-[400px] h-auto object-contain"
+          className="hero-logo w-[75%] md:w-[26%] lg:w-[27%] max-w-[400px] h-auto object-contain"
           priority
         />
       </div>
