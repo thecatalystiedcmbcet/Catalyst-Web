@@ -39,7 +39,7 @@ export default async function GalleryPage() {
     console.error("Failed to fetch gallery:", error);
   }
 
-  let allImages: string[] = [];
+  const allImages: string[] = [];
   if (data) {
     data.forEach(event => {
       if (event.related_images && Array.isArray(event.related_images)) {

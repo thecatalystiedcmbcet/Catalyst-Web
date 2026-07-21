@@ -9,6 +9,7 @@ import { createPublicClient } from "@/lib/supabase/public";
 import TimelineDemo, { type TimelineItem } from "./TimelineDemo";
 
 export default async function TimelineServer() {
+  let items: TimelineItem[] = [];
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase
@@ -16,17 +17,16 @@ export default async function TimelineServer() {
       .select("*")
       .order("sort_order", { ascending: true });
 
-    const items: TimelineItem[] = (!error && data)
-      ? data.map((item: TimelineItem & { sort_order?: number }, idx: number) => ({
-          ...item,
-          id: String(idx + 1).padStart(2, "0"),
-        }))
-      : [];
-
-    return <TimelineDemo items={items} />;
+    if (!error && data) {
+      items = data.map((item: TimelineItem & { sort_order?: number }, idx: number) => ({
+        ...item,
+        id: String(idx + 1).padStart(2, "0"),
+      }));
+    }
   } catch {
-    return <TimelineDemo items={[]} />;
+    // fall back to empty items
   }
+  return <TimelineDemo items={items} />;
 }
 
 /**

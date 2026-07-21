@@ -2,6 +2,19 @@ import { Metadata } from "next";
 import { createPublicClient } from "@/lib/supabase/public";
 import MuLearnAchievementsClient from "./MuLearnAchievementsClient";
 
+interface AchievementRecord {
+  id?: string;
+  title: string;
+  description: string;
+  date?: string;
+  created_at?: string;
+  year?: number;
+  is_featured?: boolean;
+  cover_image?: string;
+  image?: string;
+  organisation?: string;
+}
+
 export const metadata: Metadata = {
   title: "μLearn Achievements | Catalyst",
   description: "Explore the GTech μLearn student achievements, milestones, and awards of MBCET campus chapter.",
@@ -22,7 +35,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MuLearnAchievementsPage() {
-  let achievements: any[] = [];
+  let achievements: AchievementRecord[] = [];
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase

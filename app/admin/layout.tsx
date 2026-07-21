@@ -1,11 +1,11 @@
-/* eslint-disable @typescript-eslint/no-unused-vars, @typescript-eslint/no-explicit-any, prefer-const, @next/next/no-img-element */
 "use client";
 
 import * as React from "react";
 import { usePathname } from "next/navigation";
 import { SidebarProvider, SidebarTrigger, SidebarInset } from "@/components/ui/sidebar";
 import { AdminSidebar } from "@/components/layout/AdminSidebar";
-import { Bell, Search, User } from "lucide-react";
+import { User } from "lucide-react";
+import type { Subscription } from "@supabase/supabase-js";
 
 export default function AdminLayout({
   children,
@@ -28,7 +28,7 @@ export default function AdminLayout({
     };
     checkAuth();
 
-    let subscription: any;
+    let subscription: Subscription | undefined;
     const setupListener = async () => {
       const { supabase } = await import("@/lib/supabaseClient");
       const { data } = supabase.auth.onAuthStateChange((event, session) => {

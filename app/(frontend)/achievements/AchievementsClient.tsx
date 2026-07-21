@@ -67,14 +67,27 @@ const renderTitle = (title: string) => {
   );
 };
 
-export default function AchievementsClient({ 
-  featured, 
-  recentAchievements, 
-  pastAchievements 
-}: { 
-  featured: any[], 
-  recentAchievements: any[], 
-  pastAchievements: any[] 
+export interface AchievementRecord {
+  id?: string;
+  title: string;
+  description: string;
+  date?: string;
+  created_at?: string;
+  year?: number;
+  is_featured?: boolean;
+  cover_image?: string;
+  image?: string;
+  organisation?: string;
+}
+
+export default function AchievementsClient({
+  featured,
+  recentAchievements,
+  pastAchievements
+}: {
+  featured: AchievementRecord[],
+  recentAchievements: AchievementRecord[],
+  pastAchievements: AchievementRecord[]
 }) {
   const container = useRef<HTMLDivElement>(null);
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -257,7 +270,7 @@ export default function AchievementsClient({
               {recentAchievements.map((item, index) => (
                 <Card 
                   key={item.id || index} 
-                  year={item.year || new Date(item.date || item.created_at).getFullYear()} 
+                  year={item.year || new Date(item.date || item.created_at || Date.now()).getFullYear()}
                   title={item.title} 
                   description={item.description} 
                   image={item.cover_image || item.image || "/agni.png"} 
@@ -278,7 +291,7 @@ export default function AchievementsClient({
               {pastAchievements.map((item, index) => (
                 <Card 
                   key={item.id || index} 
-                  year={item.year || new Date(item.date || item.created_at).getFullYear()} 
+                  year={item.year || new Date(item.date || item.created_at || Date.now()).getFullYear()}
                   title={item.title} 
                   description={item.description} 
                   image={item.cover_image || item.image || "/agni.png"} 

@@ -14,6 +14,7 @@ const DEFAULT_ITEMS = [
 ];
 
 export default async function StatsServer() {
+  let items = DEFAULT_ITEMS;
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase
@@ -21,11 +22,13 @@ export default async function StatsServer() {
       .select("*")
       .order("sort_order", { ascending: true });
 
-    const items = (!error && data && data.length > 0) ? data : DEFAULT_ITEMS;
-    return <Stats items={items} />;
+    if (!error && data && data.length > 0) {
+      items = data;
+    }
   } catch {
-    return <Stats items={DEFAULT_ITEMS} />;
+    // fall back to DEFAULT_ITEMS
   }
+  return <Stats items={items} />;
 }
 
 /**

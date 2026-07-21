@@ -52,8 +52,8 @@ export default function SettingsPage() {
     try {
       await updateSettings(formData);
       toast.success("Settings updated successfully!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to update settings");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to update settings");
     } finally {
       setIsSaving(false);
     }

@@ -19,6 +19,13 @@ interface OurPioneersClientProps {
 
 const OurPioneersClient = ({ pioneers }: OurPioneersClientProps) => {
   const container = useRef<HTMLDivElement>(null);
+  const [activePioneer, setActivePioneer] = useState<Pioneer | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only mount flag, required to gate the portal until after hydration
+    setMounted(true);
+  }, []);
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -49,13 +56,6 @@ const OurPioneersClient = ({ pioneers }: OurPioneersClientProps) => {
   if (pioneers.length === 0) {
     return null; // Don't render the section at all if there are no pioneers
   }
-
-  const [activePioneer, setActivePioneer] = useState<Pioneer | null>(null);
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
 
   const handleClose = () => {
     setActivePioneer(null);

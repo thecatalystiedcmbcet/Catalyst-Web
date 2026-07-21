@@ -40,13 +40,38 @@ const getColClass = (cols: number) => {
   }
 };
 
+interface ExecomMemberRef {
+  member_id: string;
+  role?: string;
+  order_index?: number;
+  member: {
+    id: string;
+    name: string;
+    photo_url?: string;
+    photo?: string;
+    image?: string;
+    instagram?: string;
+    linkedin?: string;
+  };
+}
+
+interface ExecomSection {
+  id: string;
+  title?: string;
+  order_index?: number;
+  bgWhite?: boolean;
+  cols?: number;
+  size?: string;
+  execom_members?: ExecomMemberRef[];
+}
+
 export default function MuLearnExecomClient({
   initialSections,
 }: {
-  initialSections: any[];
+  initialSections: ExecomSection[];
 }) {
   const container = useRef<HTMLDivElement>(null);
-  const [sections] = useState<any[]>(initialSections);
+  const [sections] = useState<ExecomSection[]>(initialSections);
 
   useGSAP(() => {
     const tl = gsap.timeline({
@@ -87,7 +112,7 @@ export default function MuLearnExecomClient({
         {sections.length > 0 ? (
           sections.map((section) => {
             const colClass = getColClass(section.cols || 5);
-            const cardSize = section.size || "md";
+            const cardSize = (section.size as "sm" | "md" | "lg") || "md";
             return (
               <div key={section.id} className={`w-full mb-20 flex flex-col items-center ${section.bgWhite ? "bg-white pt-10 pb-10 rounded-3xl" : ""}`}>
                 {section.title && (
@@ -96,7 +121,7 @@ export default function MuLearnExecomClient({
                   </h2>
                 )}
                 <div className={`flex flex-wrap justify-center gap-x-4 gap-y-12 md:gap-8 lg:gap-12 w-full ${colClass} px-5`}>
-                  {section.execom_members?.map((em: any, idx: number) => (
+                  {section.execom_members?.map((em, idx: number) => (
                     <div key={em.member_id || idx} className="team-member-card flex justify-center">
                       <TeamMemberCard
                         name={em.member.name || "Member"}

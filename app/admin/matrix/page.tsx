@@ -33,7 +33,8 @@ export default function MatrixAdminPage() {
   }, [fetchMatrixItems]);
 
   useEffect(() => {
-    setLocalItems(matrixItems.sort((a, b) => a.sort_order - b.sort_order));
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mirrors store data into a locally reorderable copy for drag-and-drop
+    setLocalItems([...matrixItems].sort((a, b) => a.sort_order - b.sort_order));
   }, [matrixItems]);
 
   const onDragEnd = async (result: DropResult) => {
@@ -48,7 +49,7 @@ export default function MatrixAdminPage() {
     try {
       await reorderMatrixItems(items);
       toast.success("Order updated successfully!");
-    } catch (error: any) {
+    } catch {
       toast.error("Failed to update order");
       setLocalItems(matrixItems); // Revert on failure
     }
@@ -181,7 +182,7 @@ export default function MatrixAdminPage() {
         
         {localItems.length === 0 && (
           <div className="text-center py-12 text-white/50 border border-dashed border-white/10 rounded-lg">
-            No stats created yet. Click "Add Stat" to create one.
+            No stats created yet. Click &quot;Add Stat&quot; to create one.
           </div>
         )}
       </div>

@@ -2,7 +2,21 @@ import React from 'react';
 import ExecomClient from './ExecomClient';
 import { decodeSectionTitle } from "@/lib/adminStore";
 import { Metadata } from 'next';
-import { SectionData } from '../dev-team/DevTeamClient';
+import { SectionData, MemberData } from '../dev-team/DevTeamClient';
+
+interface RawExecomMember {
+  member_id: string;
+  role: string;
+  order_index?: number;
+  member: MemberData;
+}
+
+interface RawSection {
+  id: string;
+  title: string;
+  order_index: number;
+  execom_members?: RawExecomMember[];
+}
 
 export const metadata: Metadata = {
   title: "Execom | Catalyst",
@@ -49,17 +63,23 @@ export default async function ExecomPage() {
     }
 
     if (data) {
-      sections = data.map((sec: any) => {
+      const rawSections = data as unknown as RawSection[];
+      sections = rawSections.map((sec): SectionData => {
         const decoded = decodeSectionTitle(sec.title);
-        sec.title = decoded.title;
-        sec.bgWhite = decoded.bgWhite;
-        sec.cols = decoded.cols;
-        sec.size = decoded.size;
+        const execomMembers = sec.execom_members
+          ? [...sec.execom_members].sort(
+              (a, b) => (a.order_index || 0) - (b.order_index || 0)
+            )
+          : [];
 
-        if (sec.execom_members) {
-          sec.execom_members.sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0));
-        }
-        return sec as SectionData;
+        return {
+          ...sec,
+          title: decoded.title,
+          bgWhite: decoded.bgWhite,
+          cols: decoded.cols,
+          size: decoded.size,
+          execom_members: execomMembers,
+        };
       });
     }
   } catch (error) {

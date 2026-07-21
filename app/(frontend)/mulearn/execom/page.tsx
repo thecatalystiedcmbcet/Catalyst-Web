@@ -3,6 +3,31 @@ import { createPublicClient } from "@/lib/supabase/public";
 import { decodeSectionTitle } from "@/lib/adminStore";
 import MuLearnExecomClient from "./MuLearnExecomClient";
 
+interface ExecomMemberRef {
+  member_id: string;
+  role?: string;
+  order_index?: number;
+  member: {
+    id: string;
+    name: string;
+    photo_url?: string;
+    instagram?: string;
+    linkedin?: string;
+  };
+}
+
+interface ExecomSection {
+  id: string;
+  title: string;
+  order_index?: number;
+  bgWhite?: boolean;
+  cols?: number;
+  size?: string;
+  execom_members?: ExecomMemberRef[];
+}
+
+type RawSection = Omit<ExecomSection, "bgWhite" | "cols" | "size">;
+
 export const metadata: Metadata = {
   title: "μLearn Workforce | Catalyst",
   description: "Meet the student workforce and Executive Committee leading GTech μLearn MBCET chapter.",
@@ -23,7 +48,7 @@ export const metadata: Metadata = {
 };
 
 export default async function MuLearnExecomPage() {
-  let sortedSections: any[] = [];
+  let sortedSections: ExecomSection[] = [];
   try {
     const supabase = createPublicClient();
     const { data, error } = await supabase
@@ -43,17 +68,23 @@ export default async function MuLearnExecomPage() {
     if (error) throw error;
 
     if (data) {
-      sortedSections = data.map((sec: any) => {
+      const rawSections = data as unknown as RawSection[];
+      sortedSections = rawSections.map((sec): ExecomSection => {
         const decoded = decodeSectionTitle(sec.title);
-        sec.title = decoded.title;
-        sec.bgWhite = decoded.bgWhite;
-        sec.cols = decoded.cols;
-        sec.size = decoded.size;
+        const execomMembers = sec.execom_members
+          ? [...sec.execom_members].sort(
+              (a, b) => (a.order_index || 0) - (b.order_index || 0)
+            )
+          : sec.execom_members;
 
-        if (sec.execom_members) {
-          sec.execom_members.sort((a: any, b: any) => (a.order_index || 0) - (b.order_index || 0));
-        }
-        return sec;
+        return {
+          ...sec,
+          title: decoded.title,
+          bgWhite: decoded.bgWhite,
+          cols: decoded.cols,
+          size: decoded.size,
+          execom_members: execomMembers,
+        };
       });
     }
   } catch (error) {

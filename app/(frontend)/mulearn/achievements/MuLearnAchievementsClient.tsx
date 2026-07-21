@@ -18,7 +18,30 @@ const poppins = localFont({
   display: "swap",
 });
 
-const Card = ({ year, title, description, image }: any) => {
+interface AchievementRecord {
+  id?: string;
+  title: string;
+  description: string;
+  date?: string;
+  created_at?: string;
+  year?: number;
+  is_featured?: boolean;
+  cover_image?: string;
+  image?: string;
+  organisation?: string;
+}
+
+const Card = ({
+  year,
+  title,
+  description,
+  image,
+}: {
+  year: number | string;
+  title: string;
+  description: string;
+  image: string;
+}) => {
   return (
     <div className="mu-ach-card relative flex flex-col group h-full cursor-pointer bg-[#0c0c0c] rounded-3xl border border-white/5 hover:border-white/20 hover:bg-[#111] transition-all duration-500 overflow-hidden">
       {/* Image Section */}
@@ -74,10 +97,10 @@ const renderTitle = (title: string) => {
 export default function MuLearnAchievementsClient({
   initialAchievements,
 }: {
-  initialAchievements: any[];
+  initialAchievements: AchievementRecord[];
 }) {
   const container = useRef<HTMLDivElement>(null);
-  const [achievements] = useState<any[]>(initialAchievements);
+  const [achievements] = useState<AchievementRecord[]>(initialAchievements);
   const [currentIndex, setCurrentIndex] = useState(0);
 
   // Auto-scroll
@@ -252,7 +275,7 @@ export default function MuLearnAchievementsClient({
               {others.map((item, index) => (
                 <Card
                   key={item.id || index}
-                  year={item.year || new Date(item.date || item.created_at).getFullYear()}
+                  year={item.year || new Date(item.date || item.created_at || Date.now()).getFullYear()}
                   title={item.title}
                   description={item.description}
                   image={item.cover_image || item.image || "/agni.png"}

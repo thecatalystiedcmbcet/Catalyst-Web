@@ -7,7 +7,14 @@ import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
 import { X, ChevronLeft, ChevronRight } from "lucide-react";
 
-export default function GalleryClient({ items, enigmaClassName }: { items: any[], enigmaClassName: string }) {
+interface GalleryItem {
+  id: string;
+  img: string;
+  url: string;
+  height: number;
+}
+
+export default function GalleryClient({ items, enigmaClassName }: { items: GalleryItem[], enigmaClassName: string }) {
   const container = useRef<HTMLDivElement>(null);
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [lightboxIndex, setLightboxIndex] = useState(0);

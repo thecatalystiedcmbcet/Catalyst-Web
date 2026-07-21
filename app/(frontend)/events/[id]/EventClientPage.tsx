@@ -47,6 +47,7 @@ export default function EventClientPage({ event }: EventClientPageProps) {
   } | null>(null);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- client-only mount flag, required to gate hydration-sensitive countdown rendering
     setMounted(true);
 
     const calculateTimeLeft = () => {
@@ -126,9 +127,9 @@ export default function EventClientPage({ event }: EventClientPageProps) {
     })}`;
   };
 
-  // Clipboard copy helper
   const copyToClipboard = () => {
-    navigator.clipboard.writeText(window.location.href);
+    const urlToCopy = event.registrationUrl || window.location.href;
+    navigator.clipboard.writeText(urlToCopy);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -298,7 +299,7 @@ export default function EventClientPage({ event }: EventClientPageProps) {
             ) : (
               <>
                 <Copy className="w-4 h-4" />
-                <span>Copy Event Link</span>
+                <span>{event.registrationUrl ? "After Diaries" : "After Diaries"}</span>
               </>
             )}
           </button>

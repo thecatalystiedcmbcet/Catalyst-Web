@@ -32,7 +32,8 @@ export default function CampusStatisticsAdminPage() {
   }, [fetchCampusStatistics]);
 
   useEffect(() => {
-    setLocalItems(campusStatistics.sort((a, b) => a.sort_order - b.sort_order));
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mirrors store data into a locally reorderable copy for drag-and-drop
+    setLocalItems([...campusStatistics].sort((a, b) => a.sort_order - b.sort_order));
   }, [campusStatistics]);
 
   const onDragEnd = async (result: DropResult) => {
@@ -47,7 +48,7 @@ export default function CampusStatisticsAdminPage() {
     try {
       await reorderCampusStatistics(items);
       toast.success("Order updated successfully!");
-    } catch (error: any) {
+    } catch {
       toast.error("Failed to update order");
       setLocalItems(campusStatistics); // Revert on failure
     }
@@ -182,7 +183,7 @@ export default function CampusStatisticsAdminPage() {
         
         {localItems.length === 0 && (
           <div className="text-center py-12 text-white/50 border border-dashed border-white/10 rounded-lg">
-            No statistics configured. Click "Add Stat" to create your first one.
+            No statistics configured. Click &quot;Add Stat&quot; to create your first one.
           </div>
         )}
       </div>

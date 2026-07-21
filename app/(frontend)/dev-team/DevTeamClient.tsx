@@ -52,7 +52,15 @@ interface DevTeamClientProps {
   sections: SectionData[];
 }
 
-const Card = ({ invert = false, data, cardSize = "md" }: { invert?: boolean; data: any; cardSize?: string }) => {
+const Card = ({
+  invert = false,
+  data,
+  cardSize = "md",
+}: {
+  invert?: boolean;
+  data: MemberData & { role?: string };
+  cardSize?: "sm" | "md" | "lg";
+}) => {
   return (
     <div className="team-member-card flex justify-center">
       <TeamMemberCard
@@ -63,7 +71,7 @@ const Card = ({ invert = false, data, cardSize = "md" }: { invert?: boolean; dat
         instagram={data?.instagram ?? "#"}
         linkedin={data?.linkedin ?? "#"}
         invert={invert}
-        cardSize={cardSize as any}
+        cardSize={cardSize}
       />
     </div>
   );
@@ -151,7 +159,7 @@ const DevTeamClient: React.FC<DevTeamClientProps> = ({ sections }) => {
         {sections.length > 0 ? (
           sections.map((section, sIdx) => {
             const colClass = getColClass(section.cols || 5);
-            const cardSize = section.size || "md";
+            const cardSize = (section.size as "sm" | "md" | "lg") || "md";
             const topMargin = sIdx === 0 ? "mt-4" : "mt-20";
             return (
               <div key={section.id} className={`w-full mb-20 flex flex-col items-center ${section.bgWhite ? "bg-white pt-10 pb-10 rounded-3xl" : ""} ${topMargin}`}>

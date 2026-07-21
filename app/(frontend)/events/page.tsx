@@ -1,10 +1,8 @@
-import React, { Suspense } from "react";
+import React from "react";
 import Image from "next/image";
 import Link from "next/link";
 import { Metadata } from "next";
-import { MoveRight } from "lucide-react";
 import { connection } from "next/server";
-import { Button } from "@/components/ui/button";
 import NowHappening from "@/components/home/NowHappening";
 import { createPublicClient } from "@/lib/supabase/public";
 
@@ -68,83 +66,19 @@ function formatDateRange(startStr: string, endStr?: string) {
   return `${startDay}${getOrdinalSuffix(startDay)} ${startMonth} ${startYear} – ${endDay}${getOrdinalSuffix(endDay)} ${endMonth} ${endYear}`;
 }
 
-/* ---------------- BUTTON ---------------- */
-const ButtonNew = ({ link }: { link?: string }) => (
-  <Button className="mt-5 flex items-center gap-1 bg-white px-6 py-3 text-sm font-secondary text-black transition-all duration-300 hover:bg-black hover:text-white hover:shadow-lg group md:text-2xl md:mt-10 md:px-7 md:py-7 sm:text-2xl sm:py-7 w-fit">
-    Events
-    <Image
-      src="/right.svg"
-      alt=""
-      width={20}
-      height={20}
-      className="transition-transform duration-300 group-hover:translate-x-1 group-hover:-translate-y-1 ml-1 w-3 h-3 md:w-5 md:h-5 sm:w-5 sm:h-5"
-    />
-  </Button>
-);
-
-/* ---------------- FEATURED CARDS ---------------- */
-const CardDesktop = ({ event }: { event: any }) => (
-  <Link href={`/events/${event.slug || event.id}`} className="block relative rounded-2xl p-[0.5px]">
-    <div
-      className="absolute inset-0 rounded-2xl"
-      style={{
-        background: "linear-gradient(225.38deg, #FFFFFF 1.29%, rgba(255,255,255,0) 28.3%, #FFFFFF 91.9%)",
-      }}
-    />
-    <div className="relative rounded-2xl bg-gradient-to-b from-[#1D1D1D] to-[#0B0B0B] text-white p-1 h-[40vh]">
-      <div className="relative w-full h-full rounded-xl overflow-hidden flex">
-        <div className="w-1/2 bg-black flex flex-col justify-center px-10 z-20">
-          <h1 className="font-primary text-2xl sm:text-4xl mb-4">
-            {event.title}
-          </h1>
-          <ButtonNew link={event.registration_url} />
-        </div>
-
-        <div className="relative w-1/2 h-full">
-          <Image
-            src={getValidImageUrl(event.cover_image)}
-            alt={event.title}
-            fill
-            sizes="(max-width: 768px) 100vw, 50vw"
-            priority
-            className="object-cover"
-          />
-          <div className="absolute inset-0 bg-gradient-to-l from-transparent via-black/40 to-black" />
-        </div>
-      </div>
-    </div>
-  </Link>
-);
-
-const Card = ({ event }: { event: any }) => (
-  <Link href={`/events/${event.slug || event.id}`} className="block relative rounded-2xl p-[0.5px]">
-    <div
-      className="absolute inset-0 rounded-2xl"
-      style={{
-        background: "linear-gradient(225.38deg, #FFFFFF 1.29%, rgba(255,255,255,0) 28.3%, #FFFFFF 91.9%)",
-      }}
-    />
-    <div className="relative rounded-2xl bg-gradient-to-b from-[#1D1D1D] to-[#0B0B0B] text-white p-1 h-[60vh]">
-      <div className="relative w-full h-full rounded-xl overflow-hidden">
-        <Image
-          src={getValidImageUrl(event.cover_image)}
-          alt={event.title}
-          fill
-          sizes="(max-width: 768px) 100vw, 50vw"
-          className="object-cover opacity-80"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/65 via-black/20 to-transparent" />
-        <div className="relative z-20 h-full flex flex-col justify-between items-center py-6">
-          <h1 className="font-primary text-2xl sm:text-4xl">{event.title}</h1>
-          <ButtonNew link={event.registration_url} />
-        </div>
-      </div>
-    </div>
-  </Link>
-);
+interface EventRecord {
+  id: string;
+  slug?: string;
+  title: string;
+  cover_image?: string;
+  registration_url?: string;
+  status?: string;
+  start_date: string;
+  end_date?: string;
+}
 
 /* ---------------- PAST CARD ---------------- */
-const Card2 = ({ event, priority = false }: { event: any; priority?: boolean }) => (
+const Card2 = ({ event, priority = false }: { event: EventRecord; priority?: boolean }) => (
   <Link href={`/events/${event.slug || event.id}`} className="block relative rounded-2xl p-[0.5px]">
     <div
       className="absolute inset-0 rounded-2xl"

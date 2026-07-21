@@ -1,25 +1,27 @@
 "use client";
 
 import React, { useRef } from "react";
-import Image from "next/image";
 import WatermarkHeader from "@/components/home/WatermarkHeader";
 import { useGSAP } from "@gsap/react";
 import { gsap } from "@/lib/gsap";
-import localFont from 'next/font/local';
 import TeamMemberCard from '@/components/features/TeamMemberCard';
-import { SectionData, ExecomMember } from "../dev-team/DevTeamClient"; // Reusing the types
+import { SectionData, MemberData, ExecomMember } from "../dev-team/DevTeamClient"; // Reusing the types
 
-const enigma = localFont({
-  src: "../../../public/fonts/enigma.otf",
-  weight: "100",
-  style: "normal",
-});
+type CardSize = "sm" | "md" | "lg";
 
 interface ExecomClientProps {
   sections: SectionData[];
 }
 
-const Card = ({ invert = false, data, cardSize = "md" }: { invert?: boolean; data: any; cardSize?: string }) => {
+const Card = ({
+  invert = false,
+  data,
+  cardSize = "md",
+}: {
+  invert?: boolean;
+  data: MemberData & { role?: string };
+  cardSize?: "sm" | "md" | "lg";
+}) => {
   return (
     <div className="execom-card">
       <TeamMemberCard
@@ -29,7 +31,7 @@ const Card = ({ invert = false, data, cardSize = "md" }: { invert?: boolean; dat
         instagram={data?.instagram ?? "#"}
         linkedin={data?.linkedin ?? "#"}
         invert={invert}
-        cardSize={cardSize as any}
+        cardSize={cardSize}
       />
     </div>
   );
@@ -116,7 +118,7 @@ const ExecomClient: React.FC<ExecomClientProps> = ({ sections }) => {
         sections.map((section, sIdx) => {
           const bgWhite = section.bgWhite;
           const colClass = getColClass(section.cols || 5);
-          const cardSize = section.size || "md";
+          const cardSize = (section.size as CardSize) || "md";
           const isFeatured = sIdx === 0 && section.execom_members?.length <= 2;
           const topMargin = sIdx === 0 ? "mt-4" : "mt-20";
 

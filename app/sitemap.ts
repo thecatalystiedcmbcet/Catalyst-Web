@@ -24,7 +24,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   }));
 
   // Dynamic routes (events)
-  let eventRoutes: any[] = [];
+  let eventRoutes: MetadataRoute.Sitemap = [];
   try {
     const supabase = createPublicClient();
     const { data: events } = await supabase

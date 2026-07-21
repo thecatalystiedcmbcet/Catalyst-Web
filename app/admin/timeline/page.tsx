@@ -38,7 +38,8 @@ export default function TimelineAdminPage() {
   }, [fetchTimelineItems]);
 
   useEffect(() => {
-    setLocalItems(timelineItems.sort((a, b) => a.sort_order - b.sort_order));
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mirrors store data into a locally reorderable copy for drag-and-drop
+    setLocalItems([...timelineItems].sort((a, b) => a.sort_order - b.sort_order));
   }, [timelineItems]);
 
   const onDragEnd = async (result: DropResult) => {
@@ -53,7 +54,7 @@ export default function TimelineAdminPage() {
     try {
       await reorderTimelineItems(items);
       toast.success("Order updated successfully!");
-    } catch (error: any) {
+    } catch {
       toast.error("Failed to update order");
       setLocalItems(timelineItems); // Revert on failure
     }
@@ -89,8 +90,8 @@ export default function TimelineAdminPage() {
         sort_order: localItems.length,
       });
       toast.success("New event added!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to add new event");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to add new event");
       console.error(error);
     }
   };
@@ -109,8 +110,8 @@ export default function TimelineAdminPage() {
       const publicUrl = await uploadFile(file, "timeline");
       await updateTimelineItem(activeItemForUpload, { image: publicUrl });
       toast.success("Image uploaded successfully!");
-    } catch (error: any) {
-      toast.error(error.message || "Failed to upload image");
+    } catch (error) {
+      toast.error(error instanceof Error ? error.message : "Failed to upload image");
     } finally {
       setUploadingId(null);
       setActiveItemForUpload(null);
@@ -267,7 +268,7 @@ export default function TimelineAdminPage() {
         
         {localItems.length === 0 && (
           <div className="text-center py-12 text-white/50 border border-dashed border-white/10 rounded-lg">
-            No events created yet. Click "Add Event" to create one.
+            No events created yet. Click &quot;Add Event&quot; to create one.
           </div>
         )}
       </div>

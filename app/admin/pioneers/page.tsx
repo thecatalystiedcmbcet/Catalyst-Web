@@ -26,7 +26,6 @@ import {
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Plus, Trash2, Edit2, Loader2, Upload, ImageIcon, GripVertical } from "lucide-react";
-import Image from "next/image";
 import {
   DragDropContext,
   Droppable,
@@ -73,7 +72,8 @@ export default function PioneersAdminPage() {
   }, [fetchPioneers]);
 
   useEffect(() => {
-    setLocalItems(pioneers.sort((a, b) => a.sort_order - b.sort_order));
+    // eslint-disable-next-line react-hooks/set-state-in-effect -- mirrors store data into a locally reorderable copy for drag-and-drop
+    setLocalItems([...pioneers].sort((a, b) => a.sort_order - b.sort_order));
   }, [pioneers]);
 
   const {
@@ -104,6 +104,7 @@ export default function PioneersAdminPage() {
         linkedin_url: editingPioneer.linkedin_url || "",
         portfolio_url: editingPioneer.portfolio_url || "",
       });
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- syncs form preview when the edited pioneer changes
       setLogoPreview(editingPioneer.logo_url || "");
     } else {
       reset({
@@ -192,7 +193,7 @@ export default function PioneersAdminPage() {
     try {
       await reorderPioneers(items);
       toast.success("Order updated successfully!");
-    } catch (error: any) {
+    } catch {
       toast.error("Failed to update order");
       setLocalItems(pioneers); // Revert on failure
     }
@@ -302,7 +303,7 @@ export default function PioneersAdminPage() {
 
         {localItems.length === 0 && (
           <div className="text-center py-12 text-white/50 border border-dashed border-white/10 rounded-lg">
-            No pioneers found. Click "Add Pioneer" to create your first one.
+            No pioneers found. Click &quot;Add Pioneer&quot; to create your first one.
           </div>
         )}
       </div>
