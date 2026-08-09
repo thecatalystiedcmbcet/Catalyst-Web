@@ -91,6 +91,32 @@ export interface Pioneer {
   sort_order: number;
 }
 
+export type CertificateStatus = "pending" | "issued" | "rejected";
+export type DeliveryMethod = "email" | "discord" | "both";
+
+export interface CertificateRequest {
+  id: string;
+  createdAt: string;
+  fullName: string;
+  email: string;
+  discordUsername?: string;
+  department: string;
+  batch: string;
+  muid: string;
+  mulearnRank: string;
+  karma: number;
+  rankCardUrl?: string;
+  reason: string;
+  pointsClaimed: 25 | 50;
+  deliveryMethod: DeliveryMethod;
+  status: CertificateStatus;
+  rejectionReason?: string;
+  pointsAwarded?: 25 | 50;
+  certificateNumber?: string;
+  certificateUrl?: string;
+  reviewedAt?: string;
+}
+
 export type ExecomScope = "catalyst" | "mulearn" | "dev-team";
 
 export interface ExecomSection {
@@ -208,6 +234,30 @@ const mapCampusStatistic = (row: any): CampusStatistic => ({
 });
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
+const mapCertificateRequest = (row: any): CertificateRequest => ({
+  id: row.id,
+  createdAt: row.created_at,
+  fullName: row.full_name,
+  email: row.email,
+  discordUsername: row.discord_username ?? undefined,
+  department: row.department,
+  batch: row.batch,
+  muid: row.muid,
+  mulearnRank: row.mulearn_rank,
+  karma: row.karma,
+  rankCardUrl: row.rank_card_url ?? undefined,
+  reason: row.reason,
+  pointsClaimed: row.points_claimed,
+  deliveryMethod: row.delivery_method,
+  status: row.status,
+  rejectionReason: row.rejection_reason ?? undefined,
+  pointsAwarded: row.points_awarded ?? undefined,
+  certificateNumber: row.certificate_number ?? undefined,
+  certificateUrl: row.certificate_url ?? undefined,
+  reviewedAt: row.reviewed_at ?? undefined,
+});
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
 const mapPioneer = (row: any): Pioneer => ({
   id: row.id,
   name: row.name ?? "",
@@ -235,6 +285,7 @@ interface AdminState {
   timelineItems: TimelineItem[];
   campusStatistics: CampusStatistic[];
   pioneers: Pioneer[];
+  certificateRequests: CertificateRequest[];
 
   // Loading guards — prevent duplicate fetches per module
   membersLoaded: boolean;
@@ -248,6 +299,7 @@ interface AdminState {
   timelineLoaded: boolean;
   campusStatisticsLoaded: boolean;
   pioneersLoaded: boolean;
+  certificateRequestsLoaded: boolean;
 
   // Loading status for UI spinners
   isLoadingMembers: boolean;
@@ -259,6 +311,7 @@ interface AdminState {
   isLoadingTimeline: boolean;
   isLoadingCampusStatistics: boolean;
   isLoadingPioneers: boolean;
+  isLoadingCertificateRequests: boolean;
 
   // ---- FETCH ACTIONS (load from Supabase if not already loaded) ----
   fetchMembers: () => Promise<void>;
@@ -270,6 +323,7 @@ interface AdminState {
   fetchTimelineItems: () => Promise<void>;
   fetchCampusStatistics: () => Promise<void>;
   fetchPioneers: () => Promise<void>;
+  fetchCertificateRequests: () => Promise<void>;
 
   // ---- FILE UPLOAD HELPER ----
   uploadFile: (file: File, folder: string) => Promise<string>;
@@ -324,6 +378,12 @@ interface AdminState {
   deletePioneer: (id: string) => Promise<void>;
   reorderPioneers: (items: Pioneer[]) => Promise<void>;
 
+  // ---- CERTIFICATE REQUESTS REVIEW ----
+  // Both actions call the server-side /api/certificates/review route since issuing/
+  // rejecting requires secrets (Resend, Discord webhook) the browser must never hold.
+  issueCertificate: (id: string, pointsAwarded: 25 | 50, deliveryMethod: DeliveryMethod) => Promise<void>;
+  rejectCertificateRequest: (id: string, reason: string, deliveryMethod: DeliveryMethod) => Promise<void>;
+
   // ---- EXECOM MEMBERS MANAGEMENT ----
   addMemberToSection: (sectionId: string, memberId: string, role?: string) => Promise<void>;
   updateMemberRoleInSection: (sectionId: string, memberId: string, role: string) => Promise<void>;
@@ -347,6 +407,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   timelineItems: [],
   campusStatistics: [],
   pioneers: [],
+  certificateRequests: [],
 
   membersLoaded: false,
   eventsLoaded: false,
@@ -359,6 +420,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   timelineLoaded: false,
   campusStatisticsLoaded: false,
   pioneersLoaded: false,
+  certificateRequestsLoaded: false,
 
   isLoadingMembers: false,
   isLoadingEvents: false,
@@ -369,6 +431,7 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
   isLoadingTimeline: false,
   isLoadingCampusStatistics: false,
   isLoadingPioneers: false,
+  isLoadingCertificateRequests: false,
 
   // ==========================================
   // FETCH ACTIONS
@@ -1136,6 +1199,72 @@ export const useAdminStore = create<AdminState>()((set, get) => ({
           .eq("id", m.id)
       )
     );
+  },
+
+  // ==========================================
+  // CERTIFICATE REQUESTS — FETCH & REVIEW
+  // ==========================================
+  fetchCertificateRequests: async () => {
+    if (get().certificateRequestsLoaded) return;
+    set({ isLoadingCertificateRequests: true });
+    try {
+      const { data, error } = await supabase
+        .from("certificate_requests")
+        .select("*")
+        .order("created_at", { ascending: false });
+      if (error) throw error;
+      set({
+        certificateRequests: (data ?? []).map(mapCertificateRequest),
+        certificateRequestsLoaded: true,
+      });
+    } catch (err) {
+      console.error("[fetchCertificateRequests]", err);
+    } finally {
+      set({ isLoadingCertificateRequests: false });
+    }
+  },
+
+  issueCertificate: async (id, pointsAwarded, deliveryMethod) => {
+    const res = await fetch("/api/certificates/review", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requestId: id, action: "issue", pointsAwarded, deliveryMethod }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || "Failed to issue certificate");
+
+    set((state) => ({
+      certificateRequests: state.certificateRequests.map((r) =>
+        r.id === id
+          ? {
+              ...r,
+              status: "issued",
+              pointsAwarded,
+              certificateNumber: json.certificateNumber,
+              certificateUrl: json.certificateUrl,
+              reviewedAt: new Date().toISOString(),
+            }
+          : r
+      ),
+    }));
+  },
+
+  rejectCertificateRequest: async (id, reason, deliveryMethod) => {
+    const res = await fetch("/api/certificates/review", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ requestId: id, action: "reject", rejectionReason: reason, deliveryMethod }),
+    });
+    const json = await res.json();
+    if (!res.ok) throw new Error(json.error || "Failed to reject request");
+
+    set((state) => ({
+      certificateRequests: state.certificateRequests.map((r) =>
+        r.id === id
+          ? { ...r, status: "rejected", rejectionReason: reason, reviewedAt: new Date().toISOString() }
+          : r
+      ),
+    }));
   },
 }));
 

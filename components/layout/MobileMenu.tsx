@@ -23,6 +23,7 @@ const ALL_LINKS = [
     ]
   },
   { page: "Gallery", path: "/gallery" },
+  { page: "Certificate", path: "/certificate" },
 ];
 
 const MobileMenu = () => {

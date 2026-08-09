@@ -14,6 +14,7 @@ import {
   Shield,
   BarChart,
   Rocket,
+  BadgeCheck,
 } from "lucide-react";
 
 import {
@@ -87,6 +88,11 @@ const navItems = [
     title: "Our Pioneers",
     url: "/admin/pioneers",
     icon: Rocket,
+  },
+  {
+    title: "Certificates",
+    url: "/admin/certificates",
+    icon: BadgeCheck,
   },
 ];
 

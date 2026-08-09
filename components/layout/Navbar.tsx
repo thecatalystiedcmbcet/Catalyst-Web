@@ -28,6 +28,7 @@ const ALL_NAV_LINKS: NavLink[] = [
     ],
   },
   { page: "Gallery", path: "/gallery" },
+  { page: "Certificate", path: "/certificate" },
 ];
 
 const Navbar = () => {

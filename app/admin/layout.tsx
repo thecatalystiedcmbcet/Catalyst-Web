@@ -71,6 +71,8 @@ export default function AdminLayout({
     sectionLabel = "Web Team";
   } else if (pathname.includes("/admin/campus-statistics")) {
     sectionLabel = "Campus Statistics";
+  } else if (pathname.includes("/admin/certificates")) {
+    sectionLabel = "Certificates";
   }
 
   return (
