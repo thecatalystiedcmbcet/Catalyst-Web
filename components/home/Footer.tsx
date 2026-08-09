@@ -31,14 +31,22 @@ const Footer = ({ socialLinks = DEFAULT_LINKS }: { socialLinks?: SocialLinks }) 
       }
     }, 200);
 
-    return () => clearTimeout(timer);
+    // Also refresh once everything (fonts, images) has finished loading,
+    // since late layout shifts can leave the scroll trigger miscalculated.
+    const handleLoad = () => ScrollTrigger.refresh();
+    window.addEventListener("load", handleLoad);
+
+    return () => {
+      clearTimeout(timer);
+      window.removeEventListener("load", handleLoad);
+    };
   }, []);
 
   useGSAP(() => {
     const tl = gsap.timeline({
       scrollTrigger: {
         trigger: container.current,
-        start: "top 90%",
+        start: "top bottom",
         once: true,
       },
     });
@@ -58,6 +66,17 @@ const Footer = ({ socialLinks = DEFAULT_LINKS }: { socialLinks?: SocialLinks }) 
       { y: 0, opacity: 1, duration: 1, ease: "power3.out" },
       "-=0.8"
     );
+
+    // Safety net: if the scroll trigger somehow never fires (e.g. layout
+    // shifted before it could evaluate correctly), don't leave the footer
+    // permanently invisible.
+    const fallback = window.setTimeout(() => {
+      if (tl.progress() === 0) {
+        tl.progress(1);
+      }
+    }, 2000);
+
+    return () => window.clearTimeout(fallback);
   }, { scope: container });
 
   return (
